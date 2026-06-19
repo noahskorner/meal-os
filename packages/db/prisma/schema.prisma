@@ -5,20 +5,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["public", "auth"]
-}
-
-model AuthUser {
-  id      String   @id @db.Uuid
-  profile Profile?
-
-  @@map("users")
-  @@schema("auth")
+  schemas  = ["public"]
 }
 
 model Profile {
   id        String   @id @db.Uuid
-  authUser  AuthUser @relation(fields: [id], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
