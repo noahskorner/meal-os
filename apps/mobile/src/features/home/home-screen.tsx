@@ -1,4 +1,6 @@
-import { Text, View } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { View } from "react-native";
 
 export function HomeScreen() {
   return (
@@ -9,7 +11,13 @@ export function HomeScreen() {
         alignItems: "center",
       }}
     >
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
+      <Button
+        onPress={() => {
+          console.log("Button pressed");
+        }}
+      >
+        <Text>Hello world</Text>
+      </Button>
     </View>
   );
 }
