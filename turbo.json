@@ -1,7 +1,13 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
-  "globalEnv": ["DATABASE_URL", "DIRECT_URL", "NODE_ENV"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "NODE_ENV",
+    "NEXT_PUBLIC_*",
+    "EXPO_PUBLIC_*"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -10,7 +16,8 @@
         ".next/**",
         "!.next/cache/**",
         "!.next/dev/**",
-        "dist/**"
+        "dist/**",
+        "out/**"
       ]
     },
     "lint": {
