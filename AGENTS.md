@@ -17,6 +17,22 @@ Run commands from the repository root unless you need a package-specific script.
 ## Coding Style & Naming Conventions
 Use TypeScript throughout. Follow the existing style: double quotes, semicolons, and 2-space indentation as enforced by Prettier and the current source files. Export React components in `PascalCase`, keep utility values and functions in `camelCase`, and name files by their primary export or role, for example `button.tsx`, `page.tsx`, or `base.js`. Prefer placing shared UI in `packages/ui/src` and importing it via the workspace alias, such as `@repo/ui/button`.
 
+### Database Conventions
+- All database table names must be plural.
+- All database columns must use `snake_case`.
+- All Prisma models and TypeScript properties must use `camelCase`.
+- Use Prisma `@@map` and `@map` annotations to map database objects to TypeScript-friendly names.
+
+```prisma
+model User {
+  id        String   @id @map("id")
+  firstName String   @map("first_name")
+  createdAt DateTime @map("created_at")
+
+  @@map("users")
+}
+```
+
 ## Testing Guidelines
 There is no dedicated test runner configured yet. For now, treat `npm run lint` and `npm run check-types` as the required validation before opening a PR. When adding tests, keep them next to the code they cover or in a nearby `__tests__/` directory, and use `*.test.ts` or `*.test.tsx` naming so they are easy to discover.
 
