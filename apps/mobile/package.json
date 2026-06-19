@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "expo export -p web",
+    "check-types": "tsc --noEmit",
     "dev": "expo start --web",
     "start": "expo start",
     "android": "expo start --android",

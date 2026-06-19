@@ -156,6 +156,54 @@ model User {
 
 There is no dedicated test runner configured yet. For now, treat `npm run lint` and `npm run check-types` as the required validation before opening a PR. When adding tests, keep them next to the code they cover or in a nearby `__tests__/` directory, and use `*.test.ts` or `*.test.tsx` naming so they are easy to discover.
 
+## CI/CD Workflow Overview
+
+- `.github/workflows/ci.yml` runs on pull requests and pushes to `main`.
+- CI uses the Node.js version pinned in `.node-version`, restores the npm cache through `actions/setup-node`, runs `npm ci`, then executes:
+  - `npm run lint`
+  - `npm run check-types`
+  - `npm run test --workspaces --if-present`
+  - `npm run build`
+- `.github/workflows/deploy.yml` handles deployments.
+- Pushes to `main` deploy to the `production` GitHub Environment.
+- Manual runs of the deploy workflow also use the `production` GitHub Environment.
+
+## Deployment Flow
+
+- Database migrations run first with `npm run db:migrate:deploy`, which executes Prisma migrations from `packages/db`.
+- Migrations run against the database URLs stored in the selected GitHub Environment secrets.
+- After a successful migration:
+  - the current API surface is built and deployed from `apps/web` to the Vercel project identified by `VERCEL_API_PROJECT_ID`
+  - the Expo web build is created from `apps/mobile` and deployed to the separate Vercel project identified by `VERCEL_MOBILE_WEB_PROJECT_ID`
+- This repository does not currently contain `apps/api`. The deployment workflow therefore targets `apps/web`, which is where the current Next.js API routes live.
+
+## Required GitHub Environments
+
+- `production`
+
+Store all deployment secrets and variables in the `production` environment.
+
+## Required GitHub Secrets
+
+Set these secrets in the `production` GitHub Environment:
+
+- `DATABASE_URL`: target Supabase connection string used by Prisma-aware runtime code
+- `DIRECT_URL`: direct Supabase/Postgres connection string used for Prisma migrations
+- `VERCEL_TOKEN`: Vercel token with access to both deployment projects
+
+Set these GitHub Environment variables in the `production` environment:
+
+- `VERCEL_ORG_ID`: Vercel team or personal scope ID
+- `VERCEL_API_PROJECT_ID`: Vercel project ID for the API deployment target
+- `VERCEL_MOBILE_WEB_PROJECT_ID`: Vercel project ID for the Expo web deployment target
+
+## Local Development vs Deployment Responsibilities
+
+- Local development is responsible for iterative work: `npm run dev`, `npm run db:migrate:dev`, schema changes, and developer-owned `.env*` files.
+- CI is responsible for validation only: install, lint, type-check, run workspace tests when present, and verify full builds.
+- Deployment is responsible for production-like actions only: apply committed Prisma migrations with `migrate deploy`, then publish the API and mobile web artifacts to Vercel.
+- Do not store production database credentials locally. Keep deployment credentials in GitHub Environment secrets and project-specific runtime variables in Vercel.
+
 ## Commit & Pull Request Guidelines
 
 Recent history uses Conventional Commit style, for example `chore: Removes docs application`. Follow the same `type: summary` pattern (`feat`, `fix`, `chore`, `docs`, etc.) with short imperative summaries. Pull requests should describe the change, list validation performed, link related issues, and include screenshots for UI updates in `apps/web`.
