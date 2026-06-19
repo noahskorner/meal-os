@@ -39,8 +39,8 @@ jobs:
       - name: Apply Prisma migrations
         run: npm run db:migrate:deploy
 
-  deploy-api:
-    name: Deploy API (apps/web)
+  deploy-web:
+    name: Deploy Web
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: migrate-database
@@ -73,8 +73,8 @@ jobs:
       - name: Deploy API to Vercel
         run: npx vercel deploy --prebuilt --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
 
-  deploy-mobile-web:
-    name: Deploy mobile web
+  deploy-mobile:
+    name: Deploy Mobile
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: migrate-database
@@ -99,8 +99,8 @@ jobs:
       - name: Pull Vercel project settings
         run: npx vercel pull --yes --environment=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build Expo web app
-        run: npm run build --workspace=mobile
+      - name: Build mobile web project
+        run: npx vercel build --yes --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy mobile web to Vercel
-        run: npx vercel deploy apps/mobile/dist --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
