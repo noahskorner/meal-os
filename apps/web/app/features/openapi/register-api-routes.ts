@@ -1,5 +1,5 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { registerHealthCheckRoute } from "./health-check";
+import { registerHealthCheckRoute } from "../health-check/health-check.route";
 
 const routeRegistrations = [registerHealthCheckRoute];
 

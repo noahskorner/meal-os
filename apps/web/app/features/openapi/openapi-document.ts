@@ -2,7 +2,7 @@ import {
   OpenAPIRegistry,
   OpenApiGeneratorV31,
 } from "@asteasolutions/zod-to-openapi";
-import { registerApiRoutes } from "../routes";
+import { registerApiRoutes } from "./register-api-routes";
 
 function createOpenApiDocument() {
   const registry = new OpenAPIRegistry();
