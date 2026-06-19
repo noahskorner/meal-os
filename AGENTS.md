@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is an npm workspace managed with Turborepo. Application code lives in `apps/`, with the current Next.js app in `apps/web`. Shared packages live in `packages/`: `packages/ui` contains reusable React components, `packages/eslint-config` holds shared lint rules, `packages/typescript-config` stores base `tsconfig` presets, and `packages/db` owns the Prisma client and schema. Static assets for the web app are in `apps/web/public`, and App Router files are under `apps/web/app`.
+This repository is an npm workspace managed with Turborepo. Application code lives in `apps/`, with the current Next.js app in `apps/web`. Shared packages live in `packages/`: `packages/ui` contains reusable React components, `packages/eslint-config` holds shared lint rules, `packages/typescript-config` stores base `tsconfig` presets, and `packages/db` owns the Prisma client and schema. Static assets for the web app are in `apps/web/public`, and App Router files are under `apps/web/src/app`.
 
 ### Vertical Slice Architecture
 
@@ -11,13 +11,13 @@ This repository is an npm workspace managed with Turborepo. Application code liv
 - Prefer feature-local code over shared abstractions.
 - Only move code into shared libraries when it is reused across multiple slices.
 
-For this repo's Next.js app, keep API route files in `apps/web/app/api` and feature implementation in `apps/web/app/features`.
+For this repo's Next.js app, keep API route files in `apps/web/src/app/api` and feature implementation in `apps/web/src/app/features`.
 
 Example:
 
 ```text
-apps/web/app/api/health-check/route.ts
-apps/web/app/features/health-check/
+apps/web/src/app/api/health-check/route.ts
+apps/web/src/app/features/health-check/
   health-check.route.ts
   health-check.request.ts
   health-check.response.ts
@@ -43,7 +43,7 @@ Within a slice:
 - `*.repository.ts`: persistence operations when a slice needs storage.
 - `*.facade.ts`: slice entry point that coordinates services, repositories, and workflows.
 
-Keep `apps/web/app/api/**/route.ts` for Next.js handlers, and use feature `*.route.ts` files for documentation and registration concerns.
+Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*.route.ts` files for documentation and registration concerns.
 
 Keep dependencies flowing inward: `route.ts -> facade.ts -> service.ts -> repository.ts`.
 

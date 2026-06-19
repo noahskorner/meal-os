@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   createHealthCheckValidationError,
   getHealthCheck,
-} from "../../features/health-check/health-check.facade";
-import { healthCheckRequestSchema } from "../../features/health-check/health-check.request";
+} from "@/app/features/health-check/health-check.facade";
+import { healthCheckRequestSchema } from "@/app/features/health-check/health-check.request";
 
 export function GET(request: NextRequest) {
   const parsedQuery = healthCheckRequestSchema.safeParse(

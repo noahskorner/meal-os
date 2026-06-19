@@ -1,4 +1,4 @@
-import { z } from "../../../lib/zod";
+import { z } from "@/lib/zod";
 
 export const healthCheckRequestSchema = z
   .object({
