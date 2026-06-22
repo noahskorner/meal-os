@@ -5,6 +5,7 @@
 - This repository is an npm workspace managed with Turborepo.
 - Application code lives in `apps/`:
   - `apps/web` — Next.js web application
+  - `apps/web-test` — Dedicated API test workspace for the Next.js application
   - `apps/mobile` — Expo / React Native application
 - Shared packages live in `packages/`:
   - `packages/ui` — Reusable React components
@@ -14,6 +15,9 @@
 - Web application structure:
   - `apps/web/public` — Static assets
   - `apps/web/src/app` — Next.js App Router routes and layouts
+- API test workspace structure:
+  - `apps/web-test/e2e` — Playwright API and integration tests
+  - `apps/web-test/unit` — Vitest unit tests
 - Mobile application structure:
   - `apps/mobile/src/app` — Expo Router routes and layouts
 
@@ -140,6 +144,9 @@ Run commands from the repository root unless you need a package-specific script.
 - `npm install`: install workspace dependencies.
 - `npm run dev`: start all development tasks through Turborepo; the web app runs on port `3000`.
 - `npm run build`: build all workspaces with task caching.
+- `npm run test`: run all configured workspace tests through Turborepo.
+- `npm run test:unit`: run the Vitest suite in `apps/web-test`.
+- `npm run test:e2e`: run the Playwright API/integration suite in `apps/web-test`.
 - `npm run lint`: run ESLint across the repo.
 - `npm run check-types`: run TypeScript checks across workspaces.
 - `npm run format`: format `*.ts`, `*.tsx`, and `*.md` files with Prettier.
@@ -172,7 +179,14 @@ model User {
 
 ## Testing Guidelines
 
-There is no dedicated test runner configured yet. For now, treat `npm run lint` and `npm run check-types` as the required validation before opening a PR. When adding tests, keep them next to the code they cover or in a nearby `__tests__/` directory, and use `*.test.ts` or `*.test.tsx` naming so they are easy to discover.
+Use the dedicated `apps/web-test` workspace for Next.js API tests so Playwright and Vitest dependencies stay isolated from `apps/web`.
+
+- Put API integration and end-to-end coverage under `apps/web-test/e2e`.
+- Put unit tests under `apps/web-test/unit`.
+- Prefer one folder per API endpoint for Playwright specs, for example `apps/web-test/e2e/api/health-check/health-check.spec.ts`.
+- Keep Playwright focused on endpoint behavior: status codes, content type, and basic response content.
+- Keep unit tests small and close to the feature behavior they exercise, using `*.test.ts` naming.
+- Treat `npm run lint`, `npm run check-types`, `npm run build`, and `npm run test` as the standard validation set before opening a PR when the change touches tested code.
 
 ## CI/CD Workflow Overview
 
@@ -180,7 +194,7 @@ There is no dedicated test runner configured yet. For now, treat `npm run lint` 
 - CI uses the Node.js version pinned in `.node-version`, restores the npm cache through `actions/setup-node`, runs `npm ci`, then executes:
   - `npm run lint`
   - `npm run check-types`
-  - `npm run test --workspaces --if-present`
+  - `npm run test`
   - `npm run build`
 - `.github/workflows/deploy.yml` handles deployments.
 - Pushes to `main` deploy to the `production` GitHub Environment.
