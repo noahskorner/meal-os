@@ -20,9 +20,7 @@ export function RecipeDetailsForm() {
   return (
     <View className="gap-5">
       <View className="gap-2">
-        <Label nativeID="recipe-name">
-          Recipe Name
-        </Label>
+        <Label nativeID="recipe-name">Recipe Name</Label>
         <Input
           aria-labelledby="recipe-name"
           placeholder="e.g. Lemon Garlic Chicken"

@@ -23,13 +23,17 @@ export function AddRecipeFooter({
       </Button>
 
       {step > 0 ? (
-        <Pressable onPress={goBack} className="items-center py-2">
+        <Button
+          variant="outline"
+          onPress={goBack}
+          className="items-center py-2"
+        >
           <Text className="font-medium text-brand text-sm">Back</Text>
-        </Pressable>
+        </Button>
       ) : (
-        <Pressable className="items-center py-2">
+        <Button variant="outline" className="items-center py-2">
           <Text className="font-medium text-brand text-sm">Save Draft</Text>
-        </Pressable>
+        </Button>
       )}
     </View>
   );

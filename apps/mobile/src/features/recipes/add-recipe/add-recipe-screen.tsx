@@ -52,8 +52,7 @@ export function AddRecipeScreen() {
           <AddRecipeMethodSelection onManualPress={startManualFlow} />
         ) : (
           <>
-            <AddRecipeStepper currentStep={step} />
-
+            {/* <AddRecipeStepper currentStep={step} /> */}
             <View className="mt-6">
               {step === 0 && <DetailsStep />}
               {step === 1 && <IngredientsStep />}
