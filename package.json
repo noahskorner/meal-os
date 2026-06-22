@@ -6,6 +6,7 @@
     "build:mobile:web": "npm run build --workspace=mobile",
     "clean": "node ./tools/clean/index.mjs",
     "dev": "turbo run dev --ui=stream",
+    "seed": "npm run seed --workspace=@repo/db",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -13,6 +14,7 @@
     "db:generate": "npm run generate --workspace=@repo/db",
     "db:migrate:dev": "npm run migrate:dev --workspace=@repo/db",
     "db:migrate:deploy": "npm run migrate:deploy --workspace=@repo/db",
+    "db:seed": "npm run seed --workspace=@repo/db",
     "db:studio": "npm run studio --workspace=@repo/db",
     "db:validate": "npm run validate --workspace=@repo/db"
   },

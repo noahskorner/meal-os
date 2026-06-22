@@ -5,6 +5,9 @@
     "DATABASE_URL",
     "DIRECT_URL",
     "NODE_ENV",
+    "CI",
+    "PORT",
+    "PLAYWRIGHT_BASE_URL",
     "NEXT_PUBLIC_*",
     "EXPO_PUBLIC_*"
   ],

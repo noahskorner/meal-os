@@ -10,6 +10,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "tsx prisma/seed.ts",
     initShadowDb: `
       create schema if not exists auth;
       create table if not exists auth.users (

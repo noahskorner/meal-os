@@ -11,6 +11,7 @@
     "lint": "eslint . --max-warnings 0",
     "check-types": "prisma generate && tsc --noEmit",
     "generate": "prisma generate",
+    "seed": "prisma db seed",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:reset": "prisma migrate reset",
@@ -33,6 +34,7 @@
     "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "prisma": "^7.8.0",
+    "tsx": "^4.20.6",
     "typescript": "5.9.2"
   }
 }
