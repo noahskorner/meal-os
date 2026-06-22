@@ -38,6 +38,7 @@ apps/web/src/app/features/health-check/
   health-check.route.ts
   health-check.request.ts
   health-check.response.ts
+  health-check.controller.ts
   health-check.service.ts
   health-check.facade.ts
   health-check.model.ts
@@ -47,7 +48,7 @@ Route files should only:
 
 - Register the Next.js handler.
 - Parse incoming requests.
-- Delegate to a slice facade.
+- Delegate to a slice controller.
 - Return HTTP responses.
 
 Do not place business logic, persistence, or orchestration in route files.
@@ -57,22 +58,25 @@ Within a slice:
 - `*.route.ts`: feature-local route registration and OpenAPI metadata.
 - `*.request.ts`: Zod request schemas and inferred types.
 - `*.response.ts`: Zod response schemas and inferred types.
+- `*.controller.ts`: feature entry point for transport-level orchestration such as authentication, authorization, and request-to-facade coordination.
 - `*.model.ts`: Internal only domain models.
 - `*.service.ts`: atomic business logic.
 - `*.repository.ts`: persistence operations when a slice needs storage.
-- `*.facade.ts`: slice entry point that coordinates services, repositories, and workflows.
+- `*.facade.ts`: feature-facing orchestration that coordinates services, repositories, and workflows after transport/auth concerns have been handled.
 
 Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*.route.ts` files for documentation and registration concerns.
 
-Keep dependencies flowing inward: `route.ts -> facade.ts -> service.ts -> repository.ts`.
+For protected endpoints, prefer handling authentication and authorization in `*.controller.ts`, not in `route.ts` or `*.facade.ts`.
+
+Keep dependencies flowing inward: `route.ts -> controller.ts -> facade.ts -> service.ts -> repository.ts`.
 
 ### Dependency Injection
 
 - Use `packages/dependency-injection` for basic service registration and scoped resolution.
-- Keep the web app composition root in a top-level `services.ts` file for the app, and register shared infrastructure there, for example Prisma clients and slice facades.
-- Route handlers should create a service scope, resolve the slice facade, and delegate the request to that facade.
-- Prefer constructor injection for facades, services, and repositories instead of importing infrastructure directly inside a slice.
-- Keep the dependency flow aligned with the slice architecture: `services.ts -> facade.ts -> service.ts -> repository.ts`.
+- Keep the web app composition root in a top-level `services.ts` file for the app, and register shared infrastructure there, for example Prisma clients, auth providers, slice controllers, and slice facades.
+- Route handlers should create a service scope, resolve the slice controller, and delegate the request to that controller.
+- Prefer constructor injection for controllers, facades, services, and repositories instead of importing infrastructure directly inside a slice.
+- Keep the dependency flow aligned with the slice architecture: `services.ts -> controller.ts -> facade.ts -> service.ts -> repository.ts`.
 
 ### Mobile App Architecture
 

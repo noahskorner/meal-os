@@ -1,8 +1,10 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { getProfileRequestSchema } from "./get-profile.request";
 import {
+  getProfileForbiddenResponseSchema,
   getProfileNotFoundResponseSchema,
   getProfileResponseSchema,
+  getProfileUnauthorizedResponseSchema,
   getProfileValidationErrorResponseSchema,
 } from "./get-profile.response";
 
@@ -30,6 +32,22 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         content: {
           "application/json": {
             schema: getProfileValidationErrorResponseSchema,
+          },
+        },
+      },
+      401: {
+        description: "The request was unauthenticated.",
+        content: {
+          "application/json": {
+            schema: getProfileUnauthorizedResponseSchema,
+          },
+        },
+      },
+      403: {
+        description: "The authenticated user cannot access this profile.",
+        content: {
+          "application/json": {
+            schema: getProfileForbiddenResponseSchema,
           },
         },
       },
