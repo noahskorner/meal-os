@@ -1,6 +1,5 @@
 import { z } from "@/lib/zod";
-import { createProfile } from "./get-profile.service";
-import { GetProfileModel } from "./get-profile.model";
+import type { GetProfileModel } from "./get-profile.model";
 
 export const getProfileResponseSchema = z
   .object({
@@ -18,7 +17,9 @@ export const getProfileNotFoundResponseSchema = z
   })
   .openapi("GetProfileNotFoundResponse");
 
-export type GetProfileNotFoundResponse = z.infer<typeof getProfileNotFoundResponseSchema>;
+export type GetProfileNotFoundResponse = z.infer<
+  typeof getProfileNotFoundResponseSchema
+>;
 
 export const getProfileValidationErrorResponseSchema = z
   .object({
@@ -33,9 +34,12 @@ export type GetProfileValidationErrorResponse = z.infer<
   typeof getProfileValidationErrorResponseSchema
 >;
 
-
-export function createProfileResponse(profile: GetProfileModel): GetProfileResponse {
-  return getProfileResponseSchema.parse(createProfile(profile));
+export function createProfileResponse(
+  profile: GetProfileModel,
+): GetProfileResponse {
+  return getProfileResponseSchema.parse({
+    id: profile.id,
+  });
 }
 
 export function createProfileNotFoundResponse(

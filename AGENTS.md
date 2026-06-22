@@ -62,6 +62,14 @@ Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*
 
 Keep dependencies flowing inward: `route.ts -> facade.ts -> service.ts -> repository.ts`.
 
+### Dependency Injection
+
+- Use `packages/dependency-injection` for basic service registration and scoped resolution.
+- Keep the web app composition root in a top-level `services.ts` file for the app, and register shared infrastructure there, for example Prisma clients and slice facades.
+- Route handlers should create a service scope, resolve the slice facade, and delegate the request to that facade.
+- Prefer constructor injection for facades, services, and repositories instead of importing infrastructure directly inside a slice.
+- Keep the dependency flow aligned with the slice architecture: `services.ts -> facade.ts -> service.ts -> repository.ts`.
+
 ### Mobile App Architecture
 
 The mobile application in `apps/mobile` is an Expo app built with React Native, Expo Router, NativeWind, and shared theme/setup in the root layout. Treat `apps/mobile/src/app` as the routing and screen entry layer only, and keep feature implementation in `apps/mobile/src/features`.

@@ -1,4 +1,3 @@
-import { findProfileById } from "./get-profile.repository";
 import type { GetProfileRequest } from "./get-profile.request";
 import {
   createProfileNotFoundResponse,
@@ -8,8 +7,9 @@ import {
   type GetProfileResponse,
   type GetProfileValidationErrorResponse,
 } from "./get-profile.response";
+import { GetProfileService } from "./get-profile.service";
 
-type GetProfileResult =
+export type GetProfileResult =
   | {
       status: 200;
       body: GetProfileResponse;
@@ -19,22 +19,24 @@ type GetProfileResult =
       body: GetProfileNotFoundResponse;
     };
 
-export async function getProfile(
-  request: GetProfileRequest,
-): Promise<GetProfileResult> {
-  const profile = await findProfileById(request.id);
+export class GetProfileFacade {
+  constructor(private readonly getProfileService: GetProfileService) {}
 
-  if (!profile) {
+  public async get(request: GetProfileRequest): Promise<GetProfileResult> {
+    const profile = await this.getProfileService.getById(request.id);
+
+    if (!profile) {
+      return {
+        status: 404,
+        body: createProfileNotFoundResponse(request.id),
+      };
+    }
+
     return {
-      status: 404,
-      body: createProfileNotFoundResponse(request.id),
+      status: 200,
+      body: createProfileResponse(profile),
     };
   }
-
-  return {
-    status: 200,
-    body: createProfileResponse(profile),
-  };
 }
 
 export function createGetProfileValidationError(

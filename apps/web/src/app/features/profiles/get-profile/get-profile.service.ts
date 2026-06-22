@@ -1,8 +1,10 @@
-import { GetProfileModel } from "./get-profile.model";
-import type { GetProfileResponse } from "./get-profile.response";
+import type { GetProfileModel } from "./get-profile.model";
+import { GetProfileRepository } from "./get-profile.repository";
 
-export function createProfile(profile: GetProfileModel): GetProfileResponse {
-  return {
-    id: profile.id,
-  };
+export class GetProfileService {
+  constructor(private readonly getProfileRepository: GetProfileRepository) {}
+
+  public async getById(id: string): Promise<GetProfileModel | null> {
+    return this.getProfileRepository.findById(id);
+  }
 }

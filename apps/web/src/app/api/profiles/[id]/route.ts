@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createGetProfileValidationError,
-  getProfile,
 } from "@/app/features/profiles/get-profile/get-profile.facade";
 import { getProfileRequestSchema } from "@/app/features/profiles/get-profile/get-profile.request";
+import { createServiceScope, SERVICE_TOKENS } from "@/app/features/services";
 
 type GetProfileRouteContext = {
   params: Promise<{
@@ -33,7 +33,9 @@ export async function GET(
     );
   }
 
-  const response = await getProfile(parsedParams.data);
+  const scope = createServiceScope();
+  const getProfileFacade = await scope.resolve(SERVICE_TOKENS.getProfileFacade);
+  const response = await getProfileFacade.get(parsedParams.data);
 
   return NextResponse.json(response.body, { status: response.status });
 }

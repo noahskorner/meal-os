@@ -1,3 +1,3 @@
 export type GetProfileModel = {
-    id: string;
+  id: string;
 };

@@ -1,19 +1,17 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 import { PrismaClient } from "./generated/prisma/client.js";
 
-const globalForPrisma = globalThis as {
-  prisma?: PrismaClient;
-};
+declare global {
+  var prisma: PrismaClient | undefined;
+  var prismaPromise: Promise<PrismaClient> | undefined;
+}
 
-let prismaClient = globalForPrisma.prisma;
-
-export const createPrismaClient = () => {
+export async function createPrismaClient(): Promise<PrismaClient> {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {
     throw new Error(
-      "DATABASE_URL is not set. Configure packages/db/.env or your runtime environment.",
+      "DATABASE_URL is not set. Configure your runtime environment.",
     );
   }
 
@@ -25,36 +23,27 @@ export const createPrismaClient = () => {
     adapter,
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
-};
+}
 
-const getPrismaClient = () => {
-  if (prismaClient) {
-    return prismaClient;
+export async function getPrismaClient(): Promise<PrismaClient> {
+  if (globalThis.prisma) {
+    return globalThis.prisma;
   }
 
-  prismaClient = createPrismaClient();
+  if (globalThis.prismaPromise) {
+    return globalThis.prismaPromise;
+  }
+
+  globalThis.prismaPromise = createPrismaClient();
+
+  const client = await globalThis.prismaPromise;
 
   if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prismaClient;
+    globalThis.prisma = client;
   }
 
-  return prismaClient;
-};
+  return client;
+}
 
-export type DatabaseClient = PrismaClient;
-
-// Delay client creation until a query path actually touches Prisma.
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_target, property, _receiver) {
-    const client = getPrismaClient();
-    const value = Reflect.get(client, property, client);
-
-    if (typeof value === "function") {
-      return value.bind(client);
-    }
-
-    return value;
-  },
-});
-
-export { Pool };
+export type { Prisma } from "./generated/prisma/client.js";
+export { PrismaClient };
