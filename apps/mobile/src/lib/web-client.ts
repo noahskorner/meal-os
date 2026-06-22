@@ -63,6 +63,59 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/ingredients": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List ingredients
+     * @description Returns a paginated list of ingredients with aliases, category, and default unit details.
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description The page number to return. */
+          page?: number;
+          /** @description The number of ingredients to return per page. */
+          pageSize?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A paginated list of ingredients. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ListIngredientsResponse"];
+          };
+        };
+        /** @description The query parameters were invalid. */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ListIngredientsValidationErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/profiles/{id}": {
     parameters: {
       query?: never;
@@ -141,6 +194,108 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/recipes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create recipe
+     * @description Creates a recipe for the authenticated user.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateRecipeRequest"];
+        };
+      };
+      responses: {
+        /** @description The recipe was created. */
+        201: {
+          headers: {
+            /** @description Location of the created recipe resource. */
+            Location?: string;
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["CreateRecipeResponse"];
+          };
+        };
+        /** @description The request body was invalid. */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["CreateRecipeValidationErrorResponse"];
+          };
+        };
+        /** @description The request was unauthenticated. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["CreateRecipeUnauthorizedResponse"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/units": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List units
+     * @description Returns all units.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A list of units. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ListUnitsResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -172,6 +327,69 @@ export interface components {
        */
       issues: string[];
     };
+    ListIngredientsResponse: {
+      items: components["schemas"]["IngredientSummary"][];
+      /** @example 1 */
+      page: number;
+      /** @example 20 */
+      pageSize: number;
+      /** @example 120 */
+      totalItems: number;
+      /** @example 6 */
+      totalPages: number;
+    };
+    IngredientSummary: {
+      /**
+       * Format: uuid
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      id: string;
+      /** @example Bell Pepper */
+      name: string;
+      /**
+       * @example [
+       *       "Capsicum",
+       *       "Sweet Pepper"
+       *     ]
+       */
+      aliases: string[];
+      category: {
+        /**
+         * Format: uuid
+         * @example 550e8400-e29b-41d4-a716-446655440001
+         */
+        id: string;
+        /** @example Produce */
+        name: string;
+      };
+      defaultUnit: {
+        /**
+         * Format: uuid
+         * @example 550e8400-e29b-41d4-a716-446655440002
+         */
+        id: string;
+        /** @example each */
+        name: string;
+        /** @example ea */
+        abbreviation: string;
+        /** @example COUNT */
+        type: string;
+      };
+    };
+    ListIngredientsValidationErrorResponse: components["schemas"]["ValidationErrorResponse"] & {
+      /** @example Invalid query parameters. */
+      message?: string;
+      /**
+       * @example [
+       *       "page: Too small: expected number to be >0"
+       *     ]
+       */
+      issues?: string[];
+    };
+    ValidationErrorResponse: {
+      message: string;
+      issues: string[];
+    };
     GetProfileResponse: {
       /**
        * Format: uuid
@@ -179,27 +397,79 @@ export interface components {
        */
       id: string;
     };
-    GetProfileValidationErrorResponse: {
+    GetProfileValidationErrorResponse: components["schemas"]["ValidationErrorResponse"] & {
       /** @example Invalid route parameters. */
-      message: string;
+      message?: string;
       /**
        * @example [
        *       "id: Invalid UUID"
        *     ]
        */
-      issues: string[];
+      issues?: string[];
     };
-    GetProfileUnauthorizedResponse: {
+    GetProfileUnauthorizedResponse: components["schemas"]["ErrorResponse"] & {
       /** @example Authentication required. */
+      message?: string;
+    };
+    ErrorResponse: {
       message: string;
     };
-    GetProfileForbiddenResponse: {
+    GetProfileForbiddenResponse: components["schemas"]["ErrorResponse"] & {
       /** @example You can only access your own profile. */
-      message: string;
+      message?: string;
     };
-    GetProfileNotFoundResponse: {
+    GetProfileNotFoundResponse: components["schemas"]["ErrorResponse"] & {
       /** @example Profile not found. */
-      message: string;
+      message?: string;
+    };
+    CreateRecipeResponse: {
+      /**
+       * Format: uuid
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      id: string;
+      /** @example /api/recipes/550e8400-e29b-41d4-a716-446655440000 */
+      location: string;
+    };
+    CreateRecipeValidationErrorResponse: components["schemas"]["ValidationErrorResponse"] & {
+      /** @example Invalid request body. */
+      message?: string;
+      /**
+       * @example [
+       *       "name: Too small: expected string to have >=1 characters"
+       *     ]
+       */
+      issues?: string[];
+    };
+    CreateRecipeUnauthorizedResponse: components["schemas"]["ErrorResponse"] & {
+      /** @example Authentication required. */
+      message?: string;
+    };
+    CreateRecipeRequest: {
+      /** @example Weeknight Pasta */
+      name: string;
+      /** @example Simple pasta with garlic, olive oil, and chili flakes. */
+      description?: string;
+      /** @example 10 */
+      prepTimeMinutes?: number;
+      /** @example 15 */
+      cookTimeMinutes?: number;
+      /** @example 4 */
+      servings?: number;
+    };
+    ListUnitsResponse: components["schemas"]["UnitSummary"][];
+    UnitSummary: {
+      /**
+       * Format: uuid
+       * @example 550e8400-e29b-41d4-a716-446655440000
+       */
+      id: string;
+      /** @example cup */
+      name: string;
+      /** @example cup */
+      abbreviation: string;
+      /** @example VOLUME */
+      type: string;
     };
   };
   responses: never;
