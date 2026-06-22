@@ -9,10 +9,137 @@ datasource db {
 }
 
 model Profile {
-  id        String   @id @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id             String   @id @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdRecipes Recipe[]
 
   @@map("profiles")
+  @@schema("public")
+}
+
+enum UnitType {
+  WEIGHT  @map("weight")
+  VOLUME  @map("volume")
+  COUNT   @map("count")
+  PACKAGE @map("package")
+
+  @@map("unit_types")
+  @@schema("public")
+}
+
+model Recipe {
+  id                String             @id @default(uuid()) @db.Uuid
+  createdById       String             @map("created_by_id") @db.Uuid
+  name              String
+  description       String?            @db.Text
+  prepTimeMinutes   Int?               @map("prep_time_minutes")
+  cookTimeMinutes   Int?               @map("cook_time_minutes")
+  servings          Int?
+  createdBy         Profile            @relation(fields: [createdById], references: [id])
+  recipeIngredients RecipeIngredient[]
+  recipeSteps       RecipeStep[]
+  recipeRecipeTags  RecipeRecipeTag[]
+
+  @@map("recipes")
+  @@schema("public")
+}
+
+model RecipeIngredient {
+  id           String     @id @default(uuid()) @db.Uuid
+  recipeId     String     @map("recipe_id") @db.Uuid
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  name         String
+  quantity     Decimal?   @db.Decimal(10, 2)
+  unitId       String?    @map("unit_id") @db.Uuid
+  preparation  String?    @db.Text
+  note         String?    @db.Text
+  isOptional   Boolean?   @map("is_optional")
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  unit         Unit?      @relation(fields: [unitId], references: [id])
+
+  @@map("recipe_ingredients")
+  @@schema("public")
+}
+
+model RecipeStep {
+  id           String      @id @default(uuid()) @db.Uuid
+  recipeId     String      @map("recipe_id") @db.Uuid
+  ingredientId String?     @map("ingredient_id") @db.Uuid
+  text         String      @db.Text
+  sortOrder    Int         @map("sort_order")
+  recipe       Recipe      @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
+
+  @@unique([recipeId, sortOrder])
+  @@map("recipe_steps")
+  @@schema("public")
+}
+
+model RecipeTag {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String            @unique
+  recipeRecipeTags RecipeRecipeTag[]
+
+  @@map("recipe_tags")
+  @@schema("public")
+}
+
+model RecipeRecipeTag {
+  id          String    @id @default(uuid()) @db.Uuid
+  recipeId    String    @map("recipe_id") @db.Uuid
+  recipeTagId String    @map("recipe_tag_id") @db.Uuid
+  recipe      Recipe    @relation(fields: [recipeId], references: [id])
+  recipeTag   RecipeTag @relation(fields: [recipeTagId], references: [id])
+
+  @@unique([recipeId, recipeTagId])
+  @@map("recipe_recipe_tags")
+  @@schema("public")
+}
+
+model Ingredient {
+  id                String             @id @default(uuid()) @db.Uuid
+  name              String             @unique
+  categoryId        String             @map("category_id") @db.Uuid
+  defaultUnitId     String             @map("default_unit_id") @db.Uuid
+  category          IngredientCategory @relation(fields: [categoryId], references: [id])
+  defaultUnit       Unit               @relation(fields: [defaultUnitId], references: [id])
+  aliases           IngredientAlias[]
+  recipeIngredients RecipeIngredient[]
+  recipeSteps       RecipeStep[]
+
+  @@map("ingredients")
+  @@schema("public")
+}
+
+model IngredientCategory {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String       @unique
+  ingredients Ingredient[]
+
+  @@map("ingredient_categories")
+  @@schema("public")
+}
+
+model IngredientAlias {
+  ingredientId String     @map("ingredient_id") @db.Uuid
+  alias        String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([ingredientId, alias])
+  @@map("ingredient_aliases")
+  @@schema("public")
+}
+
+model Unit {
+  id                String             @id @default(uuid()) @db.Uuid
+  type              UnitType
+  name              String             @unique
+  abbreviation      String
+  ingredients       Ingredient[]
+  recipeIngredients RecipeIngredient[]
+
+  @@map("units")
   @@schema("public")
 }
