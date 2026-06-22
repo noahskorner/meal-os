@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   ci:
-    name: Validate
+    name: Continuous integration
     uses: ./.github/workflows/ci.yml
     secrets: inherit
 
