@@ -1,27 +1,18 @@
 import { useAuth } from "@/features/auth/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
+import { Alert, View } from "react-native";
 
 export function HomeScreen() {
-  const { profile, signOut, user } = useAuth();
+  const { signOut, user } = useAuth();
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.card}>
-        <Text variant="h1" style={styles.title}>
-          Authenticated
+    <View className="flex-1 justify-center bg-background px-6 py-10">
+      <View className="gap-4">
+        <Text className="text-muted-foreground">
+          Signed in as{" "}
+          <Text className="text-brand">{user?.email ?? "unknown user"}</Text>.
         </Text>
-        <Text style={styles.body}>Signed in as {user?.email ?? "unknown user"}.</Text>
-
-        {profile ? (
-          <Text style={styles.body}>Profile row ready for user ID {profile.id}.</Text>
-        ) : (
-          <View style={styles.profilePending}>
-            <ActivityIndicator />
-            <Text style={styles.body}>Waiting for the profile row to resolve.</Text>
-          </View>
-        )}
 
         <Button
           onPress={async () => {
@@ -39,35 +30,3 @@ export function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: "#f4f4ef",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 420,
-    padding: 24,
-    borderRadius: 24,
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#d6d0c4",
-    gap: 16,
-  },
-  title: {
-    textAlign: "left",
-    fontSize: 32,
-  },
-  body: {
-    color: "#3f3f46",
-  },
-  profilePending: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-});

@@ -7,9 +7,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  TextInput,
   View,
 } from "react-native";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react-native";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -57,7 +60,7 @@ export function AuthScreen() {
       setNoticeMessage(
         result.requiresEmailConfirmation
           ? "Account created. Confirm your email before signing in."
-          : "Account created and signed in."
+          : "Account created and signed in.",
       );
     } finally {
       setIsSubmitting(false);
@@ -69,44 +72,55 @@ export function AuthScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1 items-center justify-center bg-stone-100 px-6"
     >
-      <View className="w-full max-w-[420px] gap-3 rounded-lg p-6">
+      <View className="w-full max-w-[420px] gap-3 rounded-lg">
         <View className="mt-3 gap-4">
           <View className="gap-2">
-            <Text variant="small" className="text-zinc-700">
-              Email
-            </Text>
-            <TextInput
+            <Label nativeID="email-label">Email</Label>
+            <Input
+              aria-labelledby="email-label"
               autoCapitalize="none"
               autoComplete="email"
-              className="rounded-xl border border-zinc-300 bg-stone-50 px-3.5 py-3 text-base text-zinc-950"
               keyboardType="email-address"
               onChangeText={setEmail}
+              size="lg"
               placeholder="you@example.com"
-              placeholderTextColor="#71717a"
               value={email}
             />
           </View>
 
           <View className="gap-2">
-            <Text variant="small" className="text-zinc-700">
-              Password
-            </Text>
-            <TextInput
+            <Label nativeID="password-label">Password</Label>
+            <Input
+              aria-labelledby="password-label"
               autoCapitalize="none"
-              autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-              className="rounded-xl border border-zinc-300 bg-stone-50 px-3.5 py-3 text-base text-zinc-950"
+              autoComplete={
+                mode === "sign-in" ? "current-password" : "new-password"
+              }
               onChangeText={setPassword}
               placeholder="Enter your password"
-              placeholderTextColor="#71717a"
+              size="lg"
               secureTextEntry
               value={password}
             />
           </View>
 
-          {errorMessage ? <Text className="text-red-700">{errorMessage}</Text> : null}
-          {noticeMessage ? <Text className="text-green-700">{noticeMessage}</Text> : null}
+          {errorMessage ? (
+            <Alert variant="destructive" icon={AlertCircleIcon}>
+              <AlertTitle>{errorMessage}</AlertTitle>
+            </Alert>
+          ) : null}
+          {noticeMessage ? (
+            <Alert icon={AlertCircleIcon}>
+              <AlertTitle>{noticeMessage}</AlertTitle>
+            </Alert>
+          ) : null}
 
-          <Button className="mt-2" disabled={isSubmitting} onPress={handleSubmit}>
+          <Button
+            variant="brand"
+            className="mt-2"
+            disabled={isSubmitting}
+            onPress={handleSubmit}
+          >
             {isSubmitting ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
@@ -117,15 +131,29 @@ export function AuthScreen() {
           <Pressable
             disabled={isSubmitting}
             onPress={() => {
-              setMode((currentMode) => (currentMode === "sign-in" ? "sign-up" : "sign-in"));
+              setMode((currentMode) =>
+                currentMode === "sign-in" ? "sign-up" : "sign-in",
+              );
               setErrorMessage(null);
               setNoticeMessage(null);
             }}
           >
-            <Text className="text-center text-teal-700">
-              {mode === "sign-in"
-                ? "Need an account? Create one with email and password."
-                : "Already have an account? Sign in instead."}
+            <Text className="text-center text-sm text-muted-foreground font-medium">
+              {mode === "sign-in" ? (
+                <>
+                  Don&apos;t have an account?{" "}
+                  <Text className="font-semibold text-brand text-sm">
+                    Sign up
+                  </Text>
+                </>
+              ) : (
+                <>
+                  Already have an account?{" "}
+                  <Text className="font-semibold text-brand text-sm">
+                    Sign in
+                  </Text>
+                </>
+              )}
             </Text>
           </Pressable>
         </View>

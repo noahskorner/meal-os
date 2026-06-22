@@ -116,6 +116,13 @@ npx @react-native-reusables/cli@latest add card
 
 Treat the CLI as the source of truth for installing and updating reusable React Native components.
 
+### Mobile Color Tokens
+
+- Use namespaced `brand-*` tokens for app-specific colors.
+- Do not use raw hex colors inside components.
+- Do not override library-provided semantic tokens or variants.
+- Add new variants instead of changing existing ones.
+
 ## Build, Test, and Development Commands
 
 Run commands from the repository root unless you need a package-specific script.
