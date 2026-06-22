@@ -15,6 +15,10 @@ import { GetProfileController } from "@/app/features/profiles/get-profile/get-pr
 import { GetProfileFacade } from "@/app/features/profiles/get-profile/get-profile.facade";
 import { GetProfileRepository } from "@/app/features/profiles/get-profile/get-profile.repository";
 import { GetProfileService } from "@/app/features/profiles/get-profile/get-profile.service";
+import { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
+import { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
+import { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
+import { ListUnitsService } from "@/app/features/units/list-units/list-units.service";
 
 export const SERVICE_TOKENS = {
   prisma: createToken<PrismaClient>("prisma"),
@@ -31,6 +35,10 @@ export const SERVICE_TOKENS = {
   listIngredientsController: createToken<ListIngredientsController>(
     "listIngredientsController",
   ),
+  listUnitsRepository: createToken<ListUnitsRepository>("listUnitsRepository"),
+  listUnitsService: createToken<ListUnitsService>("listUnitsService"),
+  listUnitsFacade: createToken<ListUnitsFacade>("listUnitsFacade"),
+  listUnitsController: createToken<ListUnitsController>("listUnitsController"),
   getProfileRepository: createToken<GetProfileRepository>(
     "getProfileRepository",
   ),
@@ -80,6 +88,26 @@ services.registerScoped(
     );
   },
 );
+
+services.registerScoped(SERVICE_TOKENS.listUnitsRepository, async (scope) => {
+  return new ListUnitsRepository(await scope.resolve(SERVICE_TOKENS.prisma));
+});
+
+services.registerScoped(SERVICE_TOKENS.listUnitsService, async (scope) => {
+  return new ListUnitsService(
+    await scope.resolve(SERVICE_TOKENS.listUnitsRepository),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.listUnitsFacade, async (scope) => {
+  return new ListUnitsFacade(await scope.resolve(SERVICE_TOKENS.listUnitsService));
+});
+
+services.registerScoped(SERVICE_TOKENS.listUnitsController, async (scope) => {
+  return new ListUnitsController(
+    await scope.resolve(SERVICE_TOKENS.listUnitsFacade),
+  );
+});
 
 services.registerScoped(SERVICE_TOKENS.getProfileRepository, async (scope) => {
   return new GetProfileRepository(await scope.resolve(SERVICE_TOKENS.prisma));
