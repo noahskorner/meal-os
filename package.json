@@ -6,6 +6,7 @@
     "build:mobile:web": "npm run build --workspace=mobile",
     "clean": "node ./tools/clean/index.mjs",
     "dev": "turbo run dev --ui=stream",
+    "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
