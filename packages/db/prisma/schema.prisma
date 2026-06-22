@@ -12,7 +12,7 @@ model Profile {
   id             String   @id @db.Uuid
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  createdRecipes Recipe[]
+  recipes        Recipe[]
 
   @@map("profiles")
   @@schema("public")

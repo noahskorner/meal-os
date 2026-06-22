@@ -36,6 +36,7 @@ apps/web/src/app/features/health-check/
   health-check.response.ts
   health-check.service.ts
   health-check.facade.ts
+  health-check.model.ts
 ```
 
 Route files should only:
@@ -52,6 +53,7 @@ Within a slice:
 - `*.route.ts`: feature-local route registration and OpenAPI metadata.
 - `*.request.ts`: Zod request schemas and inferred types.
 - `*.response.ts`: Zod response schemas and inferred types.
+- `*.model.ts`: Internal only domain models.
 - `*.service.ts`: atomic business logic.
 - `*.repository.ts`: persistence operations when a slice needs storage.
 - `*.facade.ts`: slice entry point that coordinates services, repositories, and workflows.

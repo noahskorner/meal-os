@@ -4,6 +4,7 @@
 node_modules
 .pnp
 .pnp.js
+.yarn/install-state.gz
 
 # Local env files
 .env
@@ -28,17 +29,38 @@ test-results
 out/
 build
 dist
+/apps/mobile/web-build/
+/apps/mobile/.expo/
+/apps/mobile/.kotlin/
+/apps/mobile/ios
+/apps/mobile/android
+/apps/mobile/app-example
 packages/db/src/generated
+
+# Generated Types
+*.tsbuildinfo
+next-env.d.ts
+expo-env.d.ts
 
 
 # Debug
 npm-debug.log*
+npm-debug.*
 yarn-debug.log*
+yarn-debug.*
 yarn-error.log*
+yarn-error.*
 
 # Misc
 .DS_Store
 *.pem
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
 .env*
 !.env.example
 !apps/mobile/.env.example
