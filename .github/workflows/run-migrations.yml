@@ -1,12 +1,17 @@
-name: CI
+name: Run Migrations
 
 on:
   workflow_call:
 
 jobs:
-  validate:
+  migrate-database:
+    name: Migrate database
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
+    environment: production
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
     steps:
       - name: Checkout repository
@@ -21,14 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run type checks
-        run: npm run check-types
-
-      - name: Run tests
-        run: npm run test --workspaces --if-present
-
-      - name: Build all workspaces
-        run: npm run build
+      - name: Apply Prisma migrations
+        run: npm run db:migrate:deploy

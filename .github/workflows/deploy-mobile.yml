@@ -1,0 +1,39 @@
+name: Deploy Mobile
+
+on:
+  workflow_call:
+
+env:
+  VERCEL_TARGET: production
+
+jobs:
+  deploy-mobile:
+    name: Deploy mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_MOBILE_WEB_PROJECT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull Vercel project settings
+        run: npx vercel pull --yes --environment=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build mobile web project
+        run: npx vercel build --yes --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy mobile web to Vercel
+        run: npx vercel deploy --prebuilt --target=${{ env.VERCEL_TARGET }} --token=${{ secrets.VERCEL_TOKEN }}
