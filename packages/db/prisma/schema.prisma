@@ -11,7 +11,7 @@ datasource db {
 model Profile {
   id        String   @id @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("profiles")
   @@schema("public")

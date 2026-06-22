@@ -71,6 +71,7 @@ For the mobile app:
 - Put shared, reusable React Native UI components in `apps/mobile/components`.
 - Keep feature-specific components inside their owning slice in `apps/mobile/src/features/**`.
 - Prefer composing shared components from `apps/mobile/components` instead of duplicating UI across feature slices.
+- Use Tailwind / NativeWind `className` styling for React Native screens and components instead of `StyleSheet` objects unless there is a clear platform limitation.
 - Keep cross-feature utilities, theme helpers, and shared hooks in stable shared locations such as `apps/mobile/src/lib` when they are genuinely reused.
 
 Expected mobile structure:
