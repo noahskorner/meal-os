@@ -15,6 +15,10 @@ import { GetProfileController } from "@/app/features/profiles/get-profile/get-pr
 import { GetProfileFacade } from "@/app/features/profiles/get-profile/get-profile.facade";
 import { GetProfileRepository } from "@/app/features/profiles/get-profile/get-profile.repository";
 import { GetProfileService } from "@/app/features/profiles/get-profile/get-profile.service";
+import { CreateRecipeController } from "@/app/features/recipes/create-recipe/create-recipe.controller";
+import { CreateRecipeFacade } from "@/app/features/recipes/create-recipe/create-recipe.facade";
+import { CreateRecipeRepository } from "@/app/features/recipes/create-recipe/create-recipe.repository";
+import { CreateRecipeService } from "@/app/features/recipes/create-recipe/create-recipe.service";
 import { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
 import { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
 import { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
@@ -45,6 +49,14 @@ export const SERVICE_TOKENS = {
   getProfileService: createToken<GetProfileService>("getProfileService"),
   getProfileFacade: createToken<GetProfileFacade>("getProfileFacade"),
   getProfileController: createToken<GetProfileController>("getProfileController"),
+  createRecipeRepository: createToken<CreateRecipeRepository>(
+    "createRecipeRepository",
+  ),
+  createRecipeService: createToken<CreateRecipeService>("createRecipeService"),
+  createRecipeFacade: createToken<CreateRecipeFacade>("createRecipeFacade"),
+  createRecipeController: createToken<CreateRecipeController>(
+    "createRecipeController",
+  ),
 } as const;
 
 const services = new ServiceCollection();
@@ -129,6 +141,29 @@ services.registerScoped(SERVICE_TOKENS.getProfileController, async (scope) => {
   return new GetProfileController(
     await scope.resolve(SERVICE_TOKENS.authProvider),
     await scope.resolve(SERVICE_TOKENS.getProfileFacade),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.createRecipeRepository, async (scope) => {
+  return new CreateRecipeRepository(await scope.resolve(SERVICE_TOKENS.prisma));
+});
+
+services.registerScoped(SERVICE_TOKENS.createRecipeService, async (scope) => {
+  return new CreateRecipeService(
+    await scope.resolve(SERVICE_TOKENS.createRecipeRepository),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.createRecipeFacade, async (scope) => {
+  return new CreateRecipeFacade(
+    await scope.resolve(SERVICE_TOKENS.createRecipeService),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.createRecipeController, async (scope) => {
+  return new CreateRecipeController(
+    await scope.resolve(SERVICE_TOKENS.authProvider),
+    await scope.resolve(SERVICE_TOKENS.createRecipeFacade),
   );
 });
 

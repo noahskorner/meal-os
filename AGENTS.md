@@ -69,6 +69,8 @@ Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*
 
 For protected endpoints, prefer handling authentication and authorization in `*.controller.ts`, not in `route.ts` or `*.facade.ts`.
 
+For create commands, follow the CQRS command pattern: return `201 Created` on success and include a resource location or pointer to the newly created resource, for example a `Location` header and/or resource identifier in the response body.
+
 Keep dependencies flowing inward: `route.ts -> controller.ts -> facade.ts -> service.ts -> repository.ts`.
 
 ### Dependency Injection
