@@ -1,4 +1,4 @@
-import { z } from "@/lib/zod";
+import { z } from "../../../lib/zod";
 import type { GetProfileModel } from "./get-profile.model";
 
 export const getProfileResponseSchema = z
