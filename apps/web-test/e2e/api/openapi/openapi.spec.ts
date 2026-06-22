@@ -10,7 +10,7 @@ test.describe("GET /api/openapi.json", () => {
     const body = await response.json();
 
     expect(body.openapi).toBe("3.1.0");
-    expect(body.info?.title).toBe("Theta Web API");
+    expect(body.info?.title).toBe("TheMealOSta Web API");
     expect(body.paths?.["/api/health-check"]).toBeDefined();
     expect(body.paths?.["/api/units"]).toBeDefined();
   });

@@ -9,7 +9,7 @@ test.describe("GET /api/docs", () => {
 
     const body = await response.text();
 
-    expect(body).toContain("Theta API Docs");
+    expect(body).toContain("MealOS API Docs");
     expect(body).toContain("/api/openapi.json");
   });
 });
