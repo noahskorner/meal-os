@@ -5,7 +5,7 @@
   "scripts": {
     "build": "expo export -p web",
     "check-types": "tsc --noEmit",
-    "dev": "expo start --web",
+    "dev": "expo start",
     "generate:client": "tsx --tsconfig ../web/tsconfig.json ./tools/generate-client.ts",
     "start": "expo start",
     "android": "expo start --android",

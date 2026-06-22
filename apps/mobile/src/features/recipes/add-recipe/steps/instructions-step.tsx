@@ -14,28 +14,35 @@ import { useState } from "react";
 type InstructionStep = {
   id: string;
   text: string;
+  sortOrder: number;
 };
 
-const createStep = (text = ""): InstructionStep => ({
+const createStep = (text = "", sortOrder = 0): InstructionStep => ({
   id: Math.random().toString(36).substring(2, 9),
   text,
+  sortOrder,
 });
+
+const updateSortOrder = (steps: InstructionStep[]) =>
+  steps.map((step, sortOrder) => ({ ...step, sortOrder }));
 
 export function InstructionsStep() {
   const [steps, setSteps] = useState<InstructionStep[]>([
-    createStep("Season both sides of the chicken with salt and pepper."),
-    createStep("Heat olive oil in a large skillet over medium-high heat."),
+    createStep("Season both sides of the chicken with salt and pepper.", 0),
+    createStep("Heat olive oil in a large skillet over medium-high heat.", 1),
     createStep(
       "Add the chicken and cook for 6-7 minutes per side, until golden and cooked through.",
+      2,
     ),
-    createStep("Add garlic and cook for 30 seconds until fragrant."),
+    createStep("Add garlic and cook for 30 seconds until fragrant.", 3),
     createStep(
       "Squeeze lemon juice over the chicken and garnish with fresh parsley. Serve warm.",
+      4,
     ),
   ]);
 
   const addStep = () => {
-    setSteps((current) => [...current, createStep()]);
+    setSteps((current) => [...current, createStep("", current.length)]);
   };
 
   const updateStep = (id: string, text: string) => {
@@ -45,7 +52,9 @@ export function InstructionsStep() {
   };
 
   const removeStep = (id: string) => {
-    setSteps((current) => current.filter((step) => step.id !== id));
+    setSteps((current) =>
+      updateSortOrder(current.filter((step) => step.id !== id)),
+    );
   };
 
   const renderStep = ({
@@ -61,10 +70,12 @@ export function InstructionsStep() {
         <View className={isActive ? "opacity-90" : ""}>
           <View className="flex-row items-center gap-2">
             <Pressable
-              onLongPress={drag}
+              onPressIn={drag}
               disabled={isActive}
               className="h-10 w-6 items-center justify-center"
               hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`Reorder step ${index + 1}`}
             >
               <GripVertical size={18} className="text-muted-foreground" />
             </Pressable>
@@ -110,7 +121,7 @@ export function InstructionsStep() {
         data={steps}
         keyExtractor={(item) => item.id}
         renderItem={renderStep}
-        onDragEnd={({ data }) => setSteps(data)}
+        onDragEnd={({ data }) => setSteps(updateSortOrder(data))}
         scrollEnabled={false}
         containerStyle={{ overflow: "visible" }}
         contentContainerStyle={{ gap: 12 }}

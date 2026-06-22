@@ -4,7 +4,7 @@ import { Step } from "./steps/step";
 import { AddRecipeFooter } from "./add-recipe-footer";
 import { AddRecipeHeader } from "./add-recipe-header";
 import { AddRecipeMethodSelection } from "./add-recipe-method";
-import { AddRecipeStepper } from "./add-recipe-stepper";
+// import { AddRecipeStepper } from "./add-recipe-stepper";
 import { DetailsStep } from "./steps/details-step";
 import { IngredientsStep } from "./steps/ingredients-step";
 import { InstructionsStep } from "./steps/instructions-step";
@@ -13,8 +13,8 @@ import { ReviewStep } from "./steps/review-step";
 type Flow = "select" | "manual" | "paste" | "upload";
 
 export function AddRecipeScreen() {
-  const [flow, setFlow] = useState<Flow>("select");
-  const [step, setStep] = useState<Step>(0);
+  const [flow, setFlow] = useState<Flow>("manual");
+  const [step, setStep] = useState<Step>(2);
 
   const isSelecting = flow === "select";
 
