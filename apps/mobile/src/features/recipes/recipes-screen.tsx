@@ -1,11 +1,5 @@
-import { TabPlaceholderScreen } from "@/components/tab-placeholder-screen";
+import { AddRecipeScreen } from "./add-recipe/add-recipe-screen";
 
 export function RecipesScreen() {
-  return (
-    <TabPlaceholderScreen
-      eyebrow="Recipes"
-      title="Recipes placeholder"
-      description="This screen is scaffolded for recipe browsing, saved meals, and cooking details."
-    />
-  );
+  return <AddRecipeScreen />;
 }

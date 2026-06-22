@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react-native";
 
 type AuthMode = "sign-in" | "sign-up";
