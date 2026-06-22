@@ -1,5 +1,6 @@
 import { Pressable, View } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 
 export function AddRecipeHeader({
@@ -11,8 +12,16 @@ export function AddRecipeHeader({
   onBack: () => void;
   onCancel: () => void;
 }) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="h-16 flex-row items-center justify-between px-4">
+    <View
+      className="flex-row items-center justify-between px-4"
+      style={{
+        paddingTop: insets.top,
+        height: 64 + insets.top,
+      }}
+    >
       <Pressable
         className="h-10 w-10 items-center justify-center"
         onPress={onBack}

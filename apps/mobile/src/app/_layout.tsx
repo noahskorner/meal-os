@@ -4,7 +4,9 @@ import { AuthProvider, useAuth } from "@/features/auth/auth-provider";
 import { SplashScreenController } from "@/features/auth/splash-screen-controller";
 import { NAV_THEME } from "@/lib/theme";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
+import { useColorScheme } from "react-native";
 import "./global.css";
 
 void SplashScreen.preventAutoHideAsync();
@@ -26,9 +28,13 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
+
   return (
-    <ThemeProvider value={NAV_THEME["light"]}>
+    <ThemeProvider value={theme}>
       <AuthProvider>
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
         <SplashScreenController />
         <RootNavigator />
         <PortalHost />

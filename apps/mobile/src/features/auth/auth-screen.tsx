@@ -70,7 +70,7 @@ export function AuthScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1 items-center justify-center bg-stone-100 px-6"
+      className="flex-1 items-center justify-center bg-background px-6"
     >
       <View className="w-full max-w-[420px] gap-3 rounded-lg">
         <View className="mt-3 gap-4">

@@ -8,7 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react-native";
 import { Tabs } from "expo-router";
-import { Platform } from "react-native";
+import { Platform, useColorScheme } from "react-native";
 
 type TabBarIconProps = {
   color: string;
@@ -20,20 +20,23 @@ function TabBarIcon({ color, icon: Icon }: TabBarIconProps) {
 }
 
 export default function TabsLayout() {
+  const colorScheme = useColorScheme();
+  const palette = colorScheme === "dark" ? THEME.dark : THEME.light;
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: THEME.light.brand,
-        tabBarInactiveTintColor: THEME.light.mutedForeground,
+        tabBarActiveTintColor: palette.brand,
+        tabBarInactiveTintColor: palette.mutedForeground,
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "500",
           marginTop: 2,
         },
         tabBarStyle: {
-          backgroundColor: THEME.light.card,
-          borderTopColor: THEME.light.border,
+          backgroundColor: palette.card,
+          borderTopColor: palette.border,
           height: Platform.select({ ios: 84, default: 72 }),
           paddingTop: 8,
           paddingBottom: Platform.select({ ios: 20, default: 8 }),

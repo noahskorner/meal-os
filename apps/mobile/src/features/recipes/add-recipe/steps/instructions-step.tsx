@@ -17,7 +17,7 @@ type InstructionStep = {
 };
 
 const createStep = (text = ""): InstructionStep => ({
-  id: crypto.randomUUID(),
+  id: Math.random().toString(36).substring(2, 9),
   text,
 });
 
