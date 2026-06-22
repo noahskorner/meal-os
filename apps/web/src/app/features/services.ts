@@ -5,6 +5,10 @@ import {
   type ServiceScope,
 } from "@repo/dependency-injection";
 import type { AuthProvider } from "@/app/features/auth/auth-provider";
+import { ListIngredientsController } from "@/app/features/ingredients/list-ingredients/list-ingredients.controller";
+import { ListIngredientsFacade } from "@/app/features/ingredients/list-ingredients/list-ingredients.facade";
+import { ListIngredientsRepository } from "@/app/features/ingredients/list-ingredients/list-ingredients.repository";
+import { ListIngredientsService } from "@/app/features/ingredients/list-ingredients/list-ingredients.service";
 import { MockAuthProvider } from "@/app/features/auth/mock-auth.provider";
 import { SupabaseAuthProvider } from "@/app/features/auth/supabase-auth.provider";
 import { GetProfileController } from "@/app/features/profiles/get-profile/get-profile.controller";
@@ -15,6 +19,18 @@ import { GetProfileService } from "@/app/features/profiles/get-profile/get-profi
 export const SERVICE_TOKENS = {
   prisma: createToken<PrismaClient>("prisma"),
   authProvider: createToken<AuthProvider>("authProvider"),
+  listIngredientsRepository: createToken<ListIngredientsRepository>(
+    "listIngredientsRepository",
+  ),
+  listIngredientsService: createToken<ListIngredientsService>(
+    "listIngredientsService",
+  ),
+  listIngredientsFacade: createToken<ListIngredientsFacade>(
+    "listIngredientsFacade",
+  ),
+  listIngredientsController: createToken<ListIngredientsController>(
+    "listIngredientsController",
+  ),
   getProfileRepository: createToken<GetProfileRepository>(
     "getProfileRepository",
   ),
@@ -34,6 +50,36 @@ services.registerScoped(SERVICE_TOKENS.authProvider, () => {
     ? new MockAuthProvider()
     : new SupabaseAuthProvider();
 });
+
+services.registerScoped(
+  SERVICE_TOKENS.listIngredientsRepository,
+  async (scope) => {
+    return new ListIngredientsRepository(
+      await scope.resolve(SERVICE_TOKENS.prisma),
+    );
+  },
+);
+
+services.registerScoped(SERVICE_TOKENS.listIngredientsService, async (scope) => {
+  return new ListIngredientsService(
+    await scope.resolve(SERVICE_TOKENS.listIngredientsRepository),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.listIngredientsFacade, async (scope) => {
+  return new ListIngredientsFacade(
+    await scope.resolve(SERVICE_TOKENS.listIngredientsService),
+  );
+});
+
+services.registerScoped(
+  SERVICE_TOKENS.listIngredientsController,
+  async (scope) => {
+    return new ListIngredientsController(
+      await scope.resolve(SERVICE_TOKENS.listIngredientsFacade),
+    );
+  },
+);
 
 services.registerScoped(SERVICE_TOKENS.getProfileRepository, async (scope) => {
   return new GetProfileRepository(await scope.resolve(SERVICE_TOKENS.prisma));

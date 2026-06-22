@@ -1,4 +1,8 @@
 import { z } from "../../../lib/zod";
+import {
+  createErrorResponseSchema,
+  createValidationErrorResponseSchema,
+} from "../../error.response";
 import type { GetProfileModel } from "./get-profile.model";
 
 export const getProfileResponseSchema = z
@@ -11,46 +15,39 @@ export const getProfileResponseSchema = z
 
 export type GetProfileResponse = z.infer<typeof getProfileResponseSchema>;
 
-export const getProfileUnauthorizedResponseSchema = z
-  .object({
-    message: z.string().openapi({ example: "Authentication required." }),
-  })
-  .openapi("GetProfileUnauthorizedResponse");
+export const getProfileUnauthorizedResponseSchema = createErrorResponseSchema(
+  "GetProfileUnauthorizedResponse",
+  "Authentication required.",
+);
 
 export type GetProfileUnauthorizedResponse = z.infer<
   typeof getProfileUnauthorizedResponseSchema
 >;
 
-export const getProfileForbiddenResponseSchema = z
-  .object({
-    message: z.string().openapi({
-      example: "You can only access your own profile.",
-    }),
-  })
-  .openapi("GetProfileForbiddenResponse");
+export const getProfileForbiddenResponseSchema = createErrorResponseSchema(
+  "GetProfileForbiddenResponse",
+  "You can only access your own profile.",
+);
 
 export type GetProfileForbiddenResponse = z.infer<
   typeof getProfileForbiddenResponseSchema
 >;
 
-export const getProfileNotFoundResponseSchema = z
-  .object({
-    message: z.string().openapi({ example: "Profile not found." }),
-  })
-  .openapi("GetProfileNotFoundResponse");
+export const getProfileNotFoundResponseSchema = createErrorResponseSchema(
+  "GetProfileNotFoundResponse",
+  "Profile not found.",
+);
 
 export type GetProfileNotFoundResponse = z.infer<
   typeof getProfileNotFoundResponseSchema
 >;
 
-export const getProfileValidationErrorResponseSchema = z
-  .object({
-    message: z.string().openapi({ example: "Invalid route parameters." }),
-    issues: z.array(z.string()).openapi({
-      example: ["id: Invalid UUID"],
-    }),
-  })
-  .openapi("GetProfileValidationErrorResponse");
+export const getProfileValidationErrorResponseSchema =
+  createValidationErrorResponseSchema(
+    "GetProfileValidationErrorResponse",
+    "Invalid route parameters.",
+    ["id: Invalid UUID"],
+  );
 
 export type GetProfileValidationErrorResponse = z.infer<
   typeof getProfileValidationErrorResponseSchema

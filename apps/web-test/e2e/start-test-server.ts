@@ -206,6 +206,7 @@ async function main() {
       ["run", "migrate:deploy", "--workspace=@repo/db"],
       testEnvironment,
     );
+    await runNpmCommand(["run", "seed", "--workspace=@repo/db"], testEnvironment);
     await seedUsersAndProfiles(databaseUrl);
     await runNpmCommand(["run", "build", "--workspace=web"], testEnvironment);
 

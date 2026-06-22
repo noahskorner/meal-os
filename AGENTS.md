@@ -58,6 +58,7 @@ Within a slice:
 - `*.route.ts`: feature-local route registration and OpenAPI metadata.
 - `*.request.ts`: Zod request schemas and inferred types.
 - `*.response.ts`: Zod response schemas and inferred types.
+- For list endpoints, prefer the shared paginated response helper at `apps/web/src/app/features/paginated.response.ts`.
 - `*.controller.ts`: feature entry point for transport-level orchestration such as authentication, authorization, and request-to-facade coordination.
 - `*.model.ts`: Internal only domain models.
 - `*.service.ts`: atomic business logic.
