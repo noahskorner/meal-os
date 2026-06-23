@@ -1,6 +1,8 @@
 import { TabPlaceholderScreen } from "@/components/tab-placeholder-screen";
+import * as React from "react";
 
 export function HomeScreen() {
+
   return (
     <TabPlaceholderScreen
       eyebrow="Home"

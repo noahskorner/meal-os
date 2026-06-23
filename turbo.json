@@ -3,6 +3,7 @@
   "ui": "tui",
   "globalEnv": [
     "AUTH_PROVIDER",
+    "CORS_ALLOWED_ORIGINS",
     "DATABASE_URL",
     "DIRECT_URL",
     "NODE_ENV",

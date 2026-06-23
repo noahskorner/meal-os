@@ -4,7 +4,7 @@ import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import { GripVertical, Plus, Trash2 } from "lucide-react-native";
+import { GripVertical, Trash2 } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
@@ -140,12 +140,11 @@ export function InstructionsStep() {
       }
       ListFooterComponent={
         <Button
-          variant="secondary"
+          variant="ghost"
           size="sm"
           onPress={addStep}
           className="mt-5"
         >
-          <Icon as={Plus} size={16} className="text-brand" />
           <Text className="font-medium text-brand">Add Step</Text>
         </Button>
       }

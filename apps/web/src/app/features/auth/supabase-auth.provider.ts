@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import type { AuthProvider, AuthenticatedUser } from "./auth-provider";
 
 function getSupabaseConfiguration() {
@@ -19,8 +21,34 @@ function getSupabaseConfiguration() {
 
 export class SupabaseAuthProvider implements AuthProvider {
   public async getCurrentUser(): Promise<AuthenticatedUser | null> {
-    const cookieStore = await cookies();
     const { url, publishableKey } = getSupabaseConfiguration();
+
+    // Bearer token auth
+    const requestHeaders = await headers();
+    const authorization = requestHeaders.get("authorization");
+    const bearerToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
+
+    if (bearerToken) {
+      const supabase = createClient(url, publishableKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+        },
+      });
+      const { data, error } = await supabase.auth.getUser(bearerToken);
+
+      if (error || !data.user) {
+        return null;
+      }
+
+      return {
+        id: data.user.id,
+      };
+    }
+
+    // Cookie auth
+    const cookieStore = await cookies();
     const supabase = createServerClient(url, publishableKey, {
       cookies: {
         getAll() {
