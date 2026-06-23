@@ -32,6 +32,7 @@
       "dependsOn": ["^check-types"]
     },
     "test": {
+      "dependsOn": ["^build"],
       "outputs": []
     },
     "test:e2e": {
