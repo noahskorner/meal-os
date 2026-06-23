@@ -80,7 +80,8 @@ export function useSearchIngredients() {
       }
 
       setIngredients(data.items.map(mapIngredient));
-    } catch {
+    } catch(e) {
+      console.error("Error loading ingredients:", JSON.stringify(e, null, 2)); 
       if (!isMountedRef.current || requestIdRef.current !== requestId) {
         return;
       }
