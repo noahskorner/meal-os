@@ -16,8 +16,9 @@ export class ListIngredientsService {
       this.listIngredientsRepository.findMany({
         skip,
         take: request.pageSize,
+        searchTerm: request.searchTerm,
       }),
-      this.listIngredientsRepository.count(),
+      this.listIngredientsRepository.count(request.searchTerm),
     ]);
 
     return {

@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useAuth } from "@/features/auth/auth-provider";
 import { TabPlaceholderScreen } from "@/components/tab-placeholder-screen";
-import { Alert, View } from "react-native";
+import { useColorScheme } from "nativewind";
+import { Alert, Switch, View } from "react-native";
 
 export function AccountScreen() {
   const { signOut, user } = useAuth();
+  const { colorScheme, setColorScheme } = useColorScheme();
 
   return (
     <TabPlaceholderScreen
@@ -21,7 +23,15 @@ export function AccountScreen() {
             </Text>
             .
           </Text>
-
+            <View className="flex-row items-center justify-between">
+              <Text>Dark mode</Text>
+              <Switch
+                value={colorScheme === "dark"}
+                onValueChange={(enabled) =>
+                  setColorScheme(enabled ? "dark" : "light")
+                }
+              />
+            </View>
           <Button
             onPress={async () => {
               const result = await signOut();

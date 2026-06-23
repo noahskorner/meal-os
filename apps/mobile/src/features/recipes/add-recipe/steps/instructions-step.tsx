@@ -7,6 +7,7 @@ import DraggableFlatList, {
 import { GripVertical, Plus, Trash2 } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useState } from "react";
@@ -77,7 +78,11 @@ export function InstructionsStep() {
               accessibilityRole="button"
               accessibilityLabel={`Reorder step ${index + 1}`}
             >
-              <GripVertical size={18} className="text-muted-foreground" />
+              <Icon
+                as={GripVertical}
+                size={18}
+                className="text-muted-foreground"
+              />
             </Pressable>
 
             <Card className="flex-1 flex-row items-start gap-3 rounded-xl border border-border bg-card p-3">
@@ -89,10 +94,11 @@ export function InstructionsStep() {
 
               <Input
                 multiline
+                scrollEnabled={false}
                 value={item.text}
                 onChangeText={(text) => updateStep(item.id, text)}
                 placeholder="Describe this step..."
-                className="min-h-12 flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-auto min-h-12 flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none dark:bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 textAlignVertical="top"
               />
 
@@ -102,7 +108,7 @@ export function InstructionsStep() {
                 disabled={steps.length === 1}
                 hitSlop={8}
               >
-                <Trash2 size={18} className="text-muted-foreground" />
+                <Icon as={Trash2} size={18} className="text-muted-foreground" />
               </Pressable>
             </Card>
           </View>
@@ -112,25 +118,40 @@ export function InstructionsStep() {
   };
 
   return (
-    <View className="gap-5">
-      <StepTitle
-        title="Instructions"
-        subtitle="Add step-by-step instructions."
-      />
-      <DraggableFlatList
-        data={steps}
-        keyExtractor={(item) => item.id}
-        renderItem={renderStep}
-        onDragEnd={({ data }) => setSteps(updateSortOrder(data))}
-        scrollEnabled={false}
-        containerStyle={{ overflow: "visible" }}
-        contentContainerStyle={{ gap: 12 }}
-        activationDistance={8}
-      />
-      <Button variant="secondary" size="sm" onPress={addStep}>
-        <Plus size={16} className="text-brand" />
-        <Text className="font-medium text-brand">Add Step</Text>
-      </Button>
-    </View>
+    <DraggableFlatList
+      data={steps}
+      keyExtractor={(item) => item.id}
+      renderItem={renderStep}
+      onDragEnd={({ data }) => setSteps(updateSortOrder(data))}
+      containerStyle={{ flex: 1 }}
+      contentContainerStyle={{
+        paddingTop: 24,
+        paddingHorizontal: 20,
+        paddingBottom: 24,
+      }}
+      ItemSeparatorComponent={() => <View className="h-3" />}
+      ListHeaderComponent={
+        <View className="mb-5">
+          <StepTitle
+            title="Instructions"
+            subtitle="Add step-by-step instructions."
+          />
+        </View>
+      }
+      ListFooterComponent={
+        <Button
+          variant="secondary"
+          size="sm"
+          onPress={addStep}
+          className="mt-5"
+        >
+          <Icon as={Plus} size={16} className="text-brand" />
+          <Text className="font-medium text-brand">Add Step</Text>
+        </Button>
+      }
+      keyboardDismissMode="on-drag"
+      keyboardShouldPersistTaps="handled"
+      activationDistance={8}
+    />
   );
 }

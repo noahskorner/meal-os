@@ -109,6 +109,7 @@ model Ingredient {
   recipeIngredients RecipeIngredient[]
   recipeSteps       RecipeStep[]
 
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ingredients_name_trigram_idx")
   @@map("ingredients")
   @@schema("public")
 }
@@ -128,6 +129,7 @@ model IngredientAlias {
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
 
   @@id([ingredientId, alias])
+  @@index([alias(ops: raw("gin_trgm_ops"))], type: Gin, map: "ingredient_aliases_alias_trigram_idx")
   @@map("ingredient_aliases")
   @@schema("public")
 }

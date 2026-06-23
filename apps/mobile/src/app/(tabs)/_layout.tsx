@@ -8,7 +8,8 @@ import {
   type LucideIcon,
 } from "lucide-react-native";
 import { Tabs } from "expo-router";
-import { Platform, useColorScheme } from "react-native";
+import { useColorScheme } from "nativewind";
+import { Platform } from "react-native";
 
 type TabBarIconProps = {
   color: string;
@@ -20,7 +21,7 @@ function TabBarIcon({ color, icon: Icon }: TabBarIconProps) {
 }
 
 export default function TabsLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const palette = colorScheme === "dark" ? THEME.dark : THEME.light;
 
   return (

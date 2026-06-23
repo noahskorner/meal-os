@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { Step } from "./steps/step";
 import { AddRecipeFooter } from "./add-recipe-footer";
 import { AddRecipeHeader } from "./add-recipe-header";
@@ -13,8 +13,8 @@ import { ReviewStep } from "./steps/review-step";
 type Flow = "select" | "manual" | "paste" | "upload";
 
 export function AddRecipeScreen() {
-  const [flow, setFlow] = useState<Flow>("manual");
-  const [step, setStep] = useState<Step>(2);
+  const [flow, setFlow] = useState<Flow>("select");
+  const [step, setStep] = useState<Step>(0);
 
   const isSelecting = flow === "select";
 
@@ -47,25 +47,42 @@ export function AddRecipeScreen() {
         }}
       />
 
-      <View className="flex-1 px-5">
-        {isSelecting ? (
-          <AddRecipeMethodSelection onManualPress={startManualFlow} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1"
+      >
+        {!isSelecting && step === 2 ? (
+          <InstructionsStep />
         ) : (
-          <>
-            {/* <AddRecipeStepper currentStep={step} /> */}
-            <View className="mt-6">
-              {step === 0 && <DetailsStep />}
-              {step === 1 && <IngredientsStep />}
-              {step === 2 && <InstructionsStep />}
-              {step === 3 && <ReviewStep />}
-            </View>
-          </>
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingHorizontal: 20,
+              paddingBottom: 24,
+            }}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+          >
+            {isSelecting ? (
+              <AddRecipeMethodSelection onManualPress={startManualFlow} />
+            ) : (
+              <>
+                {/* <AddRecipeStepper currentStep={step} /> */}
+                <View className="mt-6">
+                  {step === 0 && <DetailsStep />}
+                  {step === 1 && <IngredientsStep />}
+                  {step === 3 && <ReviewStep />}
+                </View>
+              </>
+            )}
+          </ScrollView>
         )}
-      </View>
 
-      {!isSelecting && (
-        <AddRecipeFooter step={step} goNext={goNext} goBack={goBack} />
-      )}
+        {!isSelecting && (
+          <AddRecipeFooter step={step} goNext={goNext} goBack={goBack} />
+        )}
+      </KeyboardAvoidingView>
     </View>
   );
 }

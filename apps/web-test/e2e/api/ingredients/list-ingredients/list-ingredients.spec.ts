@@ -22,12 +22,7 @@ test.describe("GET /api/ingredients", () => {
     expect(bellPepper).toEqual({
       id: expect.any(String),
       name: "Bell Pepper",
-      aliases: [
-        "Bell Peppers",
-        "Capsicum",
-        "Sweet Pepper",
-        "Sweet Peppers",
-      ],
+      aliases: ["Bell Peppers", "Capsicum", "Sweet Pepper", "Sweet Peppers"],
       category: {
         id: expect.any(String),
         name: "Produce",
@@ -53,5 +48,24 @@ test.describe("GET /api/ingredients", () => {
         "pageSize: Too big: expected number to be <=100",
       ],
     });
+  });
+
+  test("fuzzy searches ingredient names and aliases", async ({ request }) => {
+    const misspelledNameResponse = await request.get(
+      "/api/ingredients?searchTerm=bell%20peper",
+    );
+    const aliasResponse = await request.get(
+      "/api/ingredients?searchTerm=capsicum",
+    );
+
+    expect(misspelledNameResponse.status()).toBe(200);
+    const misspelledNameBody = await misspelledNameResponse.json();
+    expect(misspelledNameBody.items[0].name).toBe("Bell Pepper");
+    expect(misspelledNameBody.totalItems).toBeGreaterThan(0);
+
+    expect(aliasResponse.status()).toBe(200);
+    const aliasBody = await aliasResponse.json();
+    expect(aliasBody.items[0].name).toBe("Bell Pepper");
+    expect(aliasBody.totalItems).toBe(1);
   });
 });

@@ -33,7 +33,8 @@ export function RecipeDetailsForm() {
         <Textarea
           aria-labelledby="description"
           placeholder="A short description of your recipe..."
-          className="min-h-24 bg-background"
+          scrollEnabled={false}
+          className="h-auto min-h-24 bg-background"
         />
       </View>
 
