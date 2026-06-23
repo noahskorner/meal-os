@@ -1,7 +1,9 @@
 import { Pressable, View } from "react-native";
 import { ChevronLeft } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
+import { THEME } from "@/lib/theme";
 
 export function AddRecipeHeader({
   showCancel,
@@ -13,6 +15,8 @@ export function AddRecipeHeader({
   onCancel: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const palette = colorScheme === "dark" ? THEME.dark : THEME.light;
 
   return (
     <View
@@ -26,7 +30,7 @@ export function AddRecipeHeader({
         className="h-10 w-10 items-center justify-center text-foreground"
         onPress={onBack}
       >
-        <ChevronLeft size={22} />
+        <ChevronLeft color={palette.foreground} size={22} />
       </Pressable>
 
       <Text className="text-base font-semibold text-foreground">

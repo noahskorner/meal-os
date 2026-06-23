@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { router } from "expo-router";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { Step } from "./steps/step";
 import { AddRecipeFooter } from "./add-recipe-footer";
@@ -19,6 +20,11 @@ export function AddRecipeScreen() {
   const isSelecting = flow === "select";
 
   const goBack = () => {
+    if (isSelecting) {
+      router.replace("/recipes");
+      return;
+    }
+
     if (!isSelecting && step === 0) {
       setFlow("select");
       return;

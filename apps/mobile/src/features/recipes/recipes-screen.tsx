@@ -1,5 +1,1 @@
-import { AddRecipeScreen } from "./add-recipe/add-recipe-screen";
-
-export function RecipesScreen() {
-  return <AddRecipeScreen />;
-}
+export { ListRecipesScreen as RecipesScreen } from "./list-recipes/list-recipes.screen";
