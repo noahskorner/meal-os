@@ -215,7 +215,6 @@ async function copyIgnoredEnvFiles(sourceDir) {
 }
 
 function installDependencies() {
-  const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
   const hasPackageLock =
     spawnSync("git", ["ls-files", "--error-unmatch", "package-lock.json"], {
       cwd: rootDir,
@@ -224,9 +223,19 @@ function installDependencies() {
       stdio: "pipe",
     }).status === 0;
   const installArgs = hasPackageLock ? ["ci"] : ["install"];
+  const npmExecPath = process.env.npm_execpath;
 
   console.log(`Installing dependencies with npm ${installArgs.join(" ")}...`);
-  run(npmCommand, installArgs, { stdio: "inherit" });
+
+  if (npmExecPath) {
+    run(process.execPath, [npmExecPath, ...installArgs], { stdio: "inherit" });
+    return;
+  }
+
+  run("npm", installArgs, {
+    shell: process.platform === "win32",
+    stdio: "inherit",
+  });
 }
 
 console.log("Preparing Git worktree for development...");
