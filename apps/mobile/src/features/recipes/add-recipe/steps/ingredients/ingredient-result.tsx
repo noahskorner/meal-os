@@ -1,11 +1,11 @@
 import { Icon } from "@/components/ui/icon";
+import type { ListIngredientResponse } from "@/lib/web-api-client";
 import { Plus } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { IngredientCard } from "./ingredient-card";
-import { Ingredient } from "./ingredient-types";
 
 type IngredientResultProps = {
-  ingredient: Ingredient;
+  ingredient: ListIngredientResponse;
   onAdd: () => void;
 };
 

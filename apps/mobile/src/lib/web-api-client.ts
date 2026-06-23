@@ -5,7 +5,8 @@ import {
   type WebClientOptions,
 } from "@/lib/web-client";
 
-export type IngredientSummary = components["schemas"]["IngredientSummary"];
+export type ListIngredientResponse =
+  components["schemas"]["ListIngredientResponse"];
 export type ListIngredientsResponse =
   components["schemas"]["ListIngredientsResponse"];
 

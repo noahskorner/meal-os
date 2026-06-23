@@ -2,7 +2,7 @@ import { Icon } from "@/components/ui/icon";
 import { Trash2 } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { IngredientCard } from "./ingredient-card";
-import { RecipeIngredient } from "./ingredient-types";
+import type { RecipeIngredient } from "./ingredient-data";
 
 type RecipeIngredientRowProps = {
   ingredient: RecipeIngredient;

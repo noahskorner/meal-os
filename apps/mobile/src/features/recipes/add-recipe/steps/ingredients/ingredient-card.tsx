@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
+import type { ListIngredientResponse } from "@/lib/web-api-client";
 import { View } from "react-native";
 import { ReactNode } from "react";
-import { Ingredient } from "./ingredient-types";
 
 type IngredientCardProps = {
-  ingredient: Ingredient;
+  ingredient: ListIngredientResponse;
   rightAction: ReactNode;
 };
 
@@ -13,6 +13,9 @@ export function IngredientCard({
   ingredient,
   rightAction,
 }: IngredientCardProps) {
+  const defaultAmount =
+    ingredient.defaultUnit.abbreviation || ingredient.defaultUnit.name;
+
   return (
     <Card className="flex-1 flex-row items-center gap-3 rounded-xl border border-border bg-card p-3">
       <View className="h-9 w-9 items-center justify-center rounded-md border border-border bg-background">
@@ -26,7 +29,7 @@ export function IngredientCard({
           {ingredient.name}
         </Text>
         <Text className="text-xs text-muted-foreground">
-          {ingredient.category} - {ingredient.defaultAmount}
+          {ingredient.category.name} - {defaultAmount}
         </Text>
       </View>
 

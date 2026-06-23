@@ -6,7 +6,7 @@ import {
 } from "../../paginated.response";
 import type { ListIngredientsModel } from "./list-ingredients.model";
 
-export const ingredientSummarySchema = z
+export const listIngredientResponseSchema = z
   .object({
     id: z.uuid().openapi({
       example: "550e8400-e29b-41d4-a716-446655440000",
@@ -40,16 +40,18 @@ export const ingredientSummarySchema = z
       }),
     }),
   })
-  .openapi("IngredientSummary");
+  .openapi("ListIngredientResponse");
 
-export type IngredientSummary = z.infer<typeof ingredientSummarySchema>;
+export type ListIngredientResponse = z.infer<
+  typeof listIngredientResponseSchema
+>;
 
 export const listIngredientsResponseSchema = createPaginatedResponseSchema(
-  ingredientSummarySchema,
+  listIngredientResponseSchema,
   "ListIngredientsResponse",
 );
 
-export type ListIngredientsResponse = PaginatedResponse<IngredientSummary>;
+export type ListIngredientsResponse = PaginatedResponse<ListIngredientResponse>;
 
 export const listIngredientsValidationErrorResponseSchema =
   createValidationErrorResponseSchema(

@@ -1,21 +1,18 @@
-import { webApiClient, type IngredientSummary } from "@/lib/web-api-client";
+import {
+  webApiClient,
+  type ListIngredientResponse,
+} from "@/lib/web-api-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createIngredient, updateSortOrder } from "./ingredient-data";
-import type { Ingredient, RecipeIngredient } from "./ingredient-types";
+import {
+  createIngredient,
+  type RecipeIngredient,
+  updateSortOrder,
+} from "./ingredient-data";
 
 const pageSize = 20;
 
-function mapIngredient(summary: IngredientSummary): Ingredient {
-  return {
-    id: summary.id,
-    name: summary.name,
-    category: summary.category.name,
-    defaultAmount: summary.defaultUnit.abbreviation || summary.defaultUnit.name,
-  };
-}
-
 export function useSearchIngredients() {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [ingredients, setIngredients] = useState<ListIngredientResponse[]>([]);
   const [recipeIngredients, setRecipeIngredients] = useState<
     RecipeIngredient[]
   >([]);
@@ -79,9 +76,9 @@ export function useSearchIngredients() {
         return;
       }
 
-      setIngredients(data.items.map(mapIngredient));
-    } catch(e) {
-      console.error("Error loading ingredients:", JSON.stringify(e, null, 2)); 
+      setIngredients(data.items);
+    } catch (e) {
+      console.error("Error loading ingredients:", JSON.stringify(e, null, 2));
       if (!isMountedRef.current || requestIdRef.current !== requestId) {
         return;
       }
@@ -111,7 +108,7 @@ export function useSearchIngredients() {
     setIsLoading(false);
   }, []);
 
-  const addIngredient = useCallback((ingredient: Ingredient) => {
+  const addIngredient = useCallback((ingredient: ListIngredientResponse) => {
     setRecipeIngredients((current) =>
       updateSortOrder([
         ...current,

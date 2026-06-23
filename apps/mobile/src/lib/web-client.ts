@@ -329,7 +329,7 @@ export interface components {
       issues: string[];
     };
     ListIngredientsResponse: {
-      items: components["schemas"]["IngredientSummary"][];
+      items: components["schemas"]["ListIngredientResponse"][];
       /** @example 1 */
       page: number;
       /** @example 20 */
@@ -339,7 +339,7 @@ export interface components {
       /** @example 6 */
       totalPages: number;
     };
-    IngredientSummary: {
+    ListIngredientResponse: {
       /**
        * Format: uuid
        * @example 550e8400-e29b-41d4-a716-446655440000
