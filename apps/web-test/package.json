@@ -4,7 +4,6 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npm run check-types && node -e \"const fs = require('fs'); fs.mkdirSync('dist', { recursive: true }); fs.writeFileSync('dist/build.txt', 'web-test build\\n');\"",
     "check-types": "tsc --project tsconfig.json --noEmit",
     "start:test-server": "tsx e2e/start-test-server.ts",
     "test": "npm run test:e2e",

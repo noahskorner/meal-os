@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import { once } from "node:events";
-import { readdir, rm } from "node:fs/promises";
+import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -19,11 +19,22 @@ const port =
 const databaseName = "meal_os_test";
 const databaseUser = "postgres";
 const databasePassword = "postgres";
-const migrationsDirectory = path.join(repoRoot, "packages", "db", "prisma", "migrations");
+const migrationsDirectory = path.join(
+  repoRoot,
+  "packages",
+  "db",
+  "prisma",
+  "migrations",
+);
+const runtimeDirectory = path.join(
+  repoRoot,
+  "apps",
+  "web-test",
+  ".test-runtime",
+);
+const runtimeDatabaseConfigPath = path.join(runtimeDirectory, "database.json");
 
-function sanitizeEnvironment(
-  env: NodeJS.ProcessEnv,
-): Record<string, string> {
+function sanitizeEnvironment(env: NodeJS.ProcessEnv): Record<string, string> {
   return Object.fromEntries(
     Object.entries(env).filter(
       (entry): entry is [string, string] => typeof entry[1] === "string",
@@ -130,6 +141,14 @@ async function seedUsersAndProfiles(connectionString: string): Promise<void> {
   }
 }
 
+async function writeRuntimeDatabaseConfig(databaseUrl: string): Promise<void> {
+  await mkdir(runtimeDirectory, { recursive: true });
+  await writeFile(
+    runtimeDatabaseConfigPath,
+    `${JSON.stringify({ databaseUrl }, null, 2)}\n`,
+  );
+}
+
 async function stopProcess(child: ChildProcess | undefined): Promise<void> {
   if (!child || child.exitCode !== null) {
     return;
@@ -159,6 +178,7 @@ async function main() {
     try {
       await stopProcess(serverProcess);
     } finally {
+      await rm(runtimeDirectory, { recursive: true, force: true });
       await container?.stop();
       process.exit(exitCode);
     }
@@ -180,14 +200,13 @@ async function main() {
       })
       .withExposedPorts(5432)
       .withWaitStrategy(
-        Wait.forLogMessage(
-          "database system is ready to accept connections",
-          2,
-        ),
+        Wait.forLogMessage("database system is ready to accept connections", 2),
       )
       .start();
 
     const databaseUrl = `postgresql://${databaseUser}:${databasePassword}@${container.getHost()}:${container.getMappedPort(5432)}/${databaseName}`;
+    await writeRuntimeDatabaseConfig(databaseUrl);
+
     const testEnvironment = {
       ...process.env,
       AUTH_PROVIDER: "mock",
@@ -201,12 +220,18 @@ async function main() {
       ["run", "build", "--workspace=@repo/dependency-injection"],
       testEnvironment,
     );
-    await runNpmCommand(["run", "build", "--workspace=@repo/db"], testEnvironment);
+    await runNpmCommand(
+      ["run", "build", "--workspace=@repo/db"],
+      testEnvironment,
+    );
     await runNpmCommand(
       ["run", "migrate:deploy", "--workspace=@repo/db"],
       testEnvironment,
     );
-    await runNpmCommand(["run", "seed", "--workspace=@repo/db"], testEnvironment);
+    await runNpmCommand(
+      ["run", "seed", "--workspace=@repo/db"],
+      testEnvironment,
+    );
     await seedUsersAndProfiles(databaseUrl);
     await runNpmCommand(["run", "build", "--workspace=web"], testEnvironment);
 
@@ -238,7 +263,9 @@ async function main() {
     const [code] = (await once(serverProcess, "exit")) as [number | null];
 
     if (!shuttingDown) {
-      throw new Error(`Web server exited unexpectedly with code ${code ?? "unknown"}.`);
+      throw new Error(
+        `Web server exited unexpectedly with code ${code ?? "unknown"}.`,
+      );
     }
   } catch (error) {
     console.error(error);

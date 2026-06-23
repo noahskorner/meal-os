@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 
-const port = process.env.PORT ?? "3000";
+const port = process.env.PORT ?? "3020";
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${port}`;
 const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
 

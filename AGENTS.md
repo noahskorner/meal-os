@@ -1,145 +1,580 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Core Principles
 
-- This repository is an npm workspace managed with Turborepo.
-- Application code lives in `apps/`:
-  - `apps/web` — Next.js web application
-  - `apps/web-test` — Dedicated API test workspace for the Next.js application
-  - `apps/mobile` — Expo / React Native application
-- Shared packages live in `packages/`:
-  - `packages/ui` — Reusable React components
-  - `packages/eslint-config` — Shared ESLint configuration
-  - `packages/typescript-config` — Shared TypeScript configuration and base `tsconfig` presets
-  - `packages/db` — Prisma schema, migrations, and generated client
-  - `packages/web-api-client` — Generated typed SDK for the `apps/web` OpenAPI API
-- Web application structure:
-  - `apps/web/public` — Static assets
-  - `apps/web/src/app` — Next.js App Router routes and layouts
-- API test workspace structure:
-  - `apps/web-test/e2e` — Playwright API and integration tests
-  - `apps/web-test/unit` — Vitest unit tests
-- Mobile application structure:
-  - `apps/mobile/src/app` — Expo Router routes and layouts
+- Prefer simple solutions over abstractions.
+- Organize code by feature, not by technical layer.
+- Keep dependencies flowing inward.
+- Keep route files and screens thin.
+- Prefer feature-local code over shared code.
+- Only create shared abstractions after proven reuse.
+- Do not introduce architectural patterns not already used by the repository.
+- Update tests, types, and documentation when changing behavior.
 
-### Vertical Slice Architecture
+---
 
-- Organize backend code by feature and use case, not by technical layer.
-- Keep each slice focused on one user action or business capability.
-- Prefer feature-local code over shared abstractions.
-- Only move code into shared libraries when it is reused across multiple slices.
+# Workspace Structure
 
-For this repo's Next.js app, keep API route files in `apps/web/src/app/api` and feature implementation in `apps/web/src/app/features`.
+This repository is an npm workspace managed with Turborepo.
 
-Example:
+## Applications
+
+```text
+apps/
+├── web         # Next.js application + API
+├── web-test    # API integration and unit tests
+└── mobile      # Expo / React Native application
+```
+
+## Packages
+
+```text
+packages/
+├── db                 # Prisma schema, migrations, generated client
+├── ui                 # Shared React components
+├── web-api-client     # Generated OpenAPI SDK
+├── eslint-config
+└── typescript-config
+```
+
+---
+
+# Backend Architecture
+
+## Vertical Slice Architecture
+
+Organize backend code by business capability and use case.
+
+### Example
 
 ```text
 apps/web/src/app/api/health-check/route.ts
+
 apps/web/src/app/features/health-check/
-  health-check.route.ts
-  health-check.request.ts
-  health-check.di.ts
-  health-check.dto.ts
-  health-check.response.ts
-  health-check.controller.ts
-  health-check.facade.ts
-  health-check.model.ts
-  health-check.service.ts
-  health-check.repository.ts
+├── health-check.route.ts
+├── health-check.di.ts
+├── health-check.request.ts
+├── health-check.dto.ts
+├── health-check.response.ts
+├── health-check.controller.ts
+├── health-check.facade.ts
+├── health-check.model.ts
+├── health-check.service.ts
+└── health-check.repository.ts
 ```
 
-Route files should only:
+---
 
-- Register the Next.js handler.
-- Parse incoming requests.
-- Delegate to a slice controller.
-- Return HTTP responses.
+## Layer Responsibilities
 
-Do not place business logic, persistence, or orchestration in route files.
+### route.ts
 
-Within a slice:
+Responsibilities:
 
-- `*.route.ts`: feature-local route registration and OpenAPI metadata.
-- `*.di.ts`: feature-local dependency registration. Export a single `register<Feature>(services: ServiceCollection)` function and keep slice-specific service, repository, facade, and controller registrations here.
-- `*.request.ts`: Zod request schemas and inferred types.
-- `*.dto.ts`: external API contracts exposed outside the application, including Zod response schemas, inferred DTO types, and OpenAPI metadata schemas. Keep OpenAPI schema names stable and append `Dto` to TypeScript symbols, for example `GetProfileResponseDto`.
-- `*.response.ts`: internal response contracts returned by facades and consumed by controllers.
-- For list endpoint DTO schemas, prefer the shared paginated DTO helper at `apps/web/src/app/features/paginated.dto.ts`.
-- For list endpoint internal responses, prefer the shared paginated response type at `apps/web/src/app/features/paginated.response.ts`.
-- `*.controller.ts`: feature entry point for transport-level orchestration such as authentication, authorization, request-to-facade coordination, and mapping internal `Response` types to external `Dto` types.
-- `*.model.ts`: Internal only domain models.
-- `*.service.ts`: atomic business logic.
-- `*.repository.ts`: persistence operations when a slice needs storage.
-- `*.facade.ts`: feature-facing orchestration that coordinates services, repositories, and workflows after transport/auth concerns have been handled. Facades return internal response contracts, never DTOs.
+- Register Next.js handlers
+- Parse HTTP requests
+- Resolve controller
+- Return HTTP responses
 
-Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*.route.ts` files for documentation and registration concerns.
+Must not contain:
 
-For protected endpoints, prefer handling authentication and authorization in `*.controller.ts`, not in `route.ts` or `*.facade.ts`.
+- Business logic
+- Persistence logic
+- Authorization logic
+- Workflow orchestration
 
-For create commands, follow the CQRS command pattern: return `201 Created` on success and include a resource location or pointer to the newly created resource, for example a `Location` header and/or resource identifier in the response body.
+---
 
-Keep dependencies flowing inward: `route.ts -> *.controller.ts -> *.dto.ts -> *.response.ts -> *.facade.ts -> (*.service.ts, *.repository.ts)`, where the facade orchestrates calls to both the service and repository.
+### \*.controller.ts
 
-DTOs must not flow inward past the controller layer. Controllers map facade `Response` values to external `Dto` values. Facades should never return DTOs directly.
+Responsibilities:
 
-Treat services and repositories as the same inward layer. The facade creates or transforms domain models using service business logic, then persists or retrieves those models using the repository. Services must not call repositories directly, and repositories must not contain business logic.
+- Authentication
+- Authorization
+- Transport-level orchestration
+- Request validation coordination
+- Mapping internal responses to external DTOs
 
-### Dependency Injection
+Controllers are the boundary between internal and external contracts.
 
-- Use `packages/dependency-injection` for basic service registration and scoped resolution.
-- Keep the web app composition root in a top-level `services.ts` file for the app, register shared infrastructure there, for example Prisma clients and auth providers, and compose feature registration functions such as `registerListIngredients(services)`.
-- Keep feature-specific dependency registration in each slice's `*.di.ts` file.
-- Route handlers should create a service scope, resolve the slice controller, and delegate the request to that controller.
-- Prefer constructor injection for controllers, facades, services, and repositories instead of importing infrastructure directly inside a slice.
-- Keep the dependency flow aligned with the slice architecture: `services.ts -> controller.ts -> facade.ts -> (service.ts, repository.ts)`.
+---
 
-### Mobile App Architecture
+### \*.facade.ts
 
-The mobile application in `apps/mobile` is an Expo app built with React Native, Expo Router, NativeWind, and shared theme/setup in the root layout. Treat `apps/mobile/src/app` as the routing and screen entry layer only, and keep feature implementation in `apps/mobile/src/features`.
+Responsibilities:
 
-For the mobile app:
+- Use-case orchestration
+- Coordinate services and repositories
+- Build internal response contracts
 
-- Organize code by feature or domain, not by technical layer.
-- Keep Expo Router route files thin: define navigation, read route params, and delegate to feature screens or facades.
-- Put shared, reusable React Native UI components in `apps/mobile/components`.
-- Keep feature-specific components inside their owning slice in `apps/mobile/src/features/**`.
-- Prefer composing shared components from `apps/mobile/components` instead of duplicating UI across feature slices.
-- Use Tailwind / NativeWind `className` styling for React Native screens and components instead of `StyleSheet` objects unless there is a clear platform limitation.
-- Keep cross-feature utilities, theme helpers, and shared hooks in stable shared locations such as `apps/mobile/src/lib` when they are genuinely reused.
+Facades:
 
-Expected mobile structure:
+- Return `*.response.ts`
+- Never return DTOs
+- Never perform authentication
+
+---
+
+### \*.service.ts
+
+Responsibilities:
+
+- Atomic business logic
+- Domain rules
+- Model creation and transformation
+
+Services:
+
+- Must not call repositories
+- Must not know about persistence
+
+---
+
+### \*.repository.ts
+
+Responsibilities:
+
+- Database access
+- Persistence
+- Queries
+
+Repositories:
+
+- Must not contain business logic
+
+---
+
+### \*.dto.ts
+
+External contracts.
+
+Contains:
+
+- OpenAPI schemas
+- Zod schemas
+- DTO types exposed outside the application
+
+Rules:
+
+- Append `Dto` to TypeScript type names
+- Keep OpenAPI schema names stable
+
+Example:
+
+```ts
+export type GetProfileResponseDto = ...
+```
+
+---
+
+### \*.response.ts
+
+Internal contracts.
+
+Used between:
+
+```text
+Facade -> Controller
+```
+
+Never exposed externally.
+
+---
+
+### \*.model.ts
+
+Internal domain models only.
+
+Never exposed through APIs.
+
+---
+
+### \*.request.ts
+
+Request schemas and inferred request types.
+
+---
+
+### \*.di.ts
+
+Feature-local dependency registration.
+
+Export:
+
+```ts
+registerFeature(services);
+```
+
+Example:
+
+```ts
+registerListIngredients(services);
+```
+
+---
+
+### \*.route.ts
+
+Feature-local OpenAPI metadata and route registration.
+
+Keep all OpenAPI definitions here.
+
+---
+
+## Dependency Flow
+
+```text
+route.ts
+  ↓
+controller.ts
+  ↓
+facade.ts
+  ↓
+(service.ts, repository.ts)
+```
+
+Services and repositories exist at the same layer.
+
+Typical flow:
+
+```text
+Controller
+  ↓
+Facade
+  ↓
+Service creates/transforms model
+  ↓
+Repository persists/retrieves model
+  ↓
+Facade builds response
+  ↓
+Controller maps response → DTO
+```
+
+Rules:
+
+- DTOs must not flow past controllers.
+- Controllers map Response → DTO.
+- Services must not call repositories.
+- Repositories must not contain business logic.
+
+---
+
+## Protected Endpoints
+
+Perform authentication and authorization in controllers.
+
+Do not perform auth in:
+
+- route.ts
+- facade.ts
+- repository.ts
+
+---
+
+## CQRS Guidance
+
+For create operations:
+
+- Return `201 Created`
+- Include a resource identifier
+- Include a `Location` header when appropriate
+
+---
+
+# Dependency Injection
+
+Use:
+
+```text
+packages/dependency-injection
+```
+
+## Composition Root
+
+Keep application registration in a top-level `services.ts`.
+
+Example:
+
+```ts
+registerListIngredients(services);
+registerCreateRecipe(services);
+registerGetRecipe(services);
+```
+
+Responsibilities:
+
+- Shared infrastructure registration
+- Prisma registration
+- Authentication providers
+- Feature registration
+
+---
+
+## DI Rules
+
+Use constructor injection.
+
+Avoid importing infrastructure directly inside slices.
+
+Preferred:
+
+```ts
+class CreateRecipeFacade {
+  constructor(
+    private readonly service: CreateRecipeService,
+    private readonly repository: CreateRecipeRepository,
+  ) {}
+}
+```
+
+---
+
+# API Client Generation
+
+The generated SDK lives in:
+
+```text
+packages/web-api-client
+```
+
+Published as:
+
+```ts
+@repo/web-api-client
+```
+
+---
+
+## Regeneration
+
+Run after changing:
+
+- OpenAPI metadata
+- DTO schemas
+- Request schemas
+- Endpoint paths
+
+```bash
+npm run generate:client
+```
+
+---
+
+## Rules
+
+- Never edit generated files.
+- Export public SDK APIs from:
+
+```text
+packages/web-api-client/src/index.ts
+```
+
+- Do not import generated files directly.
+- Use stable `operationId` values.
+
+---
+
+## Application Usage
+
+Applications should:
+
+- Configure auth locally
+- Configure base URLs locally
+- Import generated SDK functions and types from:
+
+```ts
+@repo/web-api-client
+```
+
+---
+
+# Testing
+
+## Test Workspace
+
+Use the dedicated `apps/web-test` workspace for all API, integration, and unit tests. This keeps Playwright and Vitest dependencies isolated from `apps/web`.
+
+```text
+apps/web-test/
+├── e2e/   # Playwright API and integration tests
+└── unit/  # Vitest unit tests
+```
+
+---
+
+## Test Organization
+
+- Put API integration and end-to-end tests in `apps/web-test/e2e`.
+- Put unit tests in `apps/web-test/unit`.
+- Prefer one folder per API endpoint.
+
+Examples:
+
+```text
+apps/web-test/e2e/api/recipes/create-recipe.spec.ts
+apps/web-test/e2e/api/recipes/get-recipe.spec.ts
+apps/web-test/e2e/api/health-check/health-check.spec.ts
+```
+
+- Use `*.spec.ts` for Playwright tests.
+- Use `*.test.ts` for Vitest unit tests.
+
+---
+
+## API Testing
+
+Prefer the generated SDK over manual HTTP requests.
+
+Use:
+
+```ts
+import "@repo/web-api-client";
+```
+
+instead of:
+
+```ts
+fetch(...);
+const response = json as SomeType;
+```
+
+### Client Usage
+
+- Execute API requests through the generated `@repo/web-api-client` SDK.
+- Create a configured client via `apps/web-test/e2e/api-client.ts`.
+- Use generated operations such as:
+
+```ts
+listIngredients();
+createRecipe();
+getProfile();
+```
+
+- Use generated request and response types for test data and assertions.
+- Avoid `as` type assertions when generated types are available.
+- For routes not exposed as generated operations, use the SDK's low-level methods rather than Playwright's raw `request` fixture.
+
+---
+
+## Authentication & Configuration
+
+Keep test-specific configuration inside the test workspace.
+
+Use:
+
+```ts
+createTestApiClient(baseURL);
+createAuthHeaders(userId);
+```
+
+for API client and authentication setup.
+
+The Playwright test server defaults to port `3020`. Override it with `PORT` when needed, or set `PLAYWRIGHT_BASE_URL` to run against an already-started server.
+
+---
+
+## Prisma Access
+
+Prefer API-level assertions over direct database reads.
+
+Only use database verification when the API cannot practically expose the state being tested (for example, validating persistence side effects before a read endpoint exists).
+
+When database access is required:
+
+- Use the shared Prisma helper.
+- Do not create ad-hoc Prisma clients inside tests.
+
+```ts
+getTestPrismaClient();
+```
+
+Location:
+
+```text
+apps/web-test/e2e/prisma-client.ts
+```
+
+Database assertions should be rare.
+
+---
+
+## Validation Checklist
+
+Before opening a PR:
+
+```bash
+npm run lint
+npm run check-types
+npm run test
+npm run build
+```
+
+---
+
+# Mobile Architecture
+
+## Routing Layer
+
+Keep Expo Router files thin.
+
+Responsibilities:
+
+- Navigation
+- Route parameters
+- Screen composition
+
+Move feature implementation into:
+
+```text
+apps/mobile/src/features
+```
+
+---
+
+## Structure
 
 ```text
 apps/mobile/
-  app.json
-  assets/
-  components/
-    ui/
-      button.tsx
-      input.tsx
-      card.tsx
-  src/
-    app/
-      _layout.tsx
-      index.tsx
-      (tabs)/
-        home.tsx
-    features/
-      home/
-        home-screen.tsx
-      profile/
-        profile-screen.tsx
-    lib/
-      theme.ts
-      utils/
-        cn.ts
+└── src/
+    ├── app/
+    ├── features/
+    ├── lib/
+    └── components/
+        └── ui/
 ```
 
-### React Native Reusables Components
+---
 
-When adding components from React Native Reusables, always install them with the CLI. Do not manually create or copy React Native Reusables component files unless there is a documented reason to do so.
+## UI Rules
 
-Examples:
+Shared UI:
+
+```text
+apps/mobile/src/components
+```
+
+Feature-specific UI:
+
+```text
+apps/mobile/src/features/**
+```
+
+Use:
+
+```tsx
+className = "";
+```
+
+Prefer NativeWind over StyleSheet.
+
+---
+
+## React Native Reusables
+
+Always install through the CLI.
+
+Example:
 
 ```bash
 npx @react-native-reusables/cli@latest add button
@@ -147,55 +582,51 @@ npx @react-native-reusables/cli@latest add input
 npx @react-native-reusables/cli@latest add card
 ```
 
-Treat the CLI as the source of truth for installing and updating reusable React Native components.
+Do not manually copy component source.
 
-### Mobile Color Tokens
+---
 
-- Use namespaced `brand-*` tokens for app-specific colors.
-- Do not use raw hex colors inside components.
-- Do not override library-provided semantic tokens or variants.
-- Add new variants instead of changing existing ones.
+## Color Tokens
 
-## API Client Generation
+Rules:
 
-- The shared web API SDK lives in `packages/web-api-client` and is consumed as `@repo/web-api-client`.
-- Run `npm run generate:client` from the repository root after changing OpenAPI route metadata, DTO schemas, request schemas, or endpoint paths in `apps/web`.
-- The generator imports the in-process OpenAPI document from `apps/web/src/app/features/openapi/openapi-document.ts`, writes the generated spec snapshot under `packages/web-api-client/src/generated/source`, and runs `@hey-api/openapi-ts`.
-- Generated client code, models, request/response types, and service functions are isolated under `packages/web-api-client/src/generated`. Do not edit files in that folder manually.
-- Export public SDK surface from `packages/web-api-client/src/index.ts`; avoid importing generated files directly from applications.
-- Add stable `operationId` values in feature `*.route.ts` files so generated service function names remain predictable.
-- Applications should keep app-specific configuration such as base URLs and auth headers in local adapters, but import generated service functions and DTO/request/response types from `@repo/web-api-client`.
+- Use `brand-*` tokens
+- Do not use raw hex values
+- Do not modify library semantic tokens
+- Add variants instead of changing existing ones
 
-## Build, Test, and Development Commands
+---
 
-Run commands from the repository root unless you need a package-specific script.
+# Database Conventions
 
-- `npm install`: install workspace dependencies.
-- `npm run dev`: start all development tasks through Turborepo; the web app runs on port `3000`.
-- `npm run build`: build all workspaces with task caching.
-- `npm run test`: run all configured workspace tests through Turborepo.
-- `npm run test:unit`: run the Vitest suite in `apps/web-test`.
-- `npm run test:e2e`: run the Playwright API/integration suite in `apps/web-test`.
-- `npm run lint`: run ESLint across the repo.
-- `npm run check-types`: run TypeScript checks across workspaces.
-- `npm run format`: format `*.ts`, `*.tsx`, and `*.md` files with Prettier.
-- `npm run generate:client`: regenerate the shared `@repo/web-api-client` SDK from the `apps/web` OpenAPI document.
-- `npm run dev -- --filter=web`: run only the web app when you do not need the full workspace.
-- `npm run dev -- --filter=mobile`: run only the mobile app through Turborepo when you do not need the full workspace.
-- `npm run start --workspace=mobile`: start the Expo app directly.
-- `npm run android --workspace=mobile`: open the Expo app on Android.
-- `npm run ios --workspace=mobile`: open the Expo app on iOS.
+## Naming
 
-## Coding Style & Naming Conventions
+Database:
 
-Use TypeScript throughout. Follow the existing style: double quotes, semicolons, and 2-space indentation as enforced by Prettier and the current source files. Export React components in `PascalCase`, keep utility values and functions in `camelCase`, and name files by their primary export or role, for example `button.tsx`, `page.tsx`, or `base.js`. Prefer placing shared web UI in `packages/ui/src` and importing it via the workspace alias, such as `@repo/ui/button`. For React Native, place shared UI building blocks in `apps/mobile/components`, and keep slice-specific mobile components inside their feature directories.
+```text
+plural table names
+snake_case columns
+```
 
-### Database Conventions
+TypeScript:
 
-- All database table names must be plural.
-- All database columns must use `snake_case`.
-- All Prisma models and TypeScript properties must use `camelCase`.
-- Use Prisma `@@map` and `@map` annotations to map database objects to TypeScript-friendly names.
+```text
+camelCase properties
+PascalCase models
+```
+
+---
+
+## Prisma Mapping
+
+Use:
+
+```prisma
+@@map(...)
+@map(...)
+```
+
+Example:
 
 ```prisma
 model User {
@@ -207,69 +638,133 @@ model User {
 }
 ```
 
-## Testing Guidelines
+---
 
-Use the dedicated `apps/web-test` workspace for Next.js API tests so Playwright and Vitest dependencies stay isolated from `apps/web`.
+# Build & Development
 
-- Put API integration and end-to-end coverage under `apps/web-test/e2e`.
-- Put unit tests under `apps/web-test/unit`.
-- Prefer one folder per API endpoint for Playwright specs, for example `apps/web-test/e2e/api/health-check/health-check.spec.ts`.
-- Keep Playwright focused on endpoint behavior: status codes, content type, and basic response content.
-- Keep unit tests small and close to the feature behavior they exercise, using `*.test.ts` naming.
-- Treat `npm run lint`, `npm run check-types`, `npm run build`, and `npm run test` as the standard validation set before opening a PR when the change touches tested code.
+Run from repository root.
 
-## CI/CD Workflow Overview
+## Common Commands
 
-- `.github/workflows/ci.yml` runs on pull requests and pushes to `main`.
-- CI uses the Node.js version pinned in `.node-version`, restores the npm cache through `actions/setup-node`, runs `npm ci`, then executes:
-  - `npm run lint`
-  - `npm run check-types`
-  - `npm run test`
-  - `npm run build`
-- `.github/workflows/deploy.yml` handles deployments.
-- Pushes to `main` deploy to the `production` GitHub Environment.
-- Manual runs of the deploy workflow also use the `production` GitHub Environment.
+```bash
+npm install
+npm run dev
+npm run build
+npm run test
+npm run lint
+npm run check-types
+npm run format
+npm run generate:client
+```
 
-## Deployment Flow
+## Filtered Development
 
-- Database migrations run first with `npm run db:migrate:deploy`, which executes Prisma migrations from `packages/db`.
-- Migrations run against the database URLs stored in the selected GitHub Environment secrets.
-- After a successful migration:
-  - the current API surface is built and deployed from `apps/web` to the Vercel project identified by `VERCEL_API_PROJECT_ID`
-  - the Expo web build is created from `apps/mobile` and deployed to the separate Vercel project identified by `VERCEL_MOBILE_WEB_PROJECT_ID`
-- This repository does not currently contain `apps/api`. The deployment workflow therefore targets `apps/web`, which is where the current Next.js API routes live.
+```bash
+npm run dev -- --filter=web
+npm run dev -- --filter=mobile
+```
 
-## Required GitHub Environments
+## Mobile
 
-- `production`
+```bash
+npm run start --workspace=mobile
+npm run android --workspace=mobile
+npm run ios --workspace=mobile
+```
 
-Store all deployment secrets and variables in the `production` environment.
+---
 
-## Required GitHub Secrets
+# CI/CD
 
-Set these secrets in the `production` GitHub Environment:
+## CI
 
-- `DATABASE_URL`: target Supabase connection string used by Prisma-aware runtime code
-- `DIRECT_URL`: direct Supabase/Postgres connection string used for Prisma migrations
-- `VERCEL_TOKEN`: Vercel token with access to both deployment projects
+`.github/workflows/ci.yml`
 
-Set these GitHub Environment variables in the `production` environment:
+Runs:
 
-- `VERCEL_ORG_ID`: Vercel team or personal scope ID
-- `VERCEL_API_PROJECT_ID`: Vercel project ID for the API deployment target
-- `VERCEL_MOBILE_WEB_PROJECT_ID`: Vercel project ID for the Expo web deployment target
+```bash
+npm ci
+npm run lint
+npm run check-types
+npm run test
+npm run build
+```
 
-## Local Development vs Deployment Responsibilities
+---
 
-- Local development is responsible for iterative work: `npm run dev`, `npm run db:migrate:dev`, schema changes, and developer-owned `.env*` files.
-- CI is responsible for validation only: install, lint, type-check, run workspace tests when present, and verify full builds.
-- Deployment is responsible for production-like actions only: apply committed Prisma migrations with `migrate deploy`, then publish the API and mobile web artifacts to Vercel.
-- Do not store production database credentials locally. Keep deployment credentials in GitHub Environment secrets and project-specific runtime variables in Vercel.
+## Deploy
 
-## Commit & Pull Request Guidelines
+`.github/workflows/deploy.yml`
 
-Recent history uses Conventional Commit style, for example `chore: Removes docs application`. Follow the same `type: summary` pattern (`feat`, `fix`, `chore`, `docs`, etc.) with short imperative summaries. Pull requests should describe the change, list validation performed, link related issues, and include screenshots for UI updates in `apps/web`.
+Deployment order:
 
-## Configuration Notes
+1. Prisma migrations
+2. Web deployment
+3. Mobile web deployment
 
-Use Node `>=18` and npm `10.8.2` as declared in `package.json`. Turborepo task inputs include `.env*`, so document new environment variables and avoid committing secrets.
+---
+
+# Deployment Targets
+
+## API
+
+```text
+apps/web
+```
+
+Deployed using:
+
+```text
+VERCEL_API_PROJECT_ID
+```
+
+## Mobile Web
+
+```text
+apps/mobile
+```
+
+Deployed using:
+
+```text
+VERCEL_MOBILE_WEB_PROJECT_ID
+```
+
+---
+
+# Git Guidelines
+
+Use Conventional Commits.
+
+Examples:
+
+```text
+feat: add recipe search
+fix: handle missing ingredient
+docs: update agents guide
+chore: regenerate api client
+```
+
+Keep commit messages:
+
+- Short
+- Imperative
+- Descriptive
+
+---
+
+# Environment Requirements
+
+## Node
+
+```text
+>=18
+```
+
+## npm
+
+```text
+10.8.2
+```
+
+---

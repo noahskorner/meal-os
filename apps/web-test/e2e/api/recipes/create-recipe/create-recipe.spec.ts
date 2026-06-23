@@ -1,22 +1,27 @@
-import { expect, test, type APIRequestContext } from "@playwright/test";
-import type {
-  CreateRecipeRequest,
-  CreateRecipeResponse,
-  ListIngredientResponse,
-  ListIngredientsResponse,
+import { expect, test } from "@playwright/test";
+import {
+  createRecipe,
+  listIngredients,
+  type Client,
+  type CreateRecipeRequest,
+  type ListIngredientResponse,
 } from "@repo/web-api-client";
-import { MOCK_AUTH_USER_ID_HEADER } from "../../../../../web/src/app/features/auth/mock-auth.constants";
+import { createAuthHeaders, createTestApiClient } from "../../../api-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
 async function getIngredient(
-  request: APIRequestContext,
+  client: Client,
   searchTerm: string,
 ): Promise<ListIngredientResponse> {
-  const response = await request.get(
-    `/api/ingredients?searchTerm=${encodeURIComponent(searchTerm)}`,
+  const result = await listIngredients({
+    client,
+    query: {
+      searchTerm,
+    },
+  });
+  const ingredient = result.data?.items.find(
+    (item) => item.name === searchTerm,
   );
-  const body = (await response.json()) as ListIngredientsResponse;
-  const ingredient = body.items.find((item) => item.name === searchTerm);
 
   if (!ingredient) {
     throw new Error(`Expected ${searchTerm} to exist in ingredient search.`);
@@ -26,11 +31,12 @@ async function getIngredient(
 }
 
 test.describe("POST /api/recipes", () => {
-  test("authenticated user can create a recipe", async ({ request }) => {
-    const garlic = await getIngredient(request, "Garlic");
-    const oliveOil = await getIngredient(request, "Olive Oil");
+  test("authenticated user can create a recipe", async ({ baseURL }) => {
+    const apiClient = createTestApiClient(baseURL);
+    const garlic = await getIngredient(apiClient, "Garlic");
+    const oliveOil = await getIngredient(apiClient, "Olive Oil");
 
-    const requestBody: CreateRecipeRequest = {
+    const recipeRequest: CreateRecipeRequest = {
       name: "Weeknight Pasta",
       description: "Simple pasta with garlic and olive oil.",
       prepTimeMinutes: 10,
@@ -66,61 +72,66 @@ test.describe("POST /api/recipes", () => {
       ],
     };
 
-    const response = await request.post("/api/recipes", {
-      data: requestBody,
-      headers: {
-        [MOCK_AUTH_USER_ID_HEADER]: E2E_TEST_USERS.primary.id,
-      },
+    const result = await createRecipe({
+      client: apiClient,
+      body: recipeRequest,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
     });
 
-    expect(response.status()).toBe(201);
-    expect(response.headers()["content-type"]).toContain("application/json");
+    expect(result.response?.status).toBe(201);
+    expect(result.response?.headers.get("content-type")).toContain(
+      "application/json",
+    );
 
-    const body = (await response.json()) as CreateRecipeResponse;
-    const location = response.headers()["location"];
+    const location = result.response?.headers.get("location");
 
-    expect(body.id).toMatch(
+    expect(result.data?.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );
-    expect(body.location).toBe(`/api/recipes/${body.id}`);
-    expect(location).toBe(body.location);
+    expect(result.data?.location).toBe(`/api/recipes/${result.data?.id}`);
+    expect(location).toBe(result.data?.location);
   });
 
   test("unauthenticated requests receive 401 unauthorized", async ({
-    request,
+    baseURL,
   }) => {
-    const response = await request.post("/api/recipes", {
-      data: {
-        name: "Weeknight Pasta",
-      },
+    const recipeRequest: CreateRecipeRequest = {
+      name: "Weeknight Pasta",
+    };
+
+    const result = await createRecipe({
+      client: createTestApiClient(baseURL),
+      body: recipeRequest,
     });
 
-    expect(response.status()).toBe(401);
-    expect(response.headers()["content-type"]).toContain("application/json");
-    await expect(response.json()).resolves.toEqual({
+    expect(result.response?.status).toBe(401);
+    expect(result.response?.headers.get("content-type")).toContain(
+      "application/json",
+    );
+    expect(result.error).toEqual({
       message: "Authentication required.",
     });
   });
 
   test("successful creation returns 201 and a resource location pointer", async ({
-    request,
+    baseURL,
   }) => {
-    const response = await request.post("/api/recipes", {
-      data: {
-        name: "Tomato Soup",
-      },
-      headers: {
-        [MOCK_AUTH_USER_ID_HEADER]: E2E_TEST_USERS.secondary.id,
-      },
+    const recipeRequest: CreateRecipeRequest = {
+      name: "Tomato Soup",
+    };
+
+    const result = await createRecipe({
+      client: createTestApiClient(baseURL),
+      body: recipeRequest,
+      headers: createAuthHeaders(E2E_TEST_USERS.secondary.id),
     });
 
-    expect(response.status()).toBe(201);
+    expect(result.response?.status).toBe(201);
 
-    const body = (await response.json()) as CreateRecipeResponse;
-    const location = response.headers()["location"];
+    const location = result.response?.headers.get("location");
 
     expect(location).toBeTruthy();
-    expect(location).toBe(`/api/recipes/${body.id}`);
-    expect(body.location).toBe(location);
+    expect(location).toBe(`/api/recipes/${result.data?.id}`);
+    expect(result.data?.location).toBe(location);
   });
 });

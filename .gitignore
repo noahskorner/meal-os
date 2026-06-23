@@ -17,6 +17,7 @@ node_modules
 coverage
 playwright-report
 test-results
+/apps/web-test/.test-runtime
 
 # Turbo
 .turbo

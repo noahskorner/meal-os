@@ -1,30 +1,33 @@
 import { expect, test } from "@playwright/test";
-import type { ListUnitsResponse } from "@repo/web-api-client";
+import { listUnits } from "@repo/web-api-client";
+import { createTestApiClient } from "../../../api-client";
 
 test.describe("GET /api/units", () => {
-  test("returns all units", async ({ request }) => {
-    const response = await request.get("/api/units");
+  test("returns all units", async ({ baseURL }) => {
+    const result = await listUnits({
+      client: createTestApiClient(baseURL),
+    });
 
-    expect(response.status()).toBe(200);
-    expect(response.headers()["content-type"]).toContain("application/json");
+    expect(result.response?.status).toBe(200);
+    expect(result.response?.headers.get("content-type")).toContain(
+      "application/json",
+    );
 
-    const body = (await response.json()) as ListUnitsResponse;
-
-    expect(Array.isArray(body)).toBe(true);
-    expect(body).toHaveLength(47);
-    expect(body[0]).toEqual({
+    expect(result.data).toBeDefined();
+    expect(result.data).toHaveLength(47);
+    expect(result.data?.[0]).toEqual({
       id: expect.any(String),
       name: "bag",
       abbreviation: "bag",
       type: "PACKAGE",
     });
-    expect(body).toContainEqual({
+    expect(result.data).toContainEqual({
       id: expect.any(String),
       name: "cup",
       abbreviation: "cup",
       type: "VOLUME",
     });
-    expect(body).toContainEqual({
+    expect(result.data).toContainEqual({
       id: expect.any(String),
       name: "each",
       abbreviation: "ea",
