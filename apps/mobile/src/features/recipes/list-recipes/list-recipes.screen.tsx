@@ -4,40 +4,16 @@ import { THEME } from "@/lib/theme";
 import { router } from "expo-router";
 import { Plus, Search, SlidersHorizontal } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import { Pressable, ScrollView, TextInput, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  TextInput,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Recipe } from "./recipe";
 import { RecipeCard } from "./recipe-card";
-
-const recipes: Recipe[] = [
-  {
-    id: "herby-chicken-bowls",
-    title: "Herby Chicken Bowls",
-    category: "Dinner",
-    cookTime: "35 min",
-    servings: "4 servings",
-    difficulty: "Easy",
-    accent: "brand",
-  },
-  {
-    id: "tomato-basil-pasta",
-    title: "Tomato Basil Pasta",
-    category: "Weeknight",
-    cookTime: "25 min",
-    servings: "3 servings",
-    difficulty: "Easy",
-    accent: "secondary",
-  },
-  {
-    id: "citrus-salmon-plate",
-    title: "Citrus Salmon Plate",
-    category: "Fresh",
-    cookTime: "30 min",
-    servings: "2 servings",
-    difficulty: "Medium",
-    accent: "muted",
-  },
-];
+import { useListRecipes } from "./use-list-recipes";
 
 const filters = ["All", "Breakfast", "Lunch", "Dinner", "Saved"];
 
@@ -45,6 +21,16 @@ export function ListRecipesScreen() {
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const palette = colorScheme === "dark" ? THEME.dark : THEME.light;
+  const {
+    recipes,
+    isInitialLoading,
+    isLoadingMore,
+    isRefreshing,
+    error,
+    refreshRecipes,
+    loadNextPage,
+    openRecipe,
+  } = useListRecipes();
 
   return (
     <View className="flex-1 bg-background">
@@ -88,51 +74,108 @@ export function ListRecipesScreen() {
         </View>
       </View>
 
-      <ScrollView
+      <FlatList
         className="flex-1"
         contentContainerStyle={{
           paddingHorizontal: 10,
           paddingTop: 18,
           paddingBottom: insets.bottom + 28,
         }}
+        data={recipes}
+        keyExtractor={(recipe) => recipe.id}
+        ListHeaderComponent={<RecipeFilters />}
+        ListEmptyComponent={
+          <RecipeListEmptyState
+            error={error}
+            isLoading={isInitialLoading}
+            onRetry={refreshRecipes}
+          />
+        }
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View className="py-4">
+              <ActivityIndicator color={palette.brand} />
+            </View>
+          ) : null
+        }
+        refreshing={isRefreshing}
+        renderItem={({ item }) => (
+          <View className="mb-3">
+            <RecipeCard recipe={item} onPress={openRecipe} />
+          </View>
+        )}
         showsVerticalScrollIndicator={false}
-      >
-        <ScrollView
-          horizontal
-          className="-mx-5"
-          contentContainerStyle={{
-            gap: 10,
-            paddingHorizontal: 20,
-            paddingBottom: 18,
-          }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {filters.map((filter, index) => (
-            <Pressable
-              key={filter}
-              className={`rounded-full border px-4 py-2 ${
-                index === 0 ? "border-brand bg-brand" : "border-border bg-card"
-              }`}
-            >
-              <Text
-                className={`text-sm font-semibold ${
-                  index === 0
-                    ? "text-brand-foreground"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {filter}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+        onEndReached={loadNextPage}
+        onEndReachedThreshold={0.35}
+        onRefresh={refreshRecipes}
+      />
+    </View>
+  );
+}
 
-        <View className="gap-3">
-          {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))}
-        </View>
-      </ScrollView>
+function RecipeFilters() {
+  return (
+    <FlatList
+      horizontal
+      className="-mx-5"
+      contentContainerStyle={{
+        gap: 10,
+        paddingHorizontal: 20,
+        paddingBottom: 18,
+      }}
+      data={filters}
+      keyExtractor={(filter) => filter}
+      renderItem={({ item, index }) => (
+        <Pressable
+          className={`rounded-full border px-4 py-2 ${
+            index === 0 ? "border-brand bg-brand" : "border-border bg-card"
+          }`}
+        >
+          <Text
+            className={`text-sm font-semibold ${
+              index === 0 ? "text-brand-foreground" : "text-muted-foreground"
+            }`}
+          >
+            {item}
+          </Text>
+        </Pressable>
+      )}
+      showsHorizontalScrollIndicator={false}
+    />
+  );
+}
+
+function RecipeListEmptyState({
+  error,
+  isLoading,
+  onRetry,
+}: {
+  error: string | null;
+  isLoading: boolean;
+  onRetry: () => void;
+}) {
+  if (isLoading) {
+    return (
+      <View className="items-center justify-center py-16">
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="items-center justify-center gap-4 py-16">
+        <Text className="text-center text-muted-foreground">{error}</Text>
+        <Button variant="brand-outline" onPress={onRetry}>
+          <Text>Try again</Text>
+        </Button>
+      </View>
+    );
+  }
+
+  return (
+    <View className="items-center justify-center py-16">
+      <Text className="text-center text-muted-foreground">No recipes yet.</Text>
     </View>
   );
 }
