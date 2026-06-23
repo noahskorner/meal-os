@@ -23,7 +23,7 @@ export function AddRecipeHeader({
       }}
     >
       <Pressable
-        className="h-10 w-10 items-center justify-center"
+        className="h-10 w-10 items-center justify-center text-foreground"
         onPress={onBack}
       >
         <ChevronLeft size={22} />

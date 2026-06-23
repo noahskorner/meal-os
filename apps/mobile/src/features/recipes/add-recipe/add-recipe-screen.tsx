@@ -6,7 +6,7 @@ import { AddRecipeHeader } from "./add-recipe-header";
 import { AddRecipeMethodSelection } from "./add-recipe-method";
 // import { AddRecipeStepper } from "./add-recipe-stepper";
 import { DetailsStep } from "./steps/details-step";
-import { IngredientsStep } from "./steps/ingredients-step";
+import { IngredientsStep } from "./steps/ingredients/ingredients-step";
 import { InstructionsStep } from "./steps/instructions-step";
 import { ReviewStep } from "./steps/review-step";
 
@@ -51,7 +51,9 @@ export function AddRecipeScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
       >
-        {!isSelecting && step === 2 ? (
+        {!isSelecting && step === 1 ? (
+          <IngredientsStep />
+        ) : !isSelecting && step === 2 ? (
           <InstructionsStep />
         ) : (
           <ScrollView
@@ -71,7 +73,6 @@ export function AddRecipeScreen() {
                 {/* <AddRecipeStepper currentStep={step} /> */}
                 <View className="mt-6">
                   {step === 0 && <DetailsStep />}
-                  {step === 1 && <IngredientsStep />}
                   {step === 3 && <ReviewStep />}
                 </View>
               </>
