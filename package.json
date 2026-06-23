@@ -11,6 +11,7 @@
     "test": "turbo run test",
     "test:unit": "npm run test:unit --workspace=web-test",
     "test:e2e": "npm run test:e2e --workspace=web-test",
+    "worktree:setup": "node ./tools/worktrees/setup/index.mjs",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
