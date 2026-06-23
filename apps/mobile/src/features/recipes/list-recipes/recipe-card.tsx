@@ -5,7 +5,6 @@ import {
   ChefHat,
   ChevronRight,
   Clock3,
-  Ellipsis,
   UsersRound,
 } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
