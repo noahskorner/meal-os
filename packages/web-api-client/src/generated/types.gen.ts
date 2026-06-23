@@ -114,20 +114,45 @@ export type CreateRecipeStepRequest = {
   sortOrder: number | null;
 };
 
-export type ListRecipesResponse = {
-  items: Array<ListRecipeResponse>;
-};
-
-export type ListRecipeResponse = {
+export type GetRecipeResponse = {
   id: string;
   name: string;
-  description?: string;
-  prepTimeMinutes?: number;
-  cookTimeMinutes?: number;
-  servings?: number;
+  description: string | null;
+  prepTimeMinutes: number | null;
+  cookTimeMinutes: number | null;
+  servings: number | null;
+  ingredients: Array<GetRecipeIngredientResponse>;
+  steps: Array<GetRecipeStepResponse>;
 };
 
-export type ListRecipesUnauthorizedResponse = ErrorResponse & {
+export type GetRecipeIngredientResponse = {
+  id: string;
+  ingredientId: string;
+  name: string;
+  quantity: number | null;
+  unitId: string | null;
+  preparation: string | null;
+  note: string | null;
+  isOptional: boolean | null;
+};
+
+export type GetRecipeStepResponse = {
+  id: string;
+  ingredientId: string | null;
+  text: string;
+  sortOrder: number;
+};
+
+export type GetRecipeValidationErrorResponse = ValidationErrorResponse & {
+  message?: string;
+  issues?: Array<string>;
+};
+
+export type GetRecipeUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type GetRecipeNotFoundResponse = ErrorResponse & {
   message?: string;
 };
 
@@ -309,6 +334,44 @@ export type CreateRecipeResponses = {
 
 export type CreateRecipeResponse2 =
   CreateRecipeResponses[keyof CreateRecipeResponses];
+
+export type GetRecipeData = {
+  body?: never;
+  path: {
+    /**
+     * The recipe ID.
+     */
+    id: string;
+  };
+  query?: never;
+  url: "/api/recipes/{id}";
+};
+
+export type GetRecipeErrors = {
+  /**
+   * The route parameters were invalid.
+   */
+  400: GetRecipeValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: GetRecipeUnauthorizedResponse;
+  /**
+   * The recipe does not exist or is not visible to the authenticated user.
+   */
+  404: GetRecipeNotFoundResponse;
+};
+
+export type GetRecipeError = GetRecipeErrors[keyof GetRecipeErrors];
+
+export type GetRecipeResponses = {
+  /**
+   * The recipe was found.
+   */
+  200: GetRecipeResponse;
+};
+
+export type GetRecipeResponse2 = GetRecipeResponses[keyof GetRecipeResponses];
 
 export type ListUnitsData = {
   body?: never;

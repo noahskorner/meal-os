@@ -455,19 +455,7 @@
         },
         "required": ["text", "sortOrder"]
       },
-      "ListRecipesResponse": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ListRecipeResponse"
-            }
-          }
-        },
-        "required": ["items"]
-      },
-      "ListRecipeResponse": {
+      "GetRecipeResponse": {
         "type": "object",
         "properties": {
           "id": {
@@ -480,28 +468,143 @@
             "example": "Weeknight Pasta"
           },
           "description": {
-            "type": "string",
+            "type": ["string", "null"],
             "example": "Simple pasta with garlic, olive oil, and chili flakes."
           },
           "prepTimeMinutes": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
+            "type": ["integer", "null"],
             "example": 10
           },
           "cookTimeMinutes": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
+            "type": ["integer", "null"],
             "example": 15
           },
           "servings": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
+            "type": ["integer", "null"],
             "example": 4
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetRecipeIngredientResponse"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetRecipeStepResponse"
+            }
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name",
+          "description",
+          "prepTimeMinutes",
+          "cookTimeMinutes",
+          "servings",
+          "ingredients",
+          "steps"
+        ]
       },
-      "ListRecipesUnauthorizedResponse": {
+      "GetRecipeIngredientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Garlic"
+          },
+          "quantity": {
+            "type": ["number", "null"],
+            "example": 2
+          },
+          "unitId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "preparation": {
+            "type": ["string", "null"],
+            "example": "minced"
+          },
+          "note": {
+            "type": ["string", "null"],
+            "example": "Adjust to taste."
+          },
+          "isOptional": {
+            "type": ["boolean", "null"],
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "ingredientId",
+          "name",
+          "quantity",
+          "unitId",
+          "preparation",
+          "note",
+          "isOptional"
+        ]
+      },
+      "GetRecipeStepResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440003"
+          },
+          "ingredientId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "text": {
+            "type": "string",
+            "example": "Saute the garlic until fragrant."
+          },
+          "sortOrder": {
+            "type": "integer",
+            "example": 0
+          }
+        },
+        "required": ["id", "ingredientId", "text", "sortOrder"]
+      },
+      "GetRecipeValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid route parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["id: Invalid UUID"]
+              }
+            }
+          }
+        ]
+      },
+      "GetRecipeUnauthorizedResponse": {
         "allOf": [
           {
             "$ref": "#/components/schemas/ErrorResponse"
@@ -512,6 +615,22 @@
               "message": {
                 "type": "string",
                 "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
+      "GetRecipeNotFoundResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Recipe not found."
               }
             }
           }
@@ -796,19 +915,45 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/recipes/{id}": {
       "get": {
-        "operationId": "listRecipes",
+        "operationId": "getRecipe",
         "tags": ["Recipes"],
-        "summary": "List recipes",
-        "description": "Lists recipe metadata visible to the authenticated user.",
+        "summary": "Get recipe",
+        "description": "Returns a recipe visible to the authenticated user.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The recipe ID.",
+              "example": "550e8400-e29b-41d4-a716-446655440000"
+            },
+            "required": true,
+            "description": "The recipe ID.",
+            "name": "id",
+            "in": "path"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Recipes visible to the authenticated user.",
+            "description": "The recipe was found.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListRecipesResponse"
+                  "$ref": "#/components/schemas/GetRecipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The route parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRecipeValidationErrorResponse"
                 }
               }
             }
@@ -818,7 +963,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListRecipesUnauthorizedResponse"
+                  "$ref": "#/components/schemas/GetRecipeUnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The recipe does not exist or is not visible to the authenticated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRecipeNotFoundResponse"
                 }
               }
             }

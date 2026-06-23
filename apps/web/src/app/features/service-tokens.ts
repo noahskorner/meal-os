@@ -20,6 +20,10 @@ import type { ListRecipesController } from "@/app/features/recipes/list-recipes/
 import type { ListRecipesFacade } from "@/app/features/recipes/list-recipes/list-recipes.facade";
 import type { ListRecipesRepository } from "@/app/features/recipes/list-recipes/list-recipes.repository";
 import type { ListRecipesService } from "@/app/features/recipes/list-recipes/list-recipes.service";
+import type { GetRecipeController } from "@/app/features/recipes/get-recipe/get-recipe.controller";
+import type { GetRecipeFacade } from "@/app/features/recipes/get-recipe/get-recipe.facade";
+import type { GetRecipeRepository } from "@/app/features/recipes/get-recipe/get-recipe.repository";
+import type { GetRecipeService } from "@/app/features/recipes/get-recipe/get-recipe.service";
 import type { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
 import type { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
 import type { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
@@ -73,4 +77,8 @@ export const SERVICE_TOKENS = {
   listRecipesController: createToken<ListRecipesController>(
     "listRecipesController",
   ),
+  getRecipeRepository: createToken<GetRecipeRepository>("getRecipeRepository"),
+  getRecipeService: createToken<GetRecipeService>("getRecipeService"),
+  getRecipeFacade: createToken<GetRecipeFacade>("getRecipeFacade"),
+  getRecipeController: createToken<GetRecipeController>("getRecipeController"),
 } as const;

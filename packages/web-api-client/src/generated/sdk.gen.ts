@@ -15,6 +15,9 @@ import type {
   GetProfileData,
   GetProfileErrors,
   GetProfileResponses,
+  GetRecipeData,
+  GetRecipeErrors,
+  GetRecipeResponses,
   HealthCheckData,
   HealthCheckErrors,
   HealthCheckResponses,
@@ -126,6 +129,20 @@ export const createRecipe = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
+
+/**
+ * Get recipe
+ *
+ * Returns a recipe visible to the authenticated user.
+ */
+export const getRecipe = <ThrowOnError extends boolean = false>(
+  options: Options<GetRecipeData, ThrowOnError>,
+): RequestResult<GetRecipeResponses, GetRecipeErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetRecipeResponses,
+    GetRecipeErrors,
+    ThrowOnError
+  >({ url: "/api/recipes/{id}", ...options });
 
 /**
  * List units

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   createRecipe,
+  getRecipe,
   listIngredients,
   type Client,
   type CreateRecipeRequest,
@@ -90,6 +91,56 @@ test.describe("POST /api/recipes", () => {
     );
     expect(result.data?.location).toBe(`/api/recipes/${result.data?.id}`);
     expect(location).toBe(result.data?.location);
+
+    const recipeResult = await getRecipe({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        id: result.data?.id ?? "",
+      },
+    });
+
+    expect(recipeResult.response?.status).toBe(200);
+    expect(recipeResult.data).toEqual({
+      id: result.data?.id,
+      name: recipeRequest.name,
+      description: recipeRequest.description,
+      prepTimeMinutes: recipeRequest.prepTimeMinutes,
+      cookTimeMinutes: recipeRequest.cookTimeMinutes,
+      servings: recipeRequest.servings,
+      ingredients: expect.arrayContaining([
+        expect.objectContaining({
+          ingredientId: garlic.id,
+          name: garlic.name,
+          quantity: 2,
+          unitId: garlic.defaultUnit.id,
+          preparation: "minced",
+          note: null,
+          isOptional: false,
+        }),
+        expect.objectContaining({
+          ingredientId: oliveOil.id,
+          name: oliveOil.name,
+          quantity: 1,
+          unitId: oliveOil.defaultUnit.id,
+          preparation: null,
+          note: "Use extra virgin if available.",
+          isOptional: null,
+        }),
+      ]),
+      steps: [
+        expect.objectContaining({
+          ingredientId: garlic.id,
+          text: "Saute the garlic in olive oil until fragrant.",
+          sortOrder: 0,
+        }),
+        expect.objectContaining({
+          ingredientId: null,
+          text: "Toss with cooked pasta and serve warm.",
+          sortOrder: 1,
+        }),
+      ],
+    });
   });
 
   test("unauthenticated requests receive 401 unauthorized", async ({
