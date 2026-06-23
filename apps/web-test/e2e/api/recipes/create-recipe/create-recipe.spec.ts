@@ -1,9 +1,37 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 import { MOCK_AUTH_USER_ID_HEADER } from "../../../../../web/src/app/features/auth/mock-auth.constants";
 import { E2E_TEST_USERS } from "../../../test-users";
 
+type IngredientSearchItem = {
+  id: string;
+  name: string;
+  defaultUnit: {
+    id: string;
+  };
+};
+
+async function getIngredient(
+  request: APIRequestContext,
+  searchTerm: string,
+): Promise<IngredientSearchItem> {
+  const response = await request.get(
+    `/api/ingredients?searchTerm=${encodeURIComponent(searchTerm)}`,
+  );
+  const body = await response.json();
+  const ingredient = body.items.find(
+    (item: IngredientSearchItem) => item.name === searchTerm,
+  );
+
+  expect(ingredient).toBeTruthy();
+
+  return ingredient;
+}
+
 test.describe("POST /api/recipes", () => {
   test("authenticated user can create a recipe", async ({ request }) => {
+    const garlic = await getIngredient(request, "Garlic");
+    const oliveOil = await getIngredient(request, "Olive Oil");
+
     const response = await request.post("/api/recipes", {
       data: {
         name: "Weeknight Pasta",
@@ -11,6 +39,34 @@ test.describe("POST /api/recipes", () => {
         prepTimeMinutes: 10,
         cookTimeMinutes: 15,
         servings: 4,
+        recipeIngredients: [
+          {
+            ingredientId: garlic.id,
+            name: garlic.name,
+            quantity: 2,
+            unitId: garlic.defaultUnit.id,
+            preparation: "minced",
+            isOptional: false,
+          },
+          {
+            ingredientId: oliveOil.id,
+            name: oliveOil.name,
+            quantity: 1,
+            unitId: oliveOil.defaultUnit.id,
+            note: "Use extra virgin if available.",
+          },
+        ],
+        recipeSteps: [
+          {
+            text: "Saute the garlic in olive oil until fragrant.",
+            sortOrder: 0,
+            ingredientId: garlic.id,
+          },
+          {
+            text: "Toss with cooked pasta and serve warm.",
+            sortOrder: 1,
+          },
+        ],
       },
       headers: {
         [MOCK_AUTH_USER_ID_HEADER]: E2E_TEST_USERS.primary.id,

@@ -1,3 +1,1 @@
-import type { CreateRecipeModel } from "./create-recipe.model";
-
-export type CreateRecipeResponse = Pick<CreateRecipeModel, "id">;
+export type CreateRecipeResponse = { id: string };
