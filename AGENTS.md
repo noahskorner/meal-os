@@ -37,6 +37,7 @@ apps/web/src/app/api/health-check/route.ts
 apps/web/src/app/features/health-check/
   health-check.route.ts
   health-check.request.ts
+  health-check.di.ts
   health-check.dto.ts
   health-check.response.ts
   health-check.controller.ts
@@ -58,6 +59,7 @@ Do not place business logic, persistence, or orchestration in route files.
 Within a slice:
 
 - `*.route.ts`: feature-local route registration and OpenAPI metadata.
+- `*.di.ts`: feature-local dependency registration. Export a single `register<Feature>(services: ServiceCollection)` function and keep slice-specific service, repository, facade, and controller registrations here.
 - `*.request.ts`: Zod request schemas and inferred types.
 - `*.dto.ts`: external API contracts exposed outside the application, including Zod response schemas, inferred DTO types, and OpenAPI metadata schemas. Keep OpenAPI schema names stable and append `Dto` to TypeScript symbols, for example `GetProfileResponseDto`.
 - `*.response.ts`: internal response contracts returned by facades and consumed by controllers.
@@ -84,7 +86,8 @@ Treat services and repositories as the same inward layer. The facade creates or 
 ### Dependency Injection
 
 - Use `packages/dependency-injection` for basic service registration and scoped resolution.
-- Keep the web app composition root in a top-level `services.ts` file for the app, and register shared infrastructure there, for example Prisma clients, auth providers, slice controllers, and slice facades.
+- Keep the web app composition root in a top-level `services.ts` file for the app, register shared infrastructure there, for example Prisma clients and auth providers, and compose feature registration functions such as `registerListIngredients(services)`.
+- Keep feature-specific dependency registration in each slice's `*.di.ts` file.
 - Route handlers should create a service scope, resolve the slice controller, and delegate the request to that controller.
 - Prefer constructor injection for controllers, facades, services, and repositories instead of importing infrastructure directly inside a slice.
 - Keep the dependency flow aligned with the slice architecture: `services.ts -> controller.ts -> facade.ts -> (service.ts, repository.ts)`.
