@@ -4,19 +4,14 @@ import {
   type ListIngredientResponse,
 } from "@repo/web-api-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  createIngredient,
-  type RecipeIngredient,
-  updateSortOrder,
-} from "./ingredient-data";
+import { createIngredient, updateSortOrder } from "./ingredient-data";
+import { useNewRecipe } from "../../use-new-recipe";
 
 const pageSize = 20;
 
-export function useSearchIngredients() {
+export function useIngredients() {
   const [ingredients, setIngredients] = useState<ListIngredientResponse[]>([]);
-  const [recipeIngredients, setRecipeIngredients] = useState<
-    RecipeIngredient[]
-  >([]);
+  const { recipeIngredients, setRecipeIngredients } = useNewRecipe();
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -106,14 +101,17 @@ export function useSearchIngredients() {
     setIsLoading(false);
   }, []);
 
-  const addIngredient = useCallback((ingredient: ListIngredientResponse) => {
-    setRecipeIngredients((current) =>
-      updateSortOrder([
-        ...current,
-        { ...ingredient, sortOrder: current.length },
-      ]),
-    );
-  }, []);
+  const addIngredient = useCallback(
+    (ingredient: ListIngredientResponse) => {
+      setRecipeIngredients((current) =>
+        updateSortOrder([
+          ...current,
+          { ...ingredient, sortOrder: current.length },
+        ]),
+      );
+    },
+    [setRecipeIngredients],
+  );
 
   const createNewIngredient = useCallback(() => {
     const name = query.trim();
@@ -126,15 +124,18 @@ export function useSearchIngredients() {
     clearIngredients();
   }, [addIngredient, clearIngredients, query]);
 
-  const removeIngredient = useCallback((id: string) => {
-    setRecipeIngredients((current) =>
-      updateSortOrder(current.filter((ingredient) => ingredient.id !== id)),
-    );
-  }, []);
+  const removeIngredient = useCallback(
+    (id: string) => {
+      setRecipeIngredients((current) =>
+        updateSortOrder(current.filter((ingredient) => ingredient.id !== id)),
+      );
+    },
+    [setRecipeIngredients],
+  );
 
   const clearRecipeIngredients = useCallback(() => {
     setRecipeIngredients([]);
-  }, []);
+  }, [setRecipeIngredients]);
 
   useEffect(() => {
     void loadIngredients();

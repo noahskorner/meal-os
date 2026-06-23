@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { THEME } from "@/lib/theme";
 
-export function AddRecipeHeader({
+export function NewRecipeHeader({
   showCancel,
   onBack,
   onCancel,

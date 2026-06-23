@@ -1,4 +1,4 @@
-import { StepTitle } from "./step-title";
+import { StepTitle } from "../step-title";
 import { Pressable, View } from "react-native";
 import DraggableFlatList, {
   RenderItemParams,
@@ -10,51 +10,32 @@ import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { useState } from "react";
+import {
+  createInstructionStep,
+  type InstructionStep,
+  updateInstructionSortOrder,
+  useNewRecipe,
+} from "../../use-new-recipe";
 
-type InstructionStep = {
-  id: string;
-  text: string;
-  sortOrder: number;
-};
-
-const createStep = (text = "", sortOrder = 0): InstructionStep => ({
-  id: Math.random().toString(36).substring(2, 9),
-  text,
-  sortOrder,
-});
-
-const updateSortOrder = (steps: InstructionStep[]) =>
-  steps.map((step, sortOrder) => ({ ...step, sortOrder }));
-
-export function InstructionsStep() {
-  const [steps, setSteps] = useState<InstructionStep[]>([
-    createStep("Season both sides of the chicken with salt and pepper.", 0),
-    createStep("Heat olive oil in a large skillet over medium-high heat.", 1),
-    createStep(
-      "Add the chicken and cook for 6-7 minutes per side, until golden and cooked through.",
-      2,
-    ),
-    createStep("Add garlic and cook for 30 seconds until fragrant.", 3),
-    createStep(
-      "Squeeze lemon juice over the chicken and garnish with fresh parsley. Serve warm.",
-      4,
-    ),
-  ]);
+export function InstructionsScreen() {
+  const { instructions, setInstructions } = useNewRecipe();
 
   const addStep = () => {
-    setSteps((current) => [...current, createStep("", current.length)]);
+    setInstructions((current) => [
+      ...current,
+      createInstructionStep("", current.length),
+    ]);
   };
 
   const updateStep = (id: string, text: string) => {
-    setSteps((current) =>
+    setInstructions((current) =>
       current.map((step) => (step.id === id ? { ...step, text } : step)),
     );
   };
 
   const removeStep = (id: string) => {
-    setSteps((current) =>
-      updateSortOrder(current.filter((step) => step.id !== id)),
+    setInstructions((current) =>
+      updateInstructionSortOrder(current.filter((step) => step.id !== id)),
     );
   };
 
@@ -105,7 +86,7 @@ export function InstructionsStep() {
               <Pressable
                 className="p-1"
                 onPress={() => removeStep(item.id)}
-                disabled={steps.length === 1}
+                disabled={instructions.length === 1}
                 hitSlop={8}
               >
                 <Icon as={Trash2} size={18} className="text-muted-foreground" />
@@ -119,10 +100,12 @@ export function InstructionsStep() {
 
   return (
     <DraggableFlatList
-      data={steps}
+      data={instructions}
       keyExtractor={(item) => item.id}
       renderItem={renderStep}
-      onDragEnd={({ data }) => setSteps(updateSortOrder(data))}
+      onDragEnd={({ data }) =>
+        setInstructions(updateInstructionSortOrder(data))
+      }
       containerStyle={{ flex: 1 }}
       contentContainerStyle={{
         paddingTop: 24,

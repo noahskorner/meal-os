@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { IngredientResult } from "./ingredient-result";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
-import { useSearchIngredients } from "./use-search-ingredients";
+import { useIngredients } from "./use-ingredients";
 
-export function IngredientsStep() {
+export function IngredientsScreen() {
   const {
     recipeIngredients,
     results,
@@ -24,7 +24,7 @@ export function IngredientsStep() {
     createNewIngredient,
     removeIngredient,
     clearRecipeIngredients,
-  } = useSearchIngredients();
+  } = useIngredients();
 
   return (
     <ScrollView

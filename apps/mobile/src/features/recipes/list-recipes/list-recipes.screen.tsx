@@ -62,7 +62,7 @@ export function ListRecipesScreen() {
             className="rounded-full"
             size="icon"
             variant="brand"
-            onPress={() => router.push("/recipes/add")}
+            onPress={() => router.push("/recipes/new")}
           >
             <Plus color={palette.brandForeground} size={22} strokeWidth={2.5} />
           </Button>

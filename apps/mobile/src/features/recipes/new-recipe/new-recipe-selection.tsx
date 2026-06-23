@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { ChevronRight, Pencil, Sparkles, Upload } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
 
-export function AddRecipeMethodSelection({
+export function NewRecipeSelection({
   onManualPress,
 }: {
   onManualPress: () => void;
@@ -14,21 +14,21 @@ export function AddRecipeMethodSelection({
       </Text>
 
       <View className="mt-6 gap-4">
-        <AddRecipeMethodCard
+        <NewRecipeMethod
           icon={<Pencil size={24} color="white" />}
           title="Enter Manually"
           description="Add your recipe step by step using a simple form."
           onPress={onManualPress}
         />
 
-        <AddRecipeMethodCard
+        <NewRecipeMethod
           icon={<Sparkles size={24} color="white" />}
           title="Paste Text"
           description="Paste a recipe and we'll extract the details."
           onPress={() => {}}
         />
 
-        <AddRecipeMethodCard
+        <NewRecipeMethod
           icon={<Upload size={24} color="white" />}
           title="Upload Photo"
           description="Take or upload a photo and we'll extract it for you."
@@ -47,7 +47,7 @@ export function AddRecipeMethodSelection({
   );
 }
 
-function AddRecipeMethodCard({
+function NewRecipeMethod({
   icon,
   title,
   description,
