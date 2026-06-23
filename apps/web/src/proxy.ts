@@ -48,7 +48,7 @@ function applyCorsHeaders(request: NextRequest, response: NextResponse) {
   return response;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (request.method === "OPTIONS") {
     return applyCorsHeaders(request, new NextResponse(null, { status: 204 }));
   }
