@@ -1,12 +1,12 @@
 import {
-  createListUnitsResponse,
-  type ListUnitsResponse,
-} from "./list-units.response";
+  createListUnitsResponseDto,
+  type ListUnitsResponseDto,
+} from "./list-units.dto";
 import { ListUnitsFacade } from "./list-units.facade";
 
 export type ListUnitsResult = {
   status: 200;
-  body: ListUnitsResponse;
+  body: ListUnitsResponseDto;
 };
 
 export class ListUnitsController {
@@ -17,7 +17,7 @@ export class ListUnitsController {
 
     return {
       status: 200,
-      body: createListUnitsResponse(units),
+      body: createListUnitsResponseDto(units),
     };
   }
 }

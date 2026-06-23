@@ -1,20 +1,23 @@
 import type { PrismaClient } from "@repo/db";
-import type { CreateRecipeRequest } from "./create-recipe.request";
+import type {
+  CreateRecipeInputModel,
+  CreateRecipeModel,
+} from "./create-recipe.model";
 
 export class CreateRecipeRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   public async create(
-    request: CreateRecipeRequest & { createdById: string },
-  ): Promise<{ id: string }> {
+    input: CreateRecipeInputModel,
+  ): Promise<CreateRecipeModel> {
     const recipe = await this.prisma.recipe.create({
       data: {
-        createdById: request.createdById,
-        name: request.name,
-        description: request.description ?? null,
-        prepTimeMinutes: request.prepTimeMinutes ?? null,
-        cookTimeMinutes: request.cookTimeMinutes ?? null,
-        servings: request.servings ?? null,
+        createdById: input.createdById,
+        name: input.name,
+        description: input.description,
+        prepTimeMinutes: input.prepTimeMinutes,
+        cookTimeMinutes: input.cookTimeMinutes,
+        servings: input.servings,
       },
       select: {
         id: true,

@@ -1,32 +1,31 @@
 import type { PaginatedResponse } from "../../paginated.response";
-import type { ListIngredientsRequest } from "./list-ingredients.request";
 import type { ListIngredientsModel } from "./list-ingredients.model";
-import { ListIngredientsRepository } from "./list-ingredients.repository";
+import type { FindManyIngredientsParams } from "./list-ingredients.repository";
+import type { ListIngredientsRequest } from "./list-ingredients.request";
 
 export class ListIngredientsService {
-  constructor(
-    private readonly listIngredientsRepository: ListIngredientsRepository,
-  ) {}
-
-  public async list(
+  public createFindManyParams(
     request: ListIngredientsRequest,
-  ): Promise<PaginatedResponse<ListIngredientsModel>> {
-    const skip = (request.page - 1) * request.pageSize;
-    const [items, totalItems] = await Promise.all([
-      this.listIngredientsRepository.findMany({
-        skip,
-        take: request.pageSize,
-        searchTerm: request.searchTerm,
-      }),
-      this.listIngredientsRepository.count(request.searchTerm),
-    ]);
-
+  ): FindManyIngredientsParams {
     return {
-      items,
-      page: request.page,
-      pageSize: request.pageSize,
-      totalItems,
-      totalPages: Math.ceil(totalItems / request.pageSize),
+      skip: (request.page - 1) * request.pageSize,
+      take: request.pageSize,
+      searchTerm: request.searchTerm,
+    };
+  }
+
+  public createListResponse(params: {
+    items: ListIngredientsModel[];
+    page: number;
+    pageSize: number;
+    totalItems: number;
+  }): PaginatedResponse<ListIngredientsModel> {
+    return {
+      items: params.items,
+      page: params.page,
+      pageSize: params.pageSize,
+      totalItems: params.totalItems,
+      totalPages: Math.ceil(params.totalItems / params.pageSize),
     };
   }
 }

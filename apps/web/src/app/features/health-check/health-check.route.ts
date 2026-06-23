@@ -1,9 +1,9 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { healthCheckRequestSchema } from "./health-check.request";
 import {
-  healthCheckResponseSchema,
-  healthCheckValidationErrorResponseSchema,
-} from "./health-check.response";
+  healthCheckResponseDtoSchema,
+  healthCheckValidationErrorResponseDtoSchema,
+} from "./health-check.dto";
+import { healthCheckRequestSchema } from "./health-check.request";
 
 export function registerHealthCheckRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
@@ -20,7 +20,7 @@ export function registerHealthCheckRoute(registry: OpenAPIRegistry) {
         description: "The application is healthy.",
         content: {
           "application/json": {
-            schema: healthCheckResponseSchema,
+            schema: healthCheckResponseDtoSchema,
           },
         },
       },
@@ -28,7 +28,7 @@ export function registerHealthCheckRoute(registry: OpenAPIRegistry) {
         description: "The request query parameters were invalid.",
         content: {
           "application/json": {
-            schema: healthCheckValidationErrorResponseSchema,
+            schema: healthCheckValidationErrorResponseDtoSchema,
           },
         },
       },

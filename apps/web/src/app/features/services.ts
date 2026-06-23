@@ -5,12 +5,15 @@ import {
   type ServiceScope,
 } from "@repo/dependency-injection";
 import type { AuthProvider } from "@/app/features/auth/auth-provider";
+import { MockAuthProvider } from "@/app/features/auth/mock-auth.provider";
+import { SupabaseAuthProvider } from "@/app/features/auth/supabase-auth.provider";
+import { HealthCheckController } from "@/app/features/health-check/health-check.controller";
+import { HealthCheckFacade } from "@/app/features/health-check/health-check.facade";
+import { HealthCheckService } from "@/app/features/health-check/health-check.service";
 import { ListIngredientsController } from "@/app/features/ingredients/list-ingredients/list-ingredients.controller";
 import { ListIngredientsFacade } from "@/app/features/ingredients/list-ingredients/list-ingredients.facade";
 import { ListIngredientsRepository } from "@/app/features/ingredients/list-ingredients/list-ingredients.repository";
 import { ListIngredientsService } from "@/app/features/ingredients/list-ingredients/list-ingredients.service";
-import { MockAuthProvider } from "@/app/features/auth/mock-auth.provider";
-import { SupabaseAuthProvider } from "@/app/features/auth/supabase-auth.provider";
 import { GetProfileController } from "@/app/features/profiles/get-profile/get-profile.controller";
 import { GetProfileFacade } from "@/app/features/profiles/get-profile/get-profile.facade";
 import { GetProfileRepository } from "@/app/features/profiles/get-profile/get-profile.repository";
@@ -27,6 +30,11 @@ import { ListUnitsService } from "@/app/features/units/list-units/list-units.ser
 export const SERVICE_TOKENS = {
   prisma: createToken<PrismaClient>("prisma"),
   authProvider: createToken<AuthProvider>("authProvider"),
+  healthCheckService: createToken<HealthCheckService>("healthCheckService"),
+  healthCheckFacade: createToken<HealthCheckFacade>("healthCheckFacade"),
+  healthCheckController: createToken<HealthCheckController>(
+    "healthCheckController",
+  ),
   listIngredientsRepository: createToken<ListIngredientsRepository>(
     "listIngredientsRepository",
   ),
@@ -48,7 +56,9 @@ export const SERVICE_TOKENS = {
   ),
   getProfileService: createToken<GetProfileService>("getProfileService"),
   getProfileFacade: createToken<GetProfileFacade>("getProfileFacade"),
-  getProfileController: createToken<GetProfileController>("getProfileController"),
+  getProfileController: createToken<GetProfileController>(
+    "getProfileController",
+  ),
   createRecipeRepository: createToken<CreateRecipeRepository>(
     "createRecipeRepository",
   ),
@@ -80,15 +90,30 @@ services.registerScoped(
   },
 );
 
-services.registerScoped(SERVICE_TOKENS.listIngredientsService, async (scope) => {
-  return new ListIngredientsService(
-    await scope.resolve(SERVICE_TOKENS.listIngredientsRepository),
+services.registerScoped(SERVICE_TOKENS.healthCheckService, () => {
+  return new HealthCheckService();
+});
+
+services.registerScoped(SERVICE_TOKENS.healthCheckFacade, async (scope) => {
+  return new HealthCheckFacade(
+    await scope.resolve(SERVICE_TOKENS.healthCheckService),
   );
+});
+
+services.registerScoped(SERVICE_TOKENS.healthCheckController, async (scope) => {
+  return new HealthCheckController(
+    await scope.resolve(SERVICE_TOKENS.healthCheckFacade),
+  );
+});
+
+services.registerScoped(SERVICE_TOKENS.listIngredientsService, () => {
+  return new ListIngredientsService();
 });
 
 services.registerScoped(SERVICE_TOKENS.listIngredientsFacade, async (scope) => {
   return new ListIngredientsFacade(
     await scope.resolve(SERVICE_TOKENS.listIngredientsService),
+    await scope.resolve(SERVICE_TOKENS.listIngredientsRepository),
   );
 });
 
@@ -105,14 +130,15 @@ services.registerScoped(SERVICE_TOKENS.listUnitsRepository, async (scope) => {
   return new ListUnitsRepository(await scope.resolve(SERVICE_TOKENS.prisma));
 });
 
-services.registerScoped(SERVICE_TOKENS.listUnitsService, async (scope) => {
-  return new ListUnitsService(
-    await scope.resolve(SERVICE_TOKENS.listUnitsRepository),
-  );
+services.registerScoped(SERVICE_TOKENS.listUnitsService, () => {
+  return new ListUnitsService();
 });
 
 services.registerScoped(SERVICE_TOKENS.listUnitsFacade, async (scope) => {
-  return new ListUnitsFacade(await scope.resolve(SERVICE_TOKENS.listUnitsService));
+  return new ListUnitsFacade(
+    await scope.resolve(SERVICE_TOKENS.listUnitsService),
+    await scope.resolve(SERVICE_TOKENS.listUnitsRepository),
+  );
 });
 
 services.registerScoped(SERVICE_TOKENS.listUnitsController, async (scope) => {
@@ -125,15 +151,14 @@ services.registerScoped(SERVICE_TOKENS.getProfileRepository, async (scope) => {
   return new GetProfileRepository(await scope.resolve(SERVICE_TOKENS.prisma));
 });
 
-services.registerScoped(SERVICE_TOKENS.getProfileService, async (scope) => {
-  return new GetProfileService(
-    await scope.resolve(SERVICE_TOKENS.getProfileRepository),
-  );
+services.registerScoped(SERVICE_TOKENS.getProfileService, () => {
+  return new GetProfileService();
 });
 
 services.registerScoped(SERVICE_TOKENS.getProfileFacade, async (scope) => {
   return new GetProfileFacade(
     await scope.resolve(SERVICE_TOKENS.getProfileService),
+    await scope.resolve(SERVICE_TOKENS.getProfileRepository),
   );
 });
 
@@ -144,28 +169,35 @@ services.registerScoped(SERVICE_TOKENS.getProfileController, async (scope) => {
   );
 });
 
-services.registerScoped(SERVICE_TOKENS.createRecipeRepository, async (scope) => {
-  return new CreateRecipeRepository(await scope.resolve(SERVICE_TOKENS.prisma));
-});
+services.registerScoped(
+  SERVICE_TOKENS.createRecipeRepository,
+  async (scope) => {
+    return new CreateRecipeRepository(
+      await scope.resolve(SERVICE_TOKENS.prisma),
+    );
+  },
+);
 
-services.registerScoped(SERVICE_TOKENS.createRecipeService, async (scope) => {
-  return new CreateRecipeService(
-    await scope.resolve(SERVICE_TOKENS.createRecipeRepository),
-  );
+services.registerScoped(SERVICE_TOKENS.createRecipeService, () => {
+  return new CreateRecipeService();
 });
 
 services.registerScoped(SERVICE_TOKENS.createRecipeFacade, async (scope) => {
   return new CreateRecipeFacade(
     await scope.resolve(SERVICE_TOKENS.createRecipeService),
+    await scope.resolve(SERVICE_TOKENS.createRecipeRepository),
   );
 });
 
-services.registerScoped(SERVICE_TOKENS.createRecipeController, async (scope) => {
-  return new CreateRecipeController(
-    await scope.resolve(SERVICE_TOKENS.authProvider),
-    await scope.resolve(SERVICE_TOKENS.createRecipeFacade),
-  );
-});
+services.registerScoped(
+  SERVICE_TOKENS.createRecipeController,
+  async (scope) => {
+    return new CreateRecipeController(
+      await scope.resolve(SERVICE_TOKENS.authProvider),
+      await scope.resolve(SERVICE_TOKENS.createRecipeFacade),
+    );
+  },
+);
 
 export function createServiceScope(): ServiceScope {
   return services.createScope();

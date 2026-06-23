@@ -1,14 +1,17 @@
 import type { CreateRecipeRequest } from "./create-recipe.request";
-import { CreateRecipeRepository } from "./create-recipe.repository";
+import type { CreateRecipeInputModel } from "./create-recipe.model";
 
 export class CreateRecipeService {
-  constructor(
-    private readonly createRecipeRepository: CreateRecipeRepository,
-  ) {}
-
-  public async create(
+  public createRecipe(
     request: CreateRecipeRequest & { createdById: string },
-  ): Promise<{ id: string }> {
-    return this.createRecipeRepository.create(request);
+  ): CreateRecipeInputModel {
+    return {
+      createdById: request.createdById,
+      name: request.name,
+      description: request.description ?? null,
+      prepTimeMinutes: request.prepTimeMinutes ?? null,
+      cookTimeMinutes: request.cookTimeMinutes ?? null,
+      servings: request.servings ?? null,
+    };
   }
 }

@@ -1,10 +1,10 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { createRecipeRequestSchema } from "./create-recipe.request";
 import {
-  createRecipeResponseSchema,
-  createRecipeUnauthorizedResponseSchema,
-  createRecipeValidationErrorResponseSchema,
-} from "./create-recipe.response";
+  createRecipeResponseDtoSchema,
+  createRecipeUnauthorizedResponseDtoSchema,
+  createRecipeValidationErrorResponseDtoSchema,
+} from "./create-recipe.dto";
+import { createRecipeRequestSchema } from "./create-recipe.request";
 
 export function registerCreateRecipeRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
@@ -36,7 +36,7 @@ export function registerCreateRecipeRoute(registry: OpenAPIRegistry) {
         },
         content: {
           "application/json": {
-            schema: createRecipeResponseSchema,
+            schema: createRecipeResponseDtoSchema,
           },
         },
       },
@@ -44,7 +44,7 @@ export function registerCreateRecipeRoute(registry: OpenAPIRegistry) {
         description: "The request body was invalid.",
         content: {
           "application/json": {
-            schema: createRecipeValidationErrorResponseSchema,
+            schema: createRecipeValidationErrorResponseDtoSchema,
           },
         },
       },
@@ -52,7 +52,7 @@ export function registerCreateRecipeRoute(registry: OpenAPIRegistry) {
         description: "The request was unauthenticated.",
         content: {
           "application/json": {
-            schema: createRecipeUnauthorizedResponseSchema,
+            schema: createRecipeUnauthorizedResponseDtoSchema,
           },
         },
       },

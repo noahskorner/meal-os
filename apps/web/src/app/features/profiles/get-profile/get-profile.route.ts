@@ -1,12 +1,12 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { getProfileRequestSchema } from "./get-profile.request";
 import {
-  getProfileForbiddenResponseSchema,
-  getProfileNotFoundResponseSchema,
-  getProfileResponseSchema,
-  getProfileUnauthorizedResponseSchema,
-  getProfileValidationErrorResponseSchema,
-} from "./get-profile.response";
+  getProfileForbiddenResponseDtoSchema,
+  getProfileNotFoundResponseDtoSchema,
+  getProfileResponseDtoSchema,
+  getProfileUnauthorizedResponseDtoSchema,
+  getProfileValidationErrorResponseDtoSchema,
+} from "./get-profile.dto";
+import { getProfileRequestSchema } from "./get-profile.request";
 
 export function registerGetProfileRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
@@ -23,7 +23,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         description: "The profile was found.",
         content: {
           "application/json": {
-            schema: getProfileResponseSchema,
+            schema: getProfileResponseDtoSchema,
           },
         },
       },
@@ -31,7 +31,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         description: "The route parameters were invalid.",
         content: {
           "application/json": {
-            schema: getProfileValidationErrorResponseSchema,
+            schema: getProfileValidationErrorResponseDtoSchema,
           },
         },
       },
@@ -39,7 +39,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         description: "The request was unauthenticated.",
         content: {
           "application/json": {
-            schema: getProfileUnauthorizedResponseSchema,
+            schema: getProfileUnauthorizedResponseDtoSchema,
           },
         },
       },
@@ -47,7 +47,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         description: "The authenticated user cannot access this profile.",
         content: {
           "application/json": {
-            schema: getProfileForbiddenResponseSchema,
+            schema: getProfileForbiddenResponseDtoSchema,
           },
         },
       },
@@ -55,7 +55,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
         description: "The profile was not found.",
         content: {
           "application/json": {
-            schema: getProfileNotFoundResponseSchema,
+            schema: getProfileNotFoundResponseDtoSchema,
           },
         },
       },

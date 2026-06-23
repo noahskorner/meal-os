@@ -13,5 +13,6 @@ export default defineConfig({
     dir: "./unit",
     environment: "node",
     globals: false,
+    passWithNoTests: true,
   },
 });

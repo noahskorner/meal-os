@@ -1,41 +1,43 @@
 import { z } from "../lib/zod";
 
-export const errorResponseSchema = z
+export const errorResponseDtoSchema = z
   .object({
     message: z.string(),
   })
   .openapi("ErrorResponse");
 
-export type ErrorResponse = z.infer<typeof errorResponseSchema>;
+export type ErrorResponseDto = z.infer<typeof errorResponseDtoSchema>;
 
-export const validationErrorResponseSchema = z
+export const validationErrorResponseDtoSchema = z
   .object({
     message: z.string(),
     issues: z.array(z.string()),
   })
   .openapi("ValidationErrorResponse");
 
-export type ValidationErrorResponse = z.infer<
-  typeof validationErrorResponseSchema
+export type ValidationErrorResponseDto = z.infer<
+  typeof validationErrorResponseDtoSchema
 >;
 
-export function createErrorResponseSchema(
+export function createErrorResponseDtoSchema(
   schemaName: string,
   messageExample: string,
 ) {
-  return errorResponseSchema.extend({
-    message: z.string().openapi({
-      example: messageExample,
-    }),
-  }).openapi(schemaName);
+  return errorResponseDtoSchema
+    .extend({
+      message: z.string().openapi({
+        example: messageExample,
+      }),
+    })
+    .openapi(schemaName);
 }
 
-export function createValidationErrorResponseSchema(
+export function createValidationErrorResponseDtoSchema(
   schemaName: string,
   messageExample: string,
   issuesExample: string[],
 ) {
-  return validationErrorResponseSchema
+  return validationErrorResponseDtoSchema
     .extend({
       message: z.string().openapi({
         example: messageExample,

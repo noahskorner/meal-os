@@ -1,9 +1,9 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { listIngredientsRequestSchema } from "./list-ingredients.request";
 import {
-  listIngredientsResponseSchema,
-  listIngredientsValidationErrorResponseSchema,
-} from "./list-ingredients.response";
+  listIngredientsResponseDtoSchema,
+  listIngredientsValidationErrorResponseDtoSchema,
+} from "./list-ingredients.dto";
+import { listIngredientsRequestSchema } from "./list-ingredients.request";
 
 export function registerListIngredientsRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
@@ -21,7 +21,7 @@ export function registerListIngredientsRoute(registry: OpenAPIRegistry) {
         description: "A paginated list of ingredients.",
         content: {
           "application/json": {
-            schema: listIngredientsResponseSchema,
+            schema: listIngredientsResponseDtoSchema,
           },
         },
       },
@@ -29,7 +29,7 @@ export function registerListIngredientsRoute(registry: OpenAPIRegistry) {
         description: "The query parameters were invalid.",
         content: {
           "application/json": {
-            schema: listIngredientsValidationErrorResponseSchema,
+            schema: listIngredientsValidationErrorResponseDtoSchema,
           },
         },
       },

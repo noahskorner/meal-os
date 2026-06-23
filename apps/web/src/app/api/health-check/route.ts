@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  createHealthCheckValidationError,
-  getHealthCheck,
-} from "@/app/features/health-check/health-check.facade";
+import { createHealthCheckValidationError } from "@/app/features/health-check/health-check.controller";
 import { healthCheckRequestSchema } from "@/app/features/health-check/health-check.request";
+import { createServiceScope, SERVICE_TOKENS } from "@/app/features/services";
 
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const parsedQuery = healthCheckRequestSchema.safeParse(
     Object.fromEntries(request.nextUrl.searchParams),
   );
@@ -23,5 +21,11 @@ export function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(getHealthCheck(parsedQuery.data));
+  const scope = createServiceScope();
+  const healthCheckController = await scope.resolve(
+    SERVICE_TOKENS.healthCheckController,
+  );
+  const response = healthCheckController.get(parsedQuery.data);
+
+  return NextResponse.json(response.body, { status: response.status });
 }

@@ -1,22 +1,11 @@
 import type { HealthCheckRequest } from "./health-check.request";
-import {
-  healthCheckResponseSchema,
-  type HealthCheckValidationErrorResponse,
-  healthCheckValidationErrorResponseSchema,
-} from "./health-check.response";
-import { createHealthCheck } from "./health-check.service";
+import type { HealthCheckResponse } from "./health-check.response";
+import { HealthCheckService } from "./health-check.service";
 
-export function getHealthCheck(request: HealthCheckRequest) {
-  return healthCheckResponseSchema.parse(
-    createHealthCheck(request.includeTimestamp === "true"),
-  );
-}
+export class HealthCheckFacade {
+  constructor(private readonly healthCheckService: HealthCheckService) {}
 
-export function createHealthCheckValidationError(
-  issues: string[],
-): HealthCheckValidationErrorResponse {
-  return healthCheckValidationErrorResponseSchema.parse({
-    message: "Invalid query parameters.",
-    issues,
-  });
+  public get(request: HealthCheckRequest): HealthCheckResponse {
+    return this.healthCheckService.create(request.includeTimestamp === "true");
+  }
 }

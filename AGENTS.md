@@ -37,11 +37,13 @@ apps/web/src/app/api/health-check/route.ts
 apps/web/src/app/features/health-check/
   health-check.route.ts
   health-check.request.ts
+  health-check.dto.ts
   health-check.response.ts
   health-check.controller.ts
-  health-check.service.ts
   health-check.facade.ts
   health-check.model.ts
+  health-check.service.ts
+  health-check.repository.ts
 ```
 
 Route files should only:
@@ -57,13 +59,15 @@ Within a slice:
 
 - `*.route.ts`: feature-local route registration and OpenAPI metadata.
 - `*.request.ts`: Zod request schemas and inferred types.
-- `*.response.ts`: Zod response schemas and inferred types.
-- For list endpoints, prefer the shared paginated response helper at `apps/web/src/app/features/paginated.response.ts`.
-- `*.controller.ts`: feature entry point for transport-level orchestration such as authentication, authorization, and request-to-facade coordination.
+- `*.dto.ts`: external API contracts exposed outside the application, including Zod response schemas, inferred DTO types, and OpenAPI metadata schemas. Keep OpenAPI schema names stable and append `Dto` to TypeScript symbols, for example `GetProfileResponseDto`.
+- `*.response.ts`: internal response contracts returned by facades and consumed by controllers.
+- For list endpoint DTO schemas, prefer the shared paginated DTO helper at `apps/web/src/app/features/paginated.dto.ts`.
+- For list endpoint internal responses, prefer the shared paginated response type at `apps/web/src/app/features/paginated.response.ts`.
+- `*.controller.ts`: feature entry point for transport-level orchestration such as authentication, authorization, request-to-facade coordination, and mapping internal `Response` types to external `Dto` types.
 - `*.model.ts`: Internal only domain models.
 - `*.service.ts`: atomic business logic.
 - `*.repository.ts`: persistence operations when a slice needs storage.
-- `*.facade.ts`: feature-facing orchestration that coordinates services, repositories, and workflows after transport/auth concerns have been handled.
+- `*.facade.ts`: feature-facing orchestration that coordinates services, repositories, and workflows after transport/auth concerns have been handled. Facades return internal response contracts, never DTOs.
 
 Keep `apps/web/src/app/api/**/route.ts` for Next.js handlers, and use feature `*.route.ts` files for documentation and registration concerns.
 
@@ -71,7 +75,11 @@ For protected endpoints, prefer handling authentication and authorization in `*.
 
 For create commands, follow the CQRS command pattern: return `201 Created` on success and include a resource location or pointer to the newly created resource, for example a `Location` header and/or resource identifier in the response body.
 
-Keep dependencies flowing inward: `route.ts -> controller.ts -> facade.ts -> service.ts -> repository.ts`.
+Keep dependencies flowing inward: `route.ts -> *.controller.ts -> *.dto.ts -> *.response.ts -> *.facade.ts -> (*.service.ts, *.repository.ts)`, where the facade orchestrates calls to both the service and repository.
+
+DTOs must not flow inward past the controller layer. Controllers map facade `Response` values to external `Dto` values. Facades should never return DTOs directly.
+
+Treat services and repositories as the same inward layer. The facade creates or transforms domain models using service business logic, then persists or retrieves those models using the repository. Services must not call repositories directly, and repositories must not contain business logic.
 
 ### Dependency Injection
 
@@ -79,7 +87,7 @@ Keep dependencies flowing inward: `route.ts -> controller.ts -> facade.ts -> ser
 - Keep the web app composition root in a top-level `services.ts` file for the app, and register shared infrastructure there, for example Prisma clients, auth providers, slice controllers, and slice facades.
 - Route handlers should create a service scope, resolve the slice controller, and delegate the request to that controller.
 - Prefer constructor injection for controllers, facades, services, and repositories instead of importing infrastructure directly inside a slice.
-- Keep the dependency flow aligned with the slice architecture: `services.ts -> controller.ts -> facade.ts -> service.ts -> repository.ts`.
+- Keep the dependency flow aligned with the slice architecture: `services.ts -> controller.ts -> facade.ts -> (service.ts, repository.ts)`.
 
 ### Mobile App Architecture
 

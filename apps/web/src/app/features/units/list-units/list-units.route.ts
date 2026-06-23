@@ -1,5 +1,5 @@
 import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { listUnitsResponseSchema } from "./list-units.response";
+import { listUnitsResponseDtoSchema } from "./list-units.dto";
 
 export function registerListUnitsRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
@@ -13,7 +13,7 @@ export function registerListUnitsRoute(registry: OpenAPIRegistry) {
         description: "A list of units.",
         content: {
           "application/json": {
-            schema: listUnitsResponseSchema,
+            schema: listUnitsResponseDtoSchema,
           },
         },
       },

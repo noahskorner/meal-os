@@ -1,26 +1,26 @@
 import type { AuthProvider } from "@/app/features/auth/auth-provider";
 import type { CreateRecipeRequest } from "./create-recipe.request";
 import {
-  createCreateRecipeResponse,
-  createRecipeUnauthorizedResponse,
-  createRecipeValidationErrorResponse,
-  type CreateRecipeResponse,
-  type CreateRecipeUnauthorizedResponse,
-  type CreateRecipeValidationErrorResponse,
-} from "./create-recipe.response";
+  createCreateRecipeResponseDto,
+  createRecipeUnauthorizedResponseDto,
+  createRecipeValidationErrorResponseDto,
+  type CreateRecipeResponseDto,
+  type CreateRecipeUnauthorizedResponseDto,
+  type CreateRecipeValidationErrorResponseDto,
+} from "./create-recipe.dto";
 import { CreateRecipeFacade } from "./create-recipe.facade";
 
 export type CreateRecipeResult =
   | {
       status: 201;
-      body: CreateRecipeResponse;
+      body: CreateRecipeResponseDto;
       headers: {
         Location: string;
       };
     }
   | {
       status: 401;
-      body: CreateRecipeUnauthorizedResponse;
+      body: CreateRecipeUnauthorizedResponseDto;
     };
 
 export class CreateRecipeController {
@@ -29,15 +29,13 @@ export class CreateRecipeController {
     private readonly createRecipeFacade: CreateRecipeFacade,
   ) {}
 
-  public async post(
-    request: CreateRecipeRequest,
-  ): Promise<CreateRecipeResult> {
+  public async post(request: CreateRecipeRequest): Promise<CreateRecipeResult> {
     const currentUser = await this.authProvider.getCurrentUser();
 
     if (!currentUser) {
       return {
         status: 401,
-        body: createRecipeUnauthorizedResponse(),
+        body: createRecipeUnauthorizedResponseDto(),
       };
     }
 
@@ -52,13 +50,13 @@ export class CreateRecipeController {
       headers: {
         Location: location,
       },
-      body: createCreateRecipeResponse(recipe, location),
+      body: createCreateRecipeResponseDto(recipe, location),
     };
   }
 }
 
 export function createCreateRecipeValidationError(
   issues: string[],
-): CreateRecipeValidationErrorResponse {
-  return createRecipeValidationErrorResponse(issues);
+): CreateRecipeValidationErrorResponseDto {
+  return createRecipeValidationErrorResponseDto(issues);
 }

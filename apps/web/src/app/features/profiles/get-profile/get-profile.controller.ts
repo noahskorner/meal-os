@@ -1,35 +1,35 @@
 import type { AuthProvider } from "@/app/features/auth/auth-provider";
 import type { GetProfileRequest } from "./get-profile.request";
 import {
-  createProfileForbiddenResponse,
-  createProfileNotFoundResponse,
-  createProfileResponse,
-  createProfileUnauthorizedResponse,
-  createProfileValidationErrorResponse,
-  type GetProfileForbiddenResponse,
-  type GetProfileNotFoundResponse,
-  type GetProfileResponse,
-  type GetProfileUnauthorizedResponse,
-  type GetProfileValidationErrorResponse,
-} from "./get-profile.response";
+  createProfileForbiddenResponseDto,
+  createProfileNotFoundResponseDto,
+  createProfileResponseDto,
+  createProfileUnauthorizedResponseDto,
+  createProfileValidationErrorResponseDto,
+  type GetProfileForbiddenResponseDto,
+  type GetProfileNotFoundResponseDto,
+  type GetProfileResponseDto,
+  type GetProfileUnauthorizedResponseDto,
+  type GetProfileValidationErrorResponseDto,
+} from "./get-profile.dto";
 import { GetProfileFacade } from "./get-profile.facade";
 
 export type GetProfileResult =
   | {
       status: 200;
-      body: GetProfileResponse;
+      body: GetProfileResponseDto;
     }
   | {
       status: 401;
-      body: GetProfileUnauthorizedResponse;
+      body: GetProfileUnauthorizedResponseDto;
     }
   | {
       status: 403;
-      body: GetProfileForbiddenResponse;
+      body: GetProfileForbiddenResponseDto;
     }
   | {
       status: 404;
-      body: GetProfileNotFoundResponse;
+      body: GetProfileNotFoundResponseDto;
     };
 
 export class GetProfileController {
@@ -44,14 +44,14 @@ export class GetProfileController {
     if (!currentUser) {
       return {
         status: 401,
-        body: createProfileUnauthorizedResponse(),
+        body: createProfileUnauthorizedResponseDto(),
       };
     }
 
     if (currentUser.id !== request.id) {
       return {
         status: 403,
-        body: createProfileForbiddenResponse(),
+        body: createProfileForbiddenResponseDto(),
       };
     }
 
@@ -60,19 +60,19 @@ export class GetProfileController {
     if (!profile) {
       return {
         status: 404,
-        body: createProfileNotFoundResponse(request.id),
+        body: createProfileNotFoundResponseDto(request.id),
       };
     }
 
     return {
       status: 200,
-      body: createProfileResponse(profile),
+      body: createProfileResponseDto(profile),
     };
   }
 }
 
 export function createGetProfileValidationError(
   issues: string[],
-): GetProfileValidationErrorResponse {
-  return createProfileValidationErrorResponse(issues);
+): GetProfileValidationErrorResponseDto {
+  return createProfileValidationErrorResponseDto(issues);
 }
