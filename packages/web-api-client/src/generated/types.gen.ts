@@ -114,6 +114,23 @@ export type CreateRecipeStepRequest = {
   sortOrder: number | null;
 };
 
+export type ListRecipesResponse = {
+  items: Array<ListRecipeResponse>;
+};
+
+export type ListRecipeResponse = {
+  id: string;
+  name: string;
+  description?: string;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  servings?: number;
+};
+
+export type ListRecipesUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
 export type GetRecipeResponse = {
   id: string;
   name: string;

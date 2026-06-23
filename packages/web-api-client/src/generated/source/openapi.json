@@ -455,6 +455,68 @@
         },
         "required": ["text", "sortOrder"]
       },
+      "ListRecipesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListRecipeResponse"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "ListRecipeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Weeknight Pasta"
+          },
+          "description": {
+            "type": "string",
+            "example": "Simple pasta with garlic, olive oil, and chili flakes."
+          },
+          "prepTimeMinutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 10
+          },
+          "cookTimeMinutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 15
+          },
+          "servings": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 4
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "ListRecipesUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
       "GetRecipeResponse": {
         "type": "object",
         "properties": {
@@ -910,6 +972,34 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateRecipeUnauthorizedResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listRecipes",
+        "tags": ["Recipes"],
+        "summary": "List recipes",
+        "description": "Lists recipe metadata visible to the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Recipes visible to the authenticated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListRecipesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListRecipesUnauthorizedResponse"
                 }
               }
             }
