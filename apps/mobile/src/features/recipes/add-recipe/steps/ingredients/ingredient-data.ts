@@ -1,4 +1,4 @@
-import type { ListIngredientResponse } from "@/lib/web-api-client";
+import type { ListIngredientResponse } from "@repo/web-api-client";
 
 export type RecipeIngredient = ListIngredientResponse & {
   sortOrder: number;

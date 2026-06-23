@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import type { ListIngredientResponse } from "@/lib/web-api-client";
+import type { ListIngredientResponse } from "@repo/web-api-client";
 import { View } from "react-native";
 import { ReactNode } from "react";
 

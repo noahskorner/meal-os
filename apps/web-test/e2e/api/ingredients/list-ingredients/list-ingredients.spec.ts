@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { ListIngredientsResponse } from "@repo/web-api-client";
 
 test.describe("GET /api/ingredients", () => {
   test("returns a public paginated list of ingredients", async ({
@@ -9,9 +10,9 @@ test.describe("GET /api/ingredients", () => {
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("application/json");
 
-    const body = await response.json();
+    const body = (await response.json()) as ListIngredientsResponse;
     const bellPepper = body.items.find(
-      (ingredient: { name: string }) => ingredient.name === "Bell Pepper",
+      (ingredient) => ingredient.name === "Bell Pepper",
     );
 
     expect(body.page).toBe(1);
@@ -59,13 +60,20 @@ test.describe("GET /api/ingredients", () => {
     );
 
     expect(misspelledNameResponse.status()).toBe(200);
-    const misspelledNameBody = await misspelledNameResponse.json();
-    expect(misspelledNameBody.items[0].name).toBe("Bell Pepper");
+    const misspelledNameBody =
+      (await misspelledNameResponse.json()) as ListIngredientsResponse;
+    const misspelledNameMatch = misspelledNameBody.items[0];
+
+    expect(misspelledNameMatch).toBeDefined();
+    expect(misspelledNameMatch?.name).toBe("Bell Pepper");
     expect(misspelledNameBody.totalItems).toBeGreaterThan(0);
 
     expect(aliasResponse.status()).toBe(200);
-    const aliasBody = await aliasResponse.json();
-    expect(aliasBody.items[0].name).toBe("Bell Pepper");
+    const aliasBody = (await aliasResponse.json()) as ListIngredientsResponse;
+    const aliasMatch = aliasBody.items[0];
+
+    expect(aliasMatch).toBeDefined();
+    expect(aliasMatch?.name).toBe("Bell Pepper");
     expect(aliasBody.totalItems).toBe(1);
   });
 });

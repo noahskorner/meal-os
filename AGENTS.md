@@ -12,6 +12,7 @@
   - `packages/eslint-config` — Shared ESLint configuration
   - `packages/typescript-config` — Shared TypeScript configuration and base `tsconfig` presets
   - `packages/db` — Prisma schema, migrations, and generated client
+  - `packages/web-api-client` — Generated typed SDK for the `apps/web` OpenAPI API
 - Web application structure:
   - `apps/web/public` — Static assets
   - `apps/web/src/app` — Next.js App Router routes and layouts
@@ -155,6 +156,16 @@ Treat the CLI as the source of truth for installing and updating reusable React 
 - Do not override library-provided semantic tokens or variants.
 - Add new variants instead of changing existing ones.
 
+## API Client Generation
+
+- The shared web API SDK lives in `packages/web-api-client` and is consumed as `@repo/web-api-client`.
+- Run `npm run generate:client` from the repository root after changing OpenAPI route metadata, DTO schemas, request schemas, or endpoint paths in `apps/web`.
+- The generator imports the in-process OpenAPI document from `apps/web/src/app/features/openapi/openapi-document.ts`, writes the generated spec snapshot under `packages/web-api-client/src/generated/source`, and runs `@hey-api/openapi-ts`.
+- Generated client code, models, request/response types, and service functions are isolated under `packages/web-api-client/src/generated`. Do not edit files in that folder manually.
+- Export public SDK surface from `packages/web-api-client/src/index.ts`; avoid importing generated files directly from applications.
+- Add stable `operationId` values in feature `*.route.ts` files so generated service function names remain predictable.
+- Applications should keep app-specific configuration such as base URLs and auth headers in local adapters, but import generated service functions and DTO/request/response types from `@repo/web-api-client`.
+
 ## Build, Test, and Development Commands
 
 Run commands from the repository root unless you need a package-specific script.
@@ -168,6 +179,7 @@ Run commands from the repository root unless you need a package-specific script.
 - `npm run lint`: run ESLint across the repo.
 - `npm run check-types`: run TypeScript checks across workspaces.
 - `npm run format`: format `*.ts`, `*.tsx`, and `*.md` files with Prettier.
+- `npm run generate:client`: regenerate the shared `@repo/web-api-client` SDK from the `apps/web` OpenAPI document.
 - `npm run dev -- --filter=web`: run only the web app when you do not need the full workspace.
 - `npm run dev -- --filter=mobile`: run only the mobile app through Turborepo when you do not need the full workspace.
 - `npm run start --workspace=mobile`: start the Expo app directly.

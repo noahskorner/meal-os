@@ -1,0 +1,25 @@
+{
+  "name": "@repo/web-api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check-types": "tsc --noEmit",
+    "generate": "tsx --tsconfig ../../apps/web/tsconfig.json ./tools/write-openapi-document.ts && openapi-ts",
+    "generate:client": "npm run generate"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.99.0",
+    "@repo/typescript-config": "*",
+    "tsx": "^4.20.6",
+    "typescript": "5.9.2"
+  }
+}

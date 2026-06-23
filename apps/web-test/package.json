@@ -14,6 +14,7 @@
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@repo/typescript-config": "*",
+    "@repo/web-api-client": "*",
     "@types/node": "^22.15.3",
     "@types/pg": "^8.15.6",
     "pg": "^8.16.3",

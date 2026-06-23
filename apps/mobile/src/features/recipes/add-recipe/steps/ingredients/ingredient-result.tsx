@@ -1,5 +1,5 @@
 import { Icon } from "@/components/ui/icon";
-import type { ListIngredientResponse } from "@/lib/web-api-client";
+import type { ListIngredientResponse } from "@repo/web-api-client";
 import { Plus } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { IngredientCard } from "./ingredient-card";
@@ -9,10 +9,7 @@ type IngredientResultProps = {
   onAdd: () => void;
 };
 
-export function IngredientResult({
-  ingredient,
-  onAdd,
-}: IngredientResultProps) {
+export function IngredientResult({ ingredient, onAdd }: IngredientResultProps) {
   return (
     <IngredientCard
       ingredient={ingredient}

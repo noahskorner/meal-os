@@ -1,14 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import {
-  createWebClient,
-  type components,
-  type WebClientOptions,
-} from "@/lib/web-client";
-
-export type ListIngredientResponse =
-  components["schemas"]["ListIngredientResponse"];
-export type ListIngredientsResponse =
-  components["schemas"]["ListIngredientsResponse"];
+import { createClient, type Client, type Config } from "@repo/web-api-client";
 
 const webUrl = process.env.EXPO_PUBLIC_WEB_URL;
 
@@ -16,13 +7,17 @@ if (!webUrl) {
   throw new Error("Missing EXPO_PUBLIC_WEB_URL for the mobile app.");
 }
 
-export function createWebApiClient(options: WebClientOptions = {}) {
+export type WebApiClient = Client;
+export type WebApiClientOptions = Config;
+
+export function createWebApiClient(options: WebApiClientOptions = {}) {
   const baseFetch = options.fetch ?? globalThis.fetch;
 
-  return createWebClient({
+  return createClient({
     baseUrl: webUrl,
     ...options,
-    async fetch(request) {
+    async fetch(input, init) {
+      const request = new Request(input, init);
       const headers = new Headers(request.headers);
       const {
         data: { session },

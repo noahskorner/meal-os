@@ -1,0 +1,761 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MealOS Web API",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for the MealOS web application API."
+  },
+  "components": {
+    "schemas": {
+      "HealthCheckResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"],
+            "example": "ok"
+          },
+          "service": {
+            "type": "string",
+            "enum": ["web"],
+            "example": "web"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-19T14:00:00.000Z"
+          }
+        },
+        "required": ["status", "service"]
+      },
+      "HealthCheckValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Invalid query parameters."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "includeTimestamp: Invalid option: expected one of \"true\"|\"false\""
+            ]
+          }
+        },
+        "required": ["message", "issues"]
+      },
+      "ListIngredientsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListIngredientResponse"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 20
+          },
+          "totalItems": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 120
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 6
+          }
+        },
+        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
+      },
+      "ListIngredientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Bell Pepper"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Capsicum", "Sweet Pepper"]
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "550e8400-e29b-41d4-a716-446655440001"
+              },
+              "name": {
+                "type": "string",
+                "example": "Produce"
+              }
+            },
+            "required": ["id", "name"]
+          },
+          "defaultUnit": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "550e8400-e29b-41d4-a716-446655440002"
+              },
+              "name": {
+                "type": "string",
+                "example": "each"
+              },
+              "abbreviation": {
+                "type": "string",
+                "example": "ea"
+              },
+              "type": {
+                "type": "string",
+                "example": "COUNT"
+              }
+            },
+            "required": ["id", "name", "abbreviation", "type"]
+          }
+        },
+        "required": ["id", "name", "aliases", "category", "defaultUnit"]
+      },
+      "ListIngredientsValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid query parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["page: Too small: expected number to be >0"]
+              }
+            }
+          }
+        ]
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["message", "issues"]
+      },
+      "GetProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": ["id"]
+      },
+      "GetProfileValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid route parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["id: Invalid UUID"]
+              }
+            }
+          }
+        ]
+      },
+      "GetProfileUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["message"]
+      },
+      "GetProfileForbiddenResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "You can only access your own profile."
+              }
+            }
+          }
+        ]
+      },
+      "GetProfileNotFoundResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Profile not found."
+              }
+            }
+          }
+        ]
+      },
+      "CreateRecipeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "location": {
+            "type": "string",
+            "example": "/api/recipes/550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": ["id", "location"]
+      },
+      "CreateRecipeValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid request body."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "name: Too small: expected string to have >=1 characters"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CreateRecipeUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
+      "CreateRecipeRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Weeknight Pasta"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "example": "Simple pasta with garlic, olive oil, and chili flakes."
+          },
+          "prepTimeMinutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1440,
+            "example": 10
+          },
+          "cookTimeMinutes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1440,
+            "example": 15
+          },
+          "servings": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 1000,
+            "example": 4
+          },
+          "recipeIngredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateRecipeIngredientRequest"
+            },
+            "example": [
+              {
+                "ingredientId": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Garlic",
+                "quantity": 2,
+                "unitId": "550e8400-e29b-41d4-a716-446655440001",
+                "preparation": "minced",
+                "isOptional": false
+              }
+            ]
+          },
+          "recipeSteps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateRecipeStepRequest"
+            },
+            "example": [
+              {
+                "text": "Saute the garlic until fragrant.",
+                "sortOrder": 0
+              }
+            ]
+          }
+        },
+        "required": ["name"]
+      },
+      "CreateRecipeIngredientRequest": {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Garlic"
+          },
+          "quantity": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 99999999.99,
+            "example": 2
+          },
+          "unitId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "preparation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "example": "minced"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "example": "Adjust to taste."
+          },
+          "isOptional": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": ["ingredientId", "name"]
+      },
+      "CreateRecipeStepRequest": {
+        "type": "object",
+        "properties": {
+          "ingredientId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000,
+            "example": "Saute the garlic until fragrant."
+          },
+          "sortOrder": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 1000,
+            "example": 0
+          }
+        },
+        "required": ["text", "sortOrder"]
+      },
+      "ListUnitsResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/UnitSummary"
+        }
+      },
+      "UnitSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "example": "cup"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "cup"
+          },
+          "type": {
+            "type": "string",
+            "example": "VOLUME"
+          }
+        },
+        "required": ["id", "name", "abbreviation", "type"]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/health-check": {
+      "get": {
+        "operationId": "healthCheck",
+        "tags": ["System"],
+        "summary": "Health check",
+        "description": "Returns the basic status of the web application.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": ["true", "false"],
+              "description": "Set to true to include a timestamp in the response.",
+              "example": "true"
+            },
+            "required": false,
+            "description": "Set to true to include a timestamp in the response.",
+            "name": "includeTimestamp",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The application is healthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request query parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheckValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ingredients": {
+      "get": {
+        "operationId": "listIngredients",
+        "tags": ["Ingredients"],
+        "summary": "List ingredients",
+        "description": "Returns a paginated list of ingredients with aliases, category, and default unit details.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "A fuzzy, case-insensitive search across ingredient names and aliases.",
+              "example": "bell peper"
+            },
+            "required": false,
+            "description": "A fuzzy, case-insensitive search across ingredient names and aliases.",
+            "name": "searchTerm",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1,
+              "description": "The page number to return.",
+              "example": 1
+            },
+            "required": false,
+            "description": "The page number to return.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "The number of ingredients to return per page.",
+              "example": 20
+            },
+            "required": false,
+            "description": "The number of ingredients to return per page.",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of ingredients.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListIngredientsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The query parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListIngredientsValidationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/{id}": {
+      "get": {
+        "operationId": "getProfile",
+        "tags": ["Profiles"],
+        "summary": "Get profile",
+        "description": "Returns a profile by ID.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The profile ID.",
+              "example": "550e8400-e29b-41d4-a716-446655440000"
+            },
+            "required": true,
+            "description": "The profile ID.",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The profile was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The route parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProfileValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProfileUnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The authenticated user cannot access this profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProfileForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The profile was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetProfileNotFoundResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recipes": {
+      "post": {
+        "operationId": "createRecipe",
+        "tags": ["Recipes"],
+        "summary": "Create recipe",
+        "description": "Creates a recipe for the authenticated user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRecipeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The recipe was created.",
+            "headers": {
+              "Location": {
+                "description": "Location of the created recipe resource.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRecipeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body was invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRecipeValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRecipeUnauthorizedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/units": {
+      "get": {
+        "operationId": "listUnits",
+        "tags": ["Units"],
+        "summary": "List units",
+        "description": "Returns all units.",
+        "responses": {
+          "200": {
+            "description": "A list of units.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListUnitsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

@@ -5,6 +5,7 @@ export function registerListUnitsRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
     path: "/api/units",
+    operationId: "listUnits",
     tags: ["Units"],
     summary: "List units",
     description: "Returns all units.",

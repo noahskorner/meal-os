@@ -1,7 +1,8 @@
+import { webApiClient } from "@/lib/web-api-client";
 import {
-  webApiClient,
+  listIngredients,
   type ListIngredientResponse,
-} from "@/lib/web-api-client";
+} from "@repo/web-api-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createIngredient,
@@ -54,15 +55,12 @@ export function useSearchIngredients() {
 
     try {
       const normalizedSearchTerm = searchTerm.trim();
-      const { data, error } = await webApiClient.GET("/api/ingredients", {
-        params: {
-          query: {
-            page: 1,
-            pageSize,
-            ...(normalizedSearchTerm
-              ? { searchTerm: normalizedSearchTerm }
-              : {}),
-          },
+      const { data, error } = await listIngredients({
+        client: webApiClient,
+        query: {
+          page: 1,
+          pageSize,
+          ...(normalizedSearchTerm ? { searchTerm: normalizedSearchTerm } : {}),
         },
       });
 
@@ -70,7 +68,7 @@ export function useSearchIngredients() {
         return;
       }
 
-      if (error) {
+      if (error || !data) {
         setIngredients([]);
         setError("Unable to load ingredients.");
         return;

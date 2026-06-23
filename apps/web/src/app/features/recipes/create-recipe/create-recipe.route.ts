@@ -10,6 +10,7 @@ export function registerCreateRecipeRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "post",
     path: "/api/recipes",
+    operationId: "createRecipe",
     tags: ["Recipes"],
     summary: "Create recipe",
     description: "Creates a recipe for the authenticated user.",

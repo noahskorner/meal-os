@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { ListUnitsResponse } from "@repo/web-api-client";
 
 test.describe("GET /api/units", () => {
   test("returns all units", async ({ request }) => {
@@ -7,7 +8,7 @@ test.describe("GET /api/units", () => {
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("application/json");
 
-    const body = await response.json();
+    const body = (await response.json()) as ListUnitsResponse;
 
     expect(Array.isArray(body)).toBe(true);
     expect(body).toHaveLength(47);

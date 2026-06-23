@@ -1,28 +1,26 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import type {
+  CreateRecipeRequest,
+  CreateRecipeResponse,
+  ListIngredientResponse,
+  ListIngredientsResponse,
+} from "@repo/web-api-client";
 import { MOCK_AUTH_USER_ID_HEADER } from "../../../../../web/src/app/features/auth/mock-auth.constants";
 import { E2E_TEST_USERS } from "../../../test-users";
-
-type IngredientSearchItem = {
-  id: string;
-  name: string;
-  defaultUnit: {
-    id: string;
-  };
-};
 
 async function getIngredient(
   request: APIRequestContext,
   searchTerm: string,
-): Promise<IngredientSearchItem> {
+): Promise<ListIngredientResponse> {
   const response = await request.get(
     `/api/ingredients?searchTerm=${encodeURIComponent(searchTerm)}`,
   );
-  const body = await response.json();
-  const ingredient = body.items.find(
-    (item: IngredientSearchItem) => item.name === searchTerm,
-  );
+  const body = (await response.json()) as ListIngredientsResponse;
+  const ingredient = body.items.find((item) => item.name === searchTerm);
 
-  expect(ingredient).toBeTruthy();
+  if (!ingredient) {
+    throw new Error(`Expected ${searchTerm} to exist in ingredient search.`);
+  }
 
   return ingredient;
 }
@@ -32,42 +30,44 @@ test.describe("POST /api/recipes", () => {
     const garlic = await getIngredient(request, "Garlic");
     const oliveOil = await getIngredient(request, "Olive Oil");
 
+    const requestBody: CreateRecipeRequest = {
+      name: "Weeknight Pasta",
+      description: "Simple pasta with garlic and olive oil.",
+      prepTimeMinutes: 10,
+      cookTimeMinutes: 15,
+      servings: 4,
+      recipeIngredients: [
+        {
+          ingredientId: garlic.id,
+          name: garlic.name,
+          quantity: 2,
+          unitId: garlic.defaultUnit.id,
+          preparation: "minced",
+          isOptional: false,
+        },
+        {
+          ingredientId: oliveOil.id,
+          name: oliveOil.name,
+          quantity: 1,
+          unitId: oliveOil.defaultUnit.id,
+          note: "Use extra virgin if available.",
+        },
+      ],
+      recipeSteps: [
+        {
+          text: "Saute the garlic in olive oil until fragrant.",
+          sortOrder: 0,
+          ingredientId: garlic.id,
+        },
+        {
+          text: "Toss with cooked pasta and serve warm.",
+          sortOrder: 1,
+        },
+      ],
+    };
+
     const response = await request.post("/api/recipes", {
-      data: {
-        name: "Weeknight Pasta",
-        description: "Simple pasta with garlic and olive oil.",
-        prepTimeMinutes: 10,
-        cookTimeMinutes: 15,
-        servings: 4,
-        recipeIngredients: [
-          {
-            ingredientId: garlic.id,
-            name: garlic.name,
-            quantity: 2,
-            unitId: garlic.defaultUnit.id,
-            preparation: "minced",
-            isOptional: false,
-          },
-          {
-            ingredientId: oliveOil.id,
-            name: oliveOil.name,
-            quantity: 1,
-            unitId: oliveOil.defaultUnit.id,
-            note: "Use extra virgin if available.",
-          },
-        ],
-        recipeSteps: [
-          {
-            text: "Saute the garlic in olive oil until fragrant.",
-            sortOrder: 0,
-            ingredientId: garlic.id,
-          },
-          {
-            text: "Toss with cooked pasta and serve warm.",
-            sortOrder: 1,
-          },
-        ],
-      },
+      data: requestBody,
       headers: {
         [MOCK_AUTH_USER_ID_HEADER]: E2E_TEST_USERS.primary.id,
       },
@@ -76,7 +76,7 @@ test.describe("POST /api/recipes", () => {
     expect(response.status()).toBe(201);
     expect(response.headers()["content-type"]).toContain("application/json");
 
-    const body = await response.json();
+    const body = (await response.json()) as CreateRecipeResponse;
     const location = response.headers()["location"];
 
     expect(body.id).toMatch(
@@ -116,7 +116,7 @@ test.describe("POST /api/recipes", () => {
 
     expect(response.status()).toBe(201);
 
-    const body = await response.json();
+    const body = (await response.json()) as CreateRecipeResponse;
     const location = response.headers()["location"];
 
     expect(location).toBeTruthy();

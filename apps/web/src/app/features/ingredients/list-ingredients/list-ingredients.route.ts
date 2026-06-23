@@ -9,6 +9,7 @@ export function registerListIngredientsRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
     path: "/api/ingredients",
+    operationId: "listIngredients",
     tags: ["Ingredients"],
     summary: "List ingredients",
     description:

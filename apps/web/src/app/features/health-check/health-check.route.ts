@@ -9,6 +9,7 @@ export function registerHealthCheckRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
     path: "/api/health-check",
+    operationId: "healthCheck",
     tags: ["System"],
     summary: "Health check",
     description: "Returns the basic status of the web application.",

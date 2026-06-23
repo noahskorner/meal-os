@@ -12,6 +12,7 @@ export function registerGetProfileRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
     path: "/api/profiles/{id}",
+    operationId: "getProfile",
     tags: ["Profiles"],
     summary: "Get profile",
     description: "Returns a profile by ID.",
