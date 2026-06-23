@@ -114,6 +114,23 @@ export type CreateRecipeStepRequest = {
   sortOrder: number | null;
 };
 
+export type ListRecipesResponse = {
+  items: Array<ListRecipeResponse>;
+};
+
+export type ListRecipeResponse = {
+  id: string;
+  name: string;
+  description?: string;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  servings?: number;
+};
+
+export type ListRecipesUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
 export type ListUnitsResponse = Array<UnitSummary>;
 
 export type UnitSummary = {
@@ -236,6 +253,32 @@ export type GetProfileResponses = {
 
 export type GetProfileResponse2 =
   GetProfileResponses[keyof GetProfileResponses];
+
+export type ListRecipesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/recipes";
+};
+
+export type ListRecipesErrors = {
+  /**
+   * The request was unauthenticated.
+   */
+  401: ListRecipesUnauthorizedResponse;
+};
+
+export type ListRecipesError = ListRecipesErrors[keyof ListRecipesErrors];
+
+export type ListRecipesResponses = {
+  /**
+   * Recipes visible to the authenticated user.
+   */
+  200: ListRecipesResponse;
+};
+
+export type ListRecipesResponse2 =
+  ListRecipesResponses[keyof ListRecipesResponses];
 
 export type CreateRecipeData = {
   body: CreateRecipeRequest;

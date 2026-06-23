@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  createCreateRecipeValidationError,
-} from "@/app/features/recipes/create-recipe/create-recipe.controller";
+import { createCreateRecipeValidationError } from "@/app/features/recipes/create-recipe/create-recipe.controller";
 import { createRecipeRequestSchema } from "@/app/features/recipes/create-recipe/create-recipe.request";
 import { createServiceScope, SERVICE_TOKENS } from "@/app/features/services";
 
 export const dynamic = "force-dynamic";
+
+export async function GET() {
+  const scope = createServiceScope();
+  const listRecipesController = await scope.resolve(
+    SERVICE_TOKENS.listRecipesController,
+  );
+  const response = await listRecipesController.get();
+
+  return NextResponse.json(response.body, {
+    status: response.status,
+  });
+}
 
 export async function POST(request: NextRequest) {
   const json = await request.json().catch(() => null);

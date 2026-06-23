@@ -21,6 +21,9 @@ import type {
   ListIngredientsData,
   ListIngredientsErrors,
   ListIngredientsResponses,
+  ListRecipesData,
+  ListRecipesErrors,
+  ListRecipesResponses,
   ListUnitsData,
   ListUnitsResponses,
 } from "./types.gen";
@@ -88,6 +91,20 @@ export const getProfile = <ThrowOnError extends boolean = false>(
     GetProfileErrors,
     ThrowOnError
   >({ url: "/api/profiles/{id}", ...options });
+
+/**
+ * List recipes
+ *
+ * Lists recipe metadata visible to the authenticated user.
+ */
+export const listRecipes = <ThrowOnError extends boolean = false>(
+  options?: Options<ListRecipesData, ThrowOnError>,
+): RequestResult<ListRecipesResponses, ListRecipesErrors, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListRecipesResponses,
+    ListRecipesErrors,
+    ThrowOnError
+  >({ url: "/api/recipes", ...options });
 
 /**
  * Create recipe
