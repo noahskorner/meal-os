@@ -116,6 +116,10 @@ export type CreateRecipeStepRequest = {
 
 export type ListRecipesResponse = {
   items: Array<ListRecipeResponse>;
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
 };
 
 export type ListRecipeResponse = {
@@ -125,6 +129,11 @@ export type ListRecipeResponse = {
   prepTimeMinutes?: number;
   cookTimeMinutes?: number;
   servings?: number;
+};
+
+export type ListRecipesValidationErrorResponse = ValidationErrorResponse & {
+  message?: string;
+  issues?: Array<string>;
 };
 
 export type ListRecipesUnauthorizedResponse = ErrorResponse & {
@@ -299,11 +308,24 @@ export type GetProfileResponse2 =
 export type ListRecipesData = {
   body?: never;
   path?: never;
-  query?: never;
+  query?: {
+    /**
+     * The page number to return.
+     */
+    page?: number;
+    /**
+     * The number of recipes to return per page.
+     */
+    pageSize?: number;
+  };
   url: "/api/recipes";
 };
 
 export type ListRecipesErrors = {
+  /**
+   * The query parameters were invalid.
+   */
+  400: ListRecipesValidationErrorResponse;
   /**
    * The request was unauthenticated.
    */
@@ -314,7 +336,7 @@ export type ListRecipesError = ListRecipesErrors[keyof ListRecipesErrors];
 
 export type ListRecipesResponses = {
   /**
-   * Recipes visible to the authenticated user.
+   * Paginated recipes visible to the authenticated user.
    */
   200: ListRecipesResponse;
 };

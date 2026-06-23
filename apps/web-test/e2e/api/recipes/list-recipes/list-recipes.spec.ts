@@ -31,6 +31,10 @@ test.describe("GET /api/recipes", () => {
 
     const result = await listRecipes({
       client: apiClient,
+      query: {
+        page: 1,
+        pageSize: 20,
+      },
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
     });
 
@@ -38,6 +42,10 @@ test.describe("GET /api/recipes", () => {
     expect(result.response?.headers.get("content-type")).toContain(
       "application/json",
     );
+    expect(result.data?.page).toBe(1);
+    expect(result.data?.pageSize).toBe(20);
+    expect(result.data?.totalItems).toBeGreaterThanOrEqual(1);
+    expect(result.data?.totalPages).toBeGreaterThanOrEqual(1);
     expect(result.data?.items).toEqual(
       expect.arrayContaining([
         {
@@ -74,6 +82,10 @@ test.describe("GET /api/recipes", () => {
 
     const result = await listRecipes({
       client: apiClient,
+      query: {
+        page: 1,
+        pageSize: 20,
+      },
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
     });
     const recipeIds = result.data?.items.map((recipe) => recipe.id) ?? [];
@@ -83,11 +95,94 @@ test.describe("GET /api/recipes", () => {
     expect(recipeIds).not.toContain(hiddenRecipe.data?.id);
   });
 
+  test("authenticated user can page through their recipes", async ({
+    baseURL,
+  }) => {
+    const apiClient = createTestApiClient(baseURL);
+    const groupName = `! Paged Pasta ${crypto.randomUUID()}`;
+    const createdRecipes = await Promise.all(
+      ["03", "01", "02"].map((suffix) =>
+        createRecipe({
+          client: apiClient,
+          body: createRecipeRequest(`${groupName} ${suffix}`),
+          headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+        }),
+      ),
+    );
+
+    for (const createdRecipe of createdRecipes) {
+      expect(createdRecipe.response?.status).toBe(201);
+    }
+
+    const firstPage = await listRecipes({
+      client: apiClient,
+      query: {
+        page: 1,
+        pageSize: 2,
+      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+    const secondPage = await listRecipes({
+      client: apiClient,
+      query: {
+        page: 2,
+        pageSize: 2,
+      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+    const firstPageRecipeIds =
+      firstPage.data?.items.map((recipe) => recipe.id) ?? [];
+    const secondPageRecipeIds =
+      secondPage.data?.items.map((recipe) => recipe.id) ?? [];
+
+    expect(firstPage.response?.status).toBe(200);
+    expect(firstPage.data?.page).toBe(1);
+    expect(firstPage.data?.pageSize).toBe(2);
+    expect(firstPage.data?.items).toHaveLength(2);
+    expect(firstPage.data?.totalItems).toBeGreaterThanOrEqual(3);
+    expect(firstPage.data?.totalPages).toBeGreaterThanOrEqual(2);
+
+    expect(secondPage.response?.status).toBe(200);
+    expect(secondPage.data?.page).toBe(2);
+    expect(secondPage.data?.pageSize).toBe(2);
+    expect(secondPage.data?.items.length).toBeLessThanOrEqual(2);
+    for (const recipeId of secondPageRecipeIds) {
+      expect(firstPageRecipeIds).not.toContain(recipeId);
+    }
+  });
+
+  test("rejects invalid query parameters", async ({ baseURL }) => {
+    const result = await listRecipes({
+      client: createTestApiClient(baseURL),
+      query: {
+        page: 0,
+        pageSize: 101,
+      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+
+    expect(result.response?.status).toBe(400);
+    expect(result.response?.headers.get("content-type")).toContain(
+      "application/json",
+    );
+    expect(result.error).toEqual({
+      message: "Invalid query parameters.",
+      issues: [
+        "page: Too small: expected number to be >0",
+        "pageSize: Too big: expected number to be <=100",
+      ],
+    });
+  });
+
   test("unauthenticated requests receive 401 unauthorized", async ({
     baseURL,
   }) => {
     const result = await listRecipes({
       client: createTestApiClient(baseURL),
+      query: {
+        page: 1,
+        pageSize: 20,
+      },
     });
 
     expect(result.response?.status).toBe(401);

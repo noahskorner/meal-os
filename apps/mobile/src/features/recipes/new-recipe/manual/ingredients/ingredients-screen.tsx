@@ -37,38 +37,37 @@ export function IngredientsScreen() {
       keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps="handled"
     >
-      <View className="gap-5">
-        <View className="mb-5 gap-5">
-          <StepTitle
-            title="Ingredients"
-            subtitle="Search and add everything for this recipe."
-          />
+      <View className="gap-3">
+        <StepTitle
+          title="Ingredients"
+          subtitle="Search and add everything for this recipe."
+        />
 
-          <View className="gap-2">
-            <View className="relative">
-              <Input
-                value={query}
-                onChangeText={searchIngredients}
-                placeholder="Search ingredients"
-                className="bg-background pl-10 pr-10"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-              <View className="absolute left-3 top-2.5">
-                <Icon as={Search} size={18} className="text-muted-foreground" />
-              </View>
-              {query ? (
-                <Pressable
-                  className="absolute right-3 top-2.5"
-                  onPress={clearIngredients}
-                  hitSlop={8}
-                >
-                  <Icon as={X} size={18} className="text-muted-foreground" />
-                </Pressable>
-              ) : null}
+        <View className="gap-2">
+          <View className="relative">
+            <Input
+              value={query}
+              onChangeText={searchIngredients}
+              placeholder="Search ingredients"
+              className="bg-background pl-10 pr-10"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <View className="absolute left-3 top-2.5">
+              <Icon as={Search} size={18} className="text-muted-foreground" />
             </View>
+            {query ? (
+              <Pressable
+                className="absolute right-3 top-2.5"
+                onPress={clearIngredients}
+                hitSlop={8}
+              >
+                <Icon as={X} size={18} className="text-muted-foreground" />
+              </Pressable>
+            ) : null}
           </View>
-
+        </View>
+        <View className="gap-3">
           {recipeIngredients.length > 0 ? (
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-semibold text-foreground">
@@ -81,21 +80,20 @@ export function IngredientsScreen() {
               </Pressable>
             </View>
           ) : null}
+          {recipeIngredients.length > 0 ? (
+            <View className="gap-3">
+              {recipeIngredients.map((ingredient) => (
+                <RecipeIngredientRow
+                  key={ingredient.id}
+                  ingredient={ingredient}
+                  onRemove={() => removeIngredient(ingredient.id)}
+                />
+              ))}
+            </View>
+          ) : null}
         </View>
 
-        {recipeIngredients.length > 0 ? (
-          <View className="gap-3">
-            {recipeIngredients.map((ingredient) => (
-              <RecipeIngredientRow
-                key={ingredient.id}
-                ingredient={ingredient}
-                onRemove={() => removeIngredient(ingredient.id)}
-              />
-            ))}
-          </View>
-        ) : null}
-
-        <View className="mt-5 gap-5">
+        <View className="gap-5">
           <View className="gap-3">
             <Text className="text-sm font-semibold text-foreground">
               Search Results

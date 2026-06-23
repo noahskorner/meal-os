@@ -1,5 +1,12 @@
 import { z } from "../../../lib/zod";
-import { createErrorResponseDtoSchema } from "../../error.dto";
+import {
+  createErrorResponseDtoSchema,
+  createValidationErrorResponseDtoSchema,
+} from "../../error.dto";
+import {
+  createPaginatedResponseDtoSchema,
+  type PaginatedResponseDto,
+} from "../../paginated.dto";
 import type { ListRecipesResponse } from "./list-recipes.response";
 
 export const listRecipeResponseDtoSchema = z
@@ -25,19 +32,15 @@ export const listRecipeResponseDtoSchema = z
   })
   .openapi("ListRecipeResponse");
 
-export type ListRecipeResponseDto = z.infer<
-  typeof listRecipeResponseDtoSchema
->;
+export type ListRecipeResponseDto = z.infer<typeof listRecipeResponseDtoSchema>;
 
-export const listRecipesResponseDtoSchema = z
-  .object({
-    items: z.array(listRecipeResponseDtoSchema),
-  })
-  .openapi("ListRecipesResponse");
+export const listRecipesResponseDtoSchema = createPaginatedResponseDtoSchema(
+  listRecipeResponseDtoSchema,
+  "ListRecipesResponse",
+);
 
-export type ListRecipesResponseDto = z.infer<
-  typeof listRecipesResponseDtoSchema
->;
+export type ListRecipesResponseDto =
+  PaginatedResponseDto<ListRecipeResponseDto>;
 
 export const listRecipesUnauthorizedResponseDtoSchema =
   createErrorResponseDtoSchema(
@@ -49,6 +52,17 @@ export type ListRecipesUnauthorizedResponseDto = z.infer<
   typeof listRecipesUnauthorizedResponseDtoSchema
 >;
 
+export const listRecipesValidationErrorResponseDtoSchema =
+  createValidationErrorResponseDtoSchema(
+    "ListRecipesValidationErrorResponse",
+    "Invalid query parameters.",
+    ["page: Too small: expected number to be >0"],
+  );
+
+export type ListRecipesValidationErrorResponseDto = z.infer<
+  typeof listRecipesValidationErrorResponseDtoSchema
+>;
+
 export function createListRecipesResponseDto(
   response: ListRecipesResponse,
 ): ListRecipesResponseDto {
@@ -58,5 +72,14 @@ export function createListRecipesResponseDto(
 export function createListRecipesUnauthorizedResponseDto(): ListRecipesUnauthorizedResponseDto {
   return listRecipesUnauthorizedResponseDtoSchema.parse({
     message: "Authentication required.",
+  });
+}
+
+export function createListRecipesValidationErrorResponseDto(
+  issues: string[],
+): ListRecipesValidationErrorResponseDto {
+  return listRecipesValidationErrorResponseDtoSchema.parse({
+    message: "Invalid query parameters.",
+    issues,
   });
 }

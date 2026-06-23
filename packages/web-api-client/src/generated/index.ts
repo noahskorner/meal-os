@@ -68,6 +68,7 @@ export type {
   ListRecipesResponse2,
   ListRecipesResponses,
   ListRecipesUnauthorizedResponse,
+  ListRecipesValidationErrorResponse,
   ListUnitsData,
   ListUnitsResponse,
   ListUnitsResponse2,

@@ -1,19 +1,27 @@
 import type { PrismaClient } from "@repo/db";
 import type { ListRecipeModel } from "./list-recipes.model";
 
+export type FindManyRecipesParams = {
+  createdById: string;
+  skip: number;
+  take: number;
+};
+
 export class ListRecipesRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  public async findManyByCreatedById(
-    createdById: string,
+  public async findMany(
+    params: FindManyRecipesParams,
   ): Promise<ListRecipeModel[]> {
     const recipes = await this.prisma.recipe.findMany({
       where: {
-        createdById,
+        createdById: params.createdById,
       },
       orderBy: {
         name: "asc",
       },
+      skip: params.skip,
+      take: params.take,
       select: {
         id: true,
         name: true,
@@ -32,5 +40,13 @@ export class ListRecipesRepository {
       cookTimeMinutes: recipe.cookTimeMinutes ?? undefined,
       servings: recipe.servings ?? undefined,
     }));
+  }
+
+  public async countByCreatedById(createdById: string): Promise<number> {
+    return this.prisma.recipe.count({
+      where: {
+        createdById,
+      },
+    });
   }
 }

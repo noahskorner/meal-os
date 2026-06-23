@@ -9,13 +9,18 @@ export class ListRecipesFacade {
     private readonly listRecipesRepository: ListRecipesRepository,
   ) {}
 
-  public async list(
-    request: ListRecipesRequest,
-  ): Promise<ListRecipesResponse> {
-    const recipes = await this.listRecipesRepository.findManyByCreatedById(
-      request.createdById,
-    );
+  public async list(request: ListRecipesRequest): Promise<ListRecipesResponse> {
+    const params = this.listRecipesService.createFindManyParams(request);
+    const [items, totalItems] = await Promise.all([
+      this.listRecipesRepository.findMany(params),
+      this.listRecipesRepository.countByCreatedById(request.createdById),
+    ]);
 
-    return this.listRecipesService.createListResponse(recipes);
+    return this.listRecipesService.createListResponse({
+      items,
+      page: request.page,
+      pageSize: request.pageSize,
+      totalItems,
+    });
   }
 }

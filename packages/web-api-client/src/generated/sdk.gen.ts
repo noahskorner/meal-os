@@ -98,7 +98,7 @@ export const getProfile = <ThrowOnError extends boolean = false>(
 /**
  * List recipes
  *
- * Lists recipe metadata visible to the authenticated user.
+ * Lists paginated recipe metadata visible to the authenticated user.
  */
 export const listRecipes = <ThrowOnError extends boolean = false>(
   options?: Options<ListRecipesData, ThrowOnError>,

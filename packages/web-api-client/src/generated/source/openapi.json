@@ -463,9 +463,29 @@
             "items": {
               "$ref": "#/components/schemas/ListRecipeResponse"
             }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 20
+          },
+          "totalItems": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 120
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 6
           }
         },
-        "required": ["items"]
+        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
       },
       "ListRecipeResponse": {
         "type": "object",
@@ -500,6 +520,29 @@
           }
         },
         "required": ["id", "name"]
+      },
+      "ListRecipesValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid query parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["page: Too small: expected number to be >0"]
+              }
+            }
+          }
+        ]
       },
       "ListRecipesUnauthorizedResponse": {
         "allOf": [
@@ -982,14 +1025,53 @@
         "operationId": "listRecipes",
         "tags": ["Recipes"],
         "summary": "List recipes",
-        "description": "Lists recipe metadata visible to the authenticated user.",
+        "description": "Lists paginated recipe metadata visible to the authenticated user.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1,
+              "description": "The page number to return.",
+              "example": 1
+            },
+            "required": false,
+            "description": "The page number to return.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "The number of recipes to return per page.",
+              "example": 20
+            },
+            "required": false,
+            "description": "The number of recipes to return per page.",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Recipes visible to the authenticated user.",
+            "description": "Paginated recipes visible to the authenticated user.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListRecipesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The query parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListRecipesValidationErrorResponse"
                 }
               }
             }

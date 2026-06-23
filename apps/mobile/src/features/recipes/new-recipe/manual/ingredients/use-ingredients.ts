@@ -43,6 +43,7 @@ export function useIngredients() {
   );
 
   const loadIngredients = useCallback(async (searchTerm = "") => {
+    console.log(searchTerm)
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
     setIsLoading(true);
@@ -50,6 +51,8 @@ export function useIngredients() {
 
     try {
       const normalizedSearchTerm = searchTerm.trim();
+
+      console.log("loadIngredients", { normalizedSearchTerm });
       const { data, error } = await listIngredients({
         client: webApiClient,
         query: {
@@ -58,6 +61,8 @@ export function useIngredients() {
           ...(normalizedSearchTerm ? { searchTerm: normalizedSearchTerm } : {}),
         },
       });
+
+      console.log("loadIngredients", { data, error });
 
       if (!isMountedRef.current || requestIdRef.current !== requestId) {
         return;

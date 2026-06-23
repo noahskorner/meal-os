@@ -1,9 +1,12 @@
 import type { AuthProvider } from "@/app/features/auth/auth-provider";
+import type { ListRecipesQueryRequest } from "./list-recipes.request";
 import {
   createListRecipesResponseDto,
   createListRecipesUnauthorizedResponseDto,
+  createListRecipesValidationErrorResponseDto,
   type ListRecipesResponseDto,
   type ListRecipesUnauthorizedResponseDto,
+  type ListRecipesValidationErrorResponseDto,
 } from "./list-recipes.dto";
 import { ListRecipesFacade } from "./list-recipes.facade";
 
@@ -15,6 +18,10 @@ export type ListRecipesResult =
   | {
       status: 401;
       body: ListRecipesUnauthorizedResponseDto;
+    }
+  | {
+      status: 400;
+      body: ListRecipesValidationErrorResponseDto;
     };
 
 export class ListRecipesController {
@@ -23,7 +30,9 @@ export class ListRecipesController {
     private readonly listRecipesFacade: ListRecipesFacade,
   ) {}
 
-  public async get(): Promise<ListRecipesResult> {
+  public async get(
+    request: ListRecipesQueryRequest,
+  ): Promise<ListRecipesResult> {
     const currentUser = await this.authProvider.getCurrentUser();
 
     if (!currentUser) {
@@ -35,6 +44,8 @@ export class ListRecipesController {
 
     const recipes = await this.listRecipesFacade.list({
       createdById: currentUser.id,
+      page: request.page,
+      pageSize: request.pageSize,
     });
 
     return {
@@ -42,4 +53,10 @@ export class ListRecipesController {
       body: createListRecipesResponseDto(recipes),
     };
   }
+}
+
+export function createListRecipesValidationError(
+  issues: string[],
+): ListRecipesValidationErrorResponseDto {
+  return createListRecipesValidationErrorResponseDto(issues);
 }
