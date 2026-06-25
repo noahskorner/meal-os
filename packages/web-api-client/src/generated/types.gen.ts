@@ -49,6 +49,13 @@ export type ValidationErrorResponse = {
   issues: Array<string>;
 };
 
+export type ListIngredientCategoriesResponse = Array<IngredientCategorySummary>;
+
+export type IngredientCategorySummary = {
+  id: string;
+  name: string;
+};
+
 export type GetProfileResponse = {
   id: string;
 };
@@ -404,6 +411,23 @@ export type ListIngredientsResponses = {
 
 export type ListIngredientsResponse2 =
   ListIngredientsResponses[keyof ListIngredientsResponses];
+
+export type ListIngredientCategoriesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/ingredient-categories";
+};
+
+export type ListIngredientCategoriesResponses = {
+  /**
+   * A list of ingredient categories.
+   */
+  200: ListIngredientCategoriesResponse;
+};
+
+export type ListIngredientCategoriesResponse2 =
+  ListIngredientCategoriesResponses[keyof ListIngredientCategoriesResponses];
 
 export type GetProfileData = {
   body?: never;

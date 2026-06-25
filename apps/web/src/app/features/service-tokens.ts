@@ -8,6 +8,10 @@ import type { ListIngredientsController } from "@/app/features/ingredients/list-
 import type { ListIngredientsFacade } from "@/app/features/ingredients/list-ingredients/list-ingredients.facade";
 import type { ListIngredientsRepository } from "@/app/features/ingredients/list-ingredients/list-ingredients.repository";
 import type { ListIngredientsService } from "@/app/features/ingredients/list-ingredients/list-ingredients.service";
+import type { ListIngredientCategoriesController } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.controller";
+import type { ListIngredientCategoriesFacade } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.facade";
+import type { ListIngredientCategoriesRepository } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.repository";
+import type { ListIngredientCategoriesService } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.service";
 import type { GetProfileController } from "@/app/features/profiles/get-profile/get-profile.controller";
 import type { GetProfileFacade } from "@/app/features/profiles/get-profile/get-profile.facade";
 import type { GetProfileRepository } from "@/app/features/profiles/get-profile/get-profile.repository";
@@ -65,6 +69,21 @@ export const SERVICE_TOKENS = {
   listIngredientsController: createToken<ListIngredientsController>(
     "listIngredientsController",
   ),
+  listIngredientCategoriesRepository:
+    createToken<ListIngredientCategoriesRepository>(
+      "listIngredientCategoriesRepository",
+    ),
+  listIngredientCategoriesService:
+    createToken<ListIngredientCategoriesService>(
+      "listIngredientCategoriesService",
+    ),
+  listIngredientCategoriesFacade: createToken<ListIngredientCategoriesFacade>(
+    "listIngredientCategoriesFacade",
+  ),
+  listIngredientCategoriesController:
+    createToken<ListIngredientCategoriesController>(
+      "listIngredientCategoriesController",
+    ),
   createUserIngredientRepository: createToken<CreateUserIngredientRepository>(
     "createUserIngredientRepository",
   ),

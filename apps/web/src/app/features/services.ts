@@ -6,6 +6,7 @@ import {
 import { MockAuthProvider } from "@/app/features/auth/mock-auth.provider";
 import { SupabaseAuthProvider } from "@/app/features/auth/supabase-auth.provider";
 import { registerHealthCheck } from "@/app/features/health-check/health-check.di";
+import { registerListIngredientCategories } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.di";
 import { registerListIngredients } from "@/app/features/ingredients/list-ingredients/list-ingredients.di";
 import { registerGetProfile } from "@/app/features/profiles/get-profile/get-profile.di";
 import { registerCreateRecipe } from "@/app/features/recipes/create-recipe/create-recipe.di";
@@ -34,6 +35,7 @@ services.registerScoped(SERVICE_TOKENS.authProvider, () => {
 
 registerHealthCheck(services);
 registerListIngredients(services);
+registerListIngredientCategories(services);
 registerCreateUserIngredient(services);
 registerListUserIngredients(services);
 registerGetUserIngredient(services);

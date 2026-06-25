@@ -27,6 +27,8 @@ import type {
   HealthCheckData,
   HealthCheckErrors,
   HealthCheckResponses,
+  ListIngredientCategoriesData,
+  ListIngredientCategoriesResponses,
   ListIngredientsData,
   ListIngredientsErrors,
   ListIngredientsResponses,
@@ -92,6 +94,20 @@ export const listIngredients = <ThrowOnError extends boolean = false>(
     ListIngredientsErrors,
     ThrowOnError
   >({ url: "/api/ingredients", ...options });
+
+/**
+ * List ingredient categories
+ *
+ * Returns all ingredient categories.
+ */
+export const listIngredientCategories = <ThrowOnError extends boolean = false>(
+  options?: Options<ListIngredientCategoriesData, ThrowOnError>,
+): RequestResult<ListIngredientCategoriesResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    ListIngredientCategoriesResponses,
+    unknown,
+    ThrowOnError
+  >({ url: "/api/ingredient-categories", ...options });
 
 /**
  * Get profile

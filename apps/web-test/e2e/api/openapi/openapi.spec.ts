@@ -27,6 +27,7 @@ test.describe("GET /api/openapi.json", () => {
     expect(result.data?.openapi).toBe("3.1.0");
     expect(result.data?.info?.title).toBe("MealOS Web API");
     expect(result.data?.paths?.["/api/health-check"]).toBeDefined();
+    expect(result.data?.paths?.["/api/ingredient-categories"]).toBeDefined();
     expect(result.data?.paths?.["/api/recipes"]).toBeDefined();
     expect(result.data?.paths?.["/api/user-ingredients"]).toBeDefined();
     expect(result.data?.paths?.["/api/units"]).toBeDefined();
