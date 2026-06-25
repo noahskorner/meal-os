@@ -22,6 +22,7 @@
     "@repo/web-api-client": "*",
     "@rn-primitives/label": "^1.4.0",
     "@rn-primitives/portal": "^1.4.0",
+    "@rn-primitives/select": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
     "@supabase/supabase-js": "^2.108.2",
     "babel-preset-expo": "~54.0.10",

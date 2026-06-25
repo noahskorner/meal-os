@@ -67,13 +67,6 @@ export function ListRecipesScreen() {
             placeholder="Search recipes"
             returnKeyType="search"
           />
-
-          <Pressable
-            accessibilityLabel="Filter recipes"
-            className="h-12 w-12 items-center justify-center rounded-lg border border-border bg-card"
-          >
-            <SlidersHorizontal color={palette.foreground} size={19} />
-          </Pressable>
         </View>
       </View>
 

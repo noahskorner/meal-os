@@ -15,6 +15,10 @@ type NewRecipeContextValue = {
   setCookTime: (cookTime: number) => void;
   setServings: (servings: number) => void;
   addIngredient: (ingredient: CreateRecipeIngredientRequest) => void;
+  updateIngredient: (
+    ingredientId: string,
+    ingredient: Partial<CreateRecipeIngredientRequest>,
+  ) => void;
   removeIngredient: (ingredientId: string) => void;
   clearIngredients: () => void;
   addStep: () => void;
@@ -92,6 +96,20 @@ export function NewRecipeProvider({ children }: { children: ReactNode }) {
         ),
         ingredient,
       ],
+    }));
+  };
+
+  const updateIngredient = (
+    ingredientId: string,
+    ingredient: Partial<CreateRecipeIngredientRequest>,
+  ) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeIngredients: (prev.recipeIngredients || []).map((item) =>
+        getIngredientReferenceKey(item) === ingredientId
+          ? { ...item, ...ingredient }
+          : item,
+      ),
     }));
   };
 
@@ -191,6 +209,7 @@ export function NewRecipeProvider({ children }: { children: ReactNode }) {
         setCookTime,
         setServings,
         addIngredient,
+        updateIngredient,
         removeIngredient,
         clearIngredients,
         addStep,

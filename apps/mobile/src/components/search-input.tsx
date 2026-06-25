@@ -30,7 +30,7 @@ export function SearchInput({
       <Input
         value={value}
         className={cn(
-          "h-full rounded-lg border-input bg-card pl-10 pr-10",
+          "rounded-lg border-input bg-card pl-10 pr-10",
           inputClassName,
         )}
         placeholderTextColor={palette.mutedForeground}
