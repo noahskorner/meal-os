@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@react-navigation/native";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
 import { AuthProvider, useAuth } from "@/features/auth/auth-provider";
 import { SplashScreenController } from "@/features/auth/splash-screen-controller";
@@ -35,12 +36,14 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={theme}>
-        <AuthProvider>
-          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-          <SplashScreenController />
-          <RootNavigator />
-          <PortalHost />
-        </AuthProvider>
+        <BottomSheetModalProvider>
+          <AuthProvider>
+            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+            <SplashScreenController />
+            <RootNavigator />
+            <PortalHost />
+          </AuthProvider>
+        </BottomSheetModalProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

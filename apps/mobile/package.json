@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
-    "@repo/web-api-client": "*",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "@repo/web-api-client": "*",
     "@rn-primitives/label": "^1.4.0",
     "@rn-primitives/portal": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
