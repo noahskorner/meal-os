@@ -222,7 +222,7 @@ function installDependencies() {
       shell: false,
       stdio: "pipe",
     }).status === 0;
-  const installArgs = hasPackageLock ? ["ci"] : ["install"];
+  const installArgs = hasPackageLock ? ["ci", "--prefer-offline"] : ["install"];
   const npmExecPath = process.env.npm_execpath;
 
   console.log(`Installing dependencies with npm ${installArgs.join(" ")}...`);
