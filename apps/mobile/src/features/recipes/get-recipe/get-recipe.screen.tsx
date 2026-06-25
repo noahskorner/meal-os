@@ -320,7 +320,6 @@ function StepRow({
   index: number;
   step: {
     id: string;
-    ingredientId: string | null;
     text: string;
     sortOrder: number;
   };
@@ -340,11 +339,6 @@ function StepRow({
               icon={ListOrdered}
               label="Sort order"
               value={`${step.sortOrder}`}
-            />
-            <MetadataRow
-              icon={ArrowUpRight}
-              label="Ingredient reference"
-              value={step.ingredientId ?? "None"}
             />
             <MetadataRow icon={SquareStack} label="Step ID" value={step.id} />
           </View>
