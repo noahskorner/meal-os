@@ -12,42 +12,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { Textarea } from "@/components/ui/textarea";
 import { useNewRecipe } from "../../use-new-recipe";
 import { StepTitle } from "../step-title";
 
-const recipePreview = {
-  name: "Lemon Garlic Chicken",
-  photoUrl:
-    "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1200&auto=format&fit=crop",
-  servings: "4 servings",
-  totalTime: "30 min",
-  difficulty: "Easy",
-  ingredients: [
-    "4 boneless chicken breasts",
-    "3 cloves garlic, minced",
-    "2 lemons, juiced and sliced",
-    "2 tbsp olive oil",
-    "1 tsp kosher salt",
-    "1/2 tsp black pepper",
-    "2 tbsp fresh parsley",
-  ],
-  instructions: [
-    "Season both sides of the chicken with salt and pepper.",
-    "Heat olive oil in a large skillet over medium-high heat.",
-    "Add chicken and cook 6-7 minutes per side until golden and cooked through.",
-    "Add garlic and cook for 30 seconds until fragrant.",
-    "Squeeze lemon juice over chicken, garnish with parsley, and serve warm.",
-  ],
-};
-
 export function ReviewScreen() {
-  const { details, recipeIngredients, instructions, notes, setNotes } =
-    useNewRecipe();
-  const recipeName = details.name.trim() || "Untitled Recipe";
-  const servings = formatServings(details.servings);
-  const totalTime = formatTotalTime(details.prepTime, details.cookTime);
-  const difficulty = details.difficulty.trim() || "Difficulty not set";
+  const { recipe } = useNewRecipe();
+  const recipeIngredients = recipe.recipeIngredients || [];
+  const instructions = recipe.recipeSteps || [];
+  const recipeName = recipe.name.trim() || "Untitled Recipe";
+  const servings = formatServings(recipe.servings);
+  const totalTime = formatTotalTime(
+    recipe.prepTimeMinutes,
+    recipe.cookTimeMinutes,
+  );
   const instructionItems = instructions.filter((step) => step.text.trim());
 
   return (
@@ -65,7 +42,7 @@ export function ReviewScreen() {
         <View className="flex-row items-center justify-between">
           <RecipeStat icon={Users} label={servings} />
           <RecipeStat icon={Clock} label={totalTime} />
-          <RecipeStat icon={BarChart3} label={difficulty} />
+          <RecipeStat icon={BarChart3} label="Manual recipe" />
         </View>
       </View>
 
@@ -78,7 +55,10 @@ export function ReviewScreen() {
           {recipeIngredients.length > 0 ? (
             <View className="gap-2">
               {recipeIngredients.map((ingredient) => (
-                <ReviewListItem key={ingredient.id} text={ingredient.name} />
+                <ReviewListItem
+                  key={ingredient.ingredientId}
+                  text={ingredient.name}
+                />
               ))}
             </View>
           ) : (
@@ -96,7 +76,7 @@ export function ReviewScreen() {
             <View className="gap-3">
               {instructionItems.map((instruction, index) => (
                 <InstructionListItem
-                  key={instruction.id}
+                  key={instruction.sortOrder ?? index}
                   index={index + 1}
                   text={instruction.text}
                 />
@@ -106,17 +86,6 @@ export function ReviewScreen() {
             <EmptyReviewText text="No instructions added." />
           )}
         </ReviewSection>
-
-        <View className="gap-2">
-          <Text className="font-semibold text-foreground">Notes</Text>
-          <Textarea
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Add any notes about this recipe..."
-            scrollEnabled={false}
-            className="h-auto min-h-24 bg-background"
-          />
-        </View>
       </View>
     </View>
   );
@@ -126,7 +95,9 @@ function ReviewPhoto() {
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-muted">
       <Image
-        source={{ uri: recipePreview.photoUrl }}
+        source={{
+          uri: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1200&auto=format&fit=crop",
+        }}
         className="h-36 w-full"
         resizeMode="cover"
       />
@@ -212,22 +183,20 @@ function InstructionListItem({ index, text }: { index: number; text: string }) {
   );
 }
 
-function formatServings(servings: string) {
-  const value = servings.trim();
-
-  if (!value) {
+function formatServings(servings?: number) {
+  if (!servings) {
     return "Servings not set";
   }
 
-  return value.toLowerCase().includes("serving") ? value : `${value} servings`;
+  return `${servings} servings`;
 }
 
-function formatTotalTime(prepTime: string, cookTime: string) {
-  const times = [prepTime.trim(), cookTime.trim()].filter(Boolean);
+function formatTotalTime(prepTime?: number, cookTime?: number) {
+  const totalTime = (prepTime || 0) + (cookTime || 0);
 
-  if (times.length === 0) {
+  if (!totalTime) {
     return "Time not set";
   }
 
-  return times.join(" + ");
+  return `${totalTime} min`;
 }

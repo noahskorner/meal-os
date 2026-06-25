@@ -9,22 +9,34 @@ import { Text } from "@/components/ui/text";
 import { IngredientResult } from "./ingredient-result";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
 import { useIngredients } from "./use-ingredients";
+import { useNewRecipe } from "../../use-new-recipe";
+import type { ListIngredientResponse } from "@repo/web-api-client";
 
 export function IngredientsScreen() {
   const {
-    recipeIngredients,
-    results,
     query,
-    hasExactMatch,
+    ingredients,
     isLoading,
     error,
+    hasExactMatch,
     searchIngredients,
     clearIngredients,
-    addIngredient,
-    createNewIngredient,
-    removeIngredient,
-    clearRecipeIngredients,
   } = useIngredients();
+  const {
+    recipe,
+    addIngredient,
+    removeIngredient,
+    clearIngredients: clearRecipeIngredients,
+  } = useNewRecipe();
+
+  const recipeIngredients = recipe.recipeIngredients || [];
+  const addRecipeIngredient = (ingredient: ListIngredientResponse) => {
+    addIngredient({
+      ingredientId: ingredient.id,
+      name: ingredient.name,
+      unitId: ingredient.defaultUnit.id,
+    });
+  };
 
   return (
     <ScrollView
@@ -84,9 +96,9 @@ export function IngredientsScreen() {
             <View className="gap-3">
               {recipeIngredients.map((ingredient) => (
                 <RecipeIngredientRow
-                  key={ingredient.id}
+                  key={ingredient.ingredientId}
                   ingredient={ingredient}
-                  onRemove={() => removeIngredient(ingredient.id)}
+                  onRemove={() => removeIngredient(ingredient.ingredientId)}
                 />
               ))}
             </View>
@@ -111,13 +123,13 @@ export function IngredientsScreen() {
                   {error}
                 </Text>
               </Card>
-            ) : results.length > 0 ? (
+            ) : ingredients.length > 0 ? (
               <View className="gap-2">
-                {results.map((ingredient) => (
+                {ingredients.map((ingredient) => (
                   <IngredientResult
                     key={ingredient.id}
                     ingredient={ingredient}
-                    onAdd={() => addIngredient(ingredient)}
+                    onAdd={() => addRecipeIngredient(ingredient)}
                   />
                 ))}
               </View>
@@ -134,7 +146,7 @@ export function IngredientsScreen() {
           </View>
 
           {query.trim() && !hasExactMatch ? (
-            <Button variant="ghost" size="sm" onPress={createNewIngredient}>
+            <Button variant="ghost" size="sm">
               <Text className="font-medium text-brand">
                 Create &apos;{query.trim()}&apos;
               </Text>

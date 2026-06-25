@@ -1,120 +1,197 @@
+import { createContext, useContext, useState, type ReactNode } from "react";
 import {
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from "react";
-import { RecipeIngredient } from "./manual/ingredients/ingredient-data";
+  createRecipe,
+  type CreateRecipeIngredientRequest,
+  type CreateRecipeRequest,
+  type CreateRecipeStepRequest,
+} from "@repo/web-api-client";
+import { webApiClient } from "@/lib/web-api-client";
 
-export type RecipeDetails = {
-  name: string;
-  description: string;
-  servings: string;
-  prepTime: string;
-  cookTime: string;
-  difficulty: string;
-};
-
-export type InstructionStep = {
-  id: string;
-  text: string;
-  sortOrder: number;
-};
-
-type AddRecipeDraftContextValue = {
-  details: RecipeDetails;
-  recipeIngredients: RecipeIngredient[];
-  instructions: InstructionStep[];
-  notes: string;
-  setDetail: (field: keyof RecipeDetails, value: string) => void;
-  setRecipeIngredients: Dispatch<SetStateAction<RecipeIngredient[]>>;
-  setInstructions: Dispatch<SetStateAction<InstructionStep[]>>;
-  setNotes: (notes: string) => void;
+type NewRecipeContextValue = {
+  recipe: CreateRecipeRequest;
+  setName: (name: string) => void;
+  setDescription: (description: string) => void;
+  setPrepTime: (prepTime: number) => void;
+  setCookTime: (cookTime: number) => void;
+  setServings: (servings: number) => void;
+  addIngredient: (ingredient: CreateRecipeIngredientRequest) => void;
+  removeIngredient: (ingredientId: string) => void;
+  clearIngredients: () => void;
+  addStep: () => void;
+  updateStep: (
+    sortOrder: number,
+    step: Partial<Omit<CreateRecipeStepRequest, "sortOrder">>,
+  ) => void;
+  reorderSteps: (steps: CreateRecipeStepRequest[]) => void;
+  removeStep: (sortOrder: number) => void;
+  clearSteps: () => void;
   resetDraft: () => void;
+  save: () => Promise<void>;
 };
 
-const initialDetails: RecipeDetails = {
-  name: "",
-  description: "",
-  servings: "",
-  prepTime: "",
-  cookTime: "",
-  difficulty: "",
-};
+const NewRecipeContext = createContext<NewRecipeContextValue | null>(null);
 
-export const createInstructionStep = (
-  text = "",
-  sortOrder = 0,
-): InstructionStep => ({
-  id: Math.random().toString(36).substring(2, 9),
-  text,
-  sortOrder,
-});
+function createEmptyRecipe(): CreateRecipeRequest {
+  return {
+    name: "",
+    description: "",
+    prepTimeMinutes: 0,
+    cookTimeMinutes: 0,
+    servings: 0,
+    recipeIngredients: [],
+    recipeSteps: [],
+  };
+}
 
-const initialInstructions = (): InstructionStep[] => [
-  createInstructionStep(
-    "Season both sides of the chicken with salt and pepper.",
-    0,
-  ),
-  createInstructionStep(
-    "Heat olive oil in a large skillet over medium-high heat.",
-    1,
-  ),
-  createInstructionStep(
-    "Add the chicken and cook for 6-7 minutes per side, until golden and cooked through.",
-    2,
-  ),
-  createInstructionStep(
-    "Add garlic and cook for 30 seconds until fragrant.",
-    3,
-  ),
-  createInstructionStep(
-    "Squeeze lemon juice over the chicken and garnish with fresh parsley. Serve warm.",
-    4,
-  ),
-];
-
-export const updateInstructionSortOrder = (steps: InstructionStep[]) =>
-  steps.map((step, sortOrder) => ({ ...step, sortOrder }));
-
-const NewRecipeContext = createContext<AddRecipeDraftContextValue | null>(null);
+function normalizeSteps(steps: CreateRecipeStepRequest[]) {
+  return steps.map((step, index) => ({
+    ...step,
+    sortOrder: index + 1,
+  }));
+}
 
 export function NewRecipeProvider({ children }: { children: ReactNode }) {
-  const [details, setDetails] = useState<RecipeDetails>(initialDetails);
-  const [recipeIngredients, setRecipeIngredients] = useState<
-    RecipeIngredient[]
-  >([]);
-  const [instructions, setInstructions] =
-    useState<InstructionStep[]>(initialInstructions);
-  const [notes, setNotes] = useState("");
+  const [recipe, setRecipe] = useState<CreateRecipeRequest>(createEmptyRecipe);
 
-  const value = useMemo<AddRecipeDraftContextValue>(
-    () => ({
-      details,
-      recipeIngredients,
-      instructions,
-      notes,
-      setDetail: (field, value) => {
-        setDetails((current) => ({ ...current, [field]: value }));
+  const setName = (name: string) => {
+    setRecipe((prev) => ({ ...prev, name }));
+  };
+
+  const setDescription = (description: string) => {
+    setRecipe((prev) => ({ ...prev, description }));
+  };
+
+  const setPrepTime = (prepTime: number) => {
+    setRecipe((prev) => ({ ...prev, prepTimeMinutes: prepTime }));
+  };
+
+  const setCookTime = (cookTime: number) => {
+    setRecipe((prev) => ({ ...prev, cookTimeMinutes: cookTime }));
+  };
+
+  const setServings = (servings: number) => {
+    setRecipe((prev) => ({ ...prev, servings }));
+  };
+
+  const addIngredient = (ingredient: CreateRecipeIngredientRequest) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeIngredients: [
+        ...(prev.recipeIngredients || []).filter(
+          (item) => item.ingredientId !== ingredient.ingredientId,
+        ),
+        ingredient,
+      ],
+    }));
+  };
+
+  const removeIngredient = (ingredientId: string) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeIngredients: (prev.recipeIngredients || []).filter(
+        (ingredient) => ingredient.ingredientId !== ingredientId,
+      ),
+    }));
+  };
+
+  const clearIngredients = () => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeIngredients: [],
+    }));
+  };
+
+  const addStep = () => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeSteps: [
+        ...(prev.recipeSteps || []),
+        {
+          text: "",
+          sortOrder: (prev.recipeSteps || []).length + 1,
+        },
+      ],
+    }));
+  };
+
+  const removeStep = (sortOrder: number) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeSteps: normalizeSteps(
+        (prev.recipeSteps || []).filter((step) => step.sortOrder !== sortOrder),
+      ),
+    }));
+  };
+
+  const clearSteps = () => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeSteps: [],
+    }));
+  };
+
+  const updateStep = (
+    sortOrder: number,
+    step: Partial<Omit<CreateRecipeStepRequest, "sortOrder">>,
+  ) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeSteps: (prev.recipeSteps || []).map((s) =>
+        s.sortOrder === sortOrder ? { ...s, ...step } : s,
+      ),
+    }));
+  };
+
+  const reorderSteps = (steps: CreateRecipeStepRequest[]) => {
+    setRecipe((prev) => ({
+      ...prev,
+      recipeSteps: normalizeSteps(steps),
+    }));
+  };
+
+  const resetDraft = () => {
+    setRecipe(createEmptyRecipe());
+  };
+
+  const save = async () => {
+    const { error } = await createRecipe({
+      client: webApiClient,
+      body: {
+        ...recipe,
+        name: recipe.name.trim(),
+        description: recipe.description?.trim(),
+        recipeSteps: (recipe.recipeSteps || []).filter((step) =>
+          step.text.trim(),
+        ),
       },
-      setRecipeIngredients,
-      setInstructions,
-      setNotes,
-      resetDraft: () => {
-        setDetails(initialDetails);
-        setRecipeIngredients([]);
-        setInstructions(initialInstructions());
-        setNotes("");
-      },
-    }),
-    [details, instructions, notes, recipeIngredients],
-  );
+    });
+
+    if (error) {
+      throw new Error("Unable to save recipe.");
+    }
+  };
 
   return (
-    <NewRecipeContext.Provider value={value}>
+    <NewRecipeContext.Provider
+      value={{
+        recipe,
+        setName,
+        setDescription,
+        setPrepTime,
+        setCookTime,
+        setServings,
+        addIngredient,
+        removeIngredient,
+        clearIngredients,
+        addStep,
+        removeStep,
+        clearSteps,
+        updateStep,
+        reorderSteps,
+        resetDraft,
+        save,
+      }}
+    >
       {children}
     </NewRecipeContext.Provider>
   );
@@ -124,7 +201,7 @@ export function useNewRecipe() {
   const context = useContext(NewRecipeContext);
 
   if (!context) {
-    throw new Error("useNewRecipe must be used within AddRecipeDraftProvider.");
+    throw new Error("useNewRecipe must be used within NewRecipeProvider.");
   }
 
   return context;

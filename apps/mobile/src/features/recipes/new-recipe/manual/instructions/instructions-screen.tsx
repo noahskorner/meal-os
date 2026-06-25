@@ -10,42 +10,22 @@ import { Card } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import {
-  createInstructionStep,
-  type InstructionStep,
-  updateInstructionSortOrder,
-  useNewRecipe,
-} from "../../use-new-recipe";
+import type { CreateRecipeStepRequest } from "@repo/web-api-client";
+import { useNewRecipe } from "../../use-new-recipe";
 
 export function InstructionsScreen() {
-  const { instructions, setInstructions } = useNewRecipe();
-
-  const addStep = () => {
-    setInstructions((current) => [
-      ...current,
-      createInstructionStep("", current.length),
-    ]);
-  };
-
-  const updateStep = (id: string, text: string) => {
-    setInstructions((current) =>
-      current.map((step) => (step.id === id ? { ...step, text } : step)),
-    );
-  };
-
-  const removeStep = (id: string) => {
-    setInstructions((current) =>
-      updateInstructionSortOrder(current.filter((step) => step.id !== id)),
-    );
-  };
+  const { recipe, addStep, removeStep, updateStep, reorderSteps } =
+    useNewRecipe();
+  const instructions = recipe.recipeSteps || [];
 
   const renderStep = ({
     item,
     drag,
     isActive,
     getIndex,
-  }: RenderItemParams<InstructionStep>) => {
+  }: RenderItemParams<CreateRecipeStepRequest>) => {
     const index = getIndex() ?? 0;
+    const sortOrder = item.sortOrder ?? index + 1;
 
     return (
       <ScaleDecorator>
@@ -77,7 +57,7 @@ export function InstructionsScreen() {
                 multiline
                 scrollEnabled={false}
                 value={item.text}
-                onChangeText={(text) => updateStep(item.id, text)}
+                onChangeText={(text) => updateStep(sortOrder, { text })}
                 placeholder="Describe this step..."
                 className="h-auto min-h-12 flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none dark:bg-transparent focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 textAlignVertical="top"
@@ -85,7 +65,7 @@ export function InstructionsScreen() {
 
               <Pressable
                 className="p-1"
-                onPress={() => removeStep(item.id)}
+                onPress={() => removeStep(sortOrder)}
                 disabled={instructions.length === 1}
                 hitSlop={8}
               >
@@ -101,11 +81,9 @@ export function InstructionsScreen() {
   return (
     <DraggableFlatList
       data={instructions}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item, index) => String(item.sortOrder ?? index)}
       renderItem={renderStep}
-      onDragEnd={({ data }) =>
-        setInstructions(updateInstructionSortOrder(data))
-      }
+      onDragEnd={({ data }) => reorderSteps(data)}
       containerStyle={{ flex: 1 }}
       contentContainerStyle={{
         paddingTop: 24,
@@ -122,12 +100,7 @@ export function InstructionsScreen() {
         </View>
       }
       ListFooterComponent={
-        <Button
-          variant="ghost"
-          size="sm"
-          onPress={addStep}
-          className="mt-5"
-        >
+        <Button variant="ghost" size="sm" onPress={addStep} className="mt-5">
           <Text className="font-medium text-brand">Add Step</Text>
         </Button>
       }

@@ -6,7 +6,14 @@ import { useNewRecipe } from "../../use-new-recipe";
 import { StepTitle } from "../step-title";
 
 export function DetailsScreen() {
-  const { details, setDetail } = useNewRecipe();
+  const {
+    recipe,
+    setName,
+    setDescription,
+    setPrepTime,
+    setCookTime,
+    setServings,
+  } = useNewRecipe();
 
   return (
     <View className="gap-5">
@@ -19,8 +26,8 @@ export function DetailsScreen() {
           <Label nativeID="recipe-name">Recipe Name</Label>
           <Input
             aria-labelledby="recipe-name"
-            value={details.name}
-            onChangeText={(value) => setDetail("name", value)}
+            value={recipe.name}
+            onChangeText={setName}
             placeholder="e.g. Lemon Garlic Chicken"
             className="bg-background"
           />
@@ -30,8 +37,8 @@ export function DetailsScreen() {
           <Label nativeID="description">Description</Label>
           <Textarea
             aria-labelledby="description"
-            value={details.description}
-            onChangeText={(value) => setDetail("description", value)}
+            value={recipe.description}
+            onChangeText={setDescription}
             placeholder="A short description of your recipe..."
             scrollEnabled={false}
             className="h-auto min-h-24 bg-background"
@@ -43,9 +50,9 @@ export function DetailsScreen() {
             <Label nativeID="servings">Servings</Label>
             <Input
               aria-labelledby="servings"
-              value={details.servings}
-              onChangeText={(value) => setDetail("servings", value)}
               keyboardType="number-pad"
+              value={recipe.servings?.toString()}
+              onChangeText={(value) => setServings(Number(value))}
               placeholder="4"
               className="bg-background"
             />
@@ -55,8 +62,9 @@ export function DetailsScreen() {
             <Label nativeID="prep-time">Prep Time</Label>
             <Input
               aria-labelledby="prep-time"
-              value={details.prepTime}
-              onChangeText={(value) => setDetail("prepTime", value)}
+              keyboardType="number-pad"
+              value={recipe.prepTimeMinutes?.toString()}
+              onChangeText={(value) => setPrepTime(Number(value))}
               placeholder="30 min"
               className="bg-background"
             />
@@ -68,20 +76,10 @@ export function DetailsScreen() {
             <Label nativeID="cook-time">Cook Time</Label>
             <Input
               aria-labelledby="cook-time"
-              value={details.cookTime}
-              onChangeText={(value) => setDetail("cookTime", value)}
+              keyboardType="number-pad"
+              value={recipe.cookTimeMinutes?.toString()}
+              onChangeText={(value) => setCookTime(Number(value))}
               placeholder="30 min"
-              className="bg-background"
-            />
-          </View>
-
-          <View className="flex-1 gap-2">
-            <Label nativeID="difficulty">Difficulty</Label>
-            <Input
-              aria-labelledby="difficulty"
-              value={details.difficulty}
-              onChangeText={(value) => setDetail("difficulty", value)}
-              placeholder="Easy"
               className="bg-background"
             />
           </View>

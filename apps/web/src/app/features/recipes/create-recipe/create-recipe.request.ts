@@ -45,7 +45,7 @@ export const createRecipeRequestSchema = z
     name: z.string().trim().min(1).max(200).openapi({
       example: "Weeknight Pasta",
     }),
-    description: z.string().trim().min(1).max(5000).optional().openapi({
+    description: z.string().trim().min(0).max(5000).optional().openapi({
       example: "Simple pasta with garlic, olive oil, and chili flakes.",
     }),
     prepTimeMinutes: z.coerce

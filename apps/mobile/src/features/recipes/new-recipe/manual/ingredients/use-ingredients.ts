@@ -3,47 +3,19 @@ import {
   listIngredients,
   type ListIngredientResponse,
 } from "@repo/web-api-client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createIngredient, updateSortOrder } from "./ingredient-data";
-import { useNewRecipe } from "../../use-new-recipe";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const pageSize = 20;
 
 export function useIngredients() {
   const [ingredients, setIngredients] = useState<ListIngredientResponse[]>([]);
-  const { recipeIngredients, setRecipeIngredients } = useNewRecipe();
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const isMountedRef = useRef(true);
   const requestIdRef = useRef(0);
 
-  const addedIds = useMemo(
-    () => new Set(recipeIngredients.map((ingredient) => ingredient.id)),
-    [recipeIngredients],
-  );
-
-  const results = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return ingredients.filter((ingredient) => !addedIds.has(ingredient.id));
-    }
-
-    return ingredients.filter(
-      (ingredient) =>
-        !addedIds.has(ingredient.id) &&
-        ingredient.name.toLowerCase().includes(normalizedQuery),
-    );
-  }, [addedIds, ingredients, query]);
-
-  const hasExactMatch = ingredients.some(
-    (ingredient) =>
-      ingredient.name.toLowerCase() === query.trim().toLowerCase(),
-  );
-
   const loadIngredients = useCallback(async (searchTerm = "") => {
-    console.log(searchTerm)
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
     setIsLoading(true);
@@ -51,8 +23,6 @@ export function useIngredients() {
 
     try {
       const normalizedSearchTerm = searchTerm.trim();
-
-      console.log("loadIngredients", { normalizedSearchTerm });
       const { data, error } = await listIngredients({
         client: webApiClient,
         query: {
@@ -61,8 +31,6 @@ export function useIngredients() {
           ...(normalizedSearchTerm ? { searchTerm: normalizedSearchTerm } : {}),
         },
       });
-
-      console.log("loadIngredients", { data, error });
 
       if (!isMountedRef.current || requestIdRef.current !== requestId) {
         return;
@@ -106,41 +74,10 @@ export function useIngredients() {
     setIsLoading(false);
   }, []);
 
-  const addIngredient = useCallback(
-    (ingredient: ListIngredientResponse) => {
-      setRecipeIngredients((current) =>
-        updateSortOrder([
-          ...current,
-          { ...ingredient, sortOrder: current.length },
-        ]),
-      );
-    },
-    [setRecipeIngredients],
+  const hasExactMatch = ingredients.some(
+    (ingredient) =>
+      ingredient.name.toLowerCase() === query.trim().toLowerCase(),
   );
-
-  const createNewIngredient = useCallback(() => {
-    const name = query.trim();
-
-    if (!name) {
-      return;
-    }
-
-    addIngredient(createIngredient(name));
-    clearIngredients();
-  }, [addIngredient, clearIngredients, query]);
-
-  const removeIngredient = useCallback(
-    (id: string) => {
-      setRecipeIngredients((current) =>
-        updateSortOrder(current.filter((ingredient) => ingredient.id !== id)),
-      );
-    },
-    [setRecipeIngredients],
-  );
-
-  const clearRecipeIngredients = useCallback(() => {
-    setRecipeIngredients([]);
-  }, [setRecipeIngredients]);
 
   useEffect(() => {
     void loadIngredients();
@@ -154,17 +91,12 @@ export function useIngredients() {
   }, []);
 
   return {
-    recipeIngredients,
-    results,
     query,
-    hasExactMatch,
+    ingredients,
     isLoading,
     error,
+    hasExactMatch,
     searchIngredients,
     clearIngredients,
-    addIngredient,
-    createNewIngredient,
-    removeIngredient,
-    clearRecipeIngredients,
   };
 }

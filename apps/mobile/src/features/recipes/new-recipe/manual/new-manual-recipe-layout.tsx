@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { NewRecipeRoute, newRecipeRoutes } from "../new-recipe-routes";
 import { NewManualRecipeFooter } from "./new-manual-recipe-footer";
@@ -21,16 +21,30 @@ export function NewManualRecipeLayout({
   backFallback,
   scroll = true,
 }: NewManualRecipeLayoutProps) {
-  const { resetDraft } = useNewRecipe();
+  const { resetDraft, save } = useNewRecipe();
+  const [isSaving, setIsSaving] = useState(false);
 
-  const goNext = () => {
+  const goNext = async () => {
     if (nextRoute) {
       router.push(nextRoute);
       return;
     }
 
-    resetDraft();
-    router.replace(newRecipeRoutes.recipes);
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      await save();
+      resetDraft();
+      router.replace(newRecipeRoutes.recipes);
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const cancel = () => {
@@ -68,7 +82,7 @@ export function NewManualRecipeLayout({
         )}
 
         <NewManualRecipeFooter
-          primaryLabel={nextLabel}
+          primaryLabel={isSaving ? "Saving..." : nextLabel}
           onPrimaryPress={goNext}
           secondaryLabel={
             backFallback === newRecipeRoutes.chooseMethod
