@@ -1,16 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/search-input";
 import { Text } from "@/components/ui/text";
 import { THEME } from "@/lib/theme";
 import { router } from "expo-router";
-import { Plus, Search, SlidersHorizontal } from "lucide-react-native";
+import { Plus, SlidersHorizontal } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RecipeCard } from "./recipe-card";
 import { useListRecipes } from "./use-list-recipes";
@@ -22,11 +17,16 @@ export function ListRecipesScreen() {
   const { colorScheme } = useColorScheme();
   const palette = colorScheme === "dark" ? THEME.dark : THEME.light;
   const {
+    query,
     recipes,
     isInitialLoading,
     isLoadingMore,
     isRefreshing,
+    isSearching,
     error,
+    emptyStateMessage,
+    searchRecipes,
+    clearSearch,
     refreshRecipes,
     loadNextPage,
     openRecipe,
@@ -55,15 +55,18 @@ export function ListRecipesScreen() {
         </View>
 
         <View className="mt-5 flex-row items-center gap-3">
-          <View className="h-12 flex-1 flex-row items-center gap-3 rounded-lg border border-input bg-card px-4">
-            <Search color={palette.mutedForeground} size={18} />
-            <TextInput
-              className="min-w-0 flex-1 text-base text-foreground"
-              placeholder="Search recipes"
-              placeholderTextColor={palette.mutedForeground}
-              returnKeyType="search"
-            />
-          </View>
+          <SearchInput
+            value={query}
+            onChangeText={searchRecipes}
+            onClear={clearSearch}
+            isLoading={isSearching}
+            containerClassName="flex-1"
+            inputClassName="h-12 text-base"
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholder="Search recipes"
+            returnKeyType="search"
+          />
 
           <Pressable
             accessibilityLabel="Filter recipes"
@@ -87,6 +90,7 @@ export function ListRecipesScreen() {
         ListEmptyComponent={
           <RecipeListEmptyState
             error={error}
+            emptyMessage={emptyStateMessage}
             isLoading={isInitialLoading}
             onRetry={refreshRecipes}
           />
@@ -147,10 +151,12 @@ function RecipeFilters() {
 
 function RecipeListEmptyState({
   error,
+  emptyMessage,
   isLoading,
   onRetry,
 }: {
   error: string | null;
+  emptyMessage: string;
   isLoading: boolean;
   onRetry: () => void;
 }) {
@@ -175,7 +181,7 @@ function RecipeListEmptyState({
 
   return (
     <View className="items-center justify-center py-16">
-      <Text className="text-center text-muted-foreground">No recipes yet.</Text>
+      <Text className="text-center text-muted-foreground">{emptyMessage}</Text>
     </View>
   );
 }

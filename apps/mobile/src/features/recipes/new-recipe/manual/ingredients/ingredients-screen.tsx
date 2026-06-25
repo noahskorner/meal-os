@@ -1,10 +1,8 @@
 import { StepTitle } from "../step-title";
 import { Pressable, ScrollView, View } from "react-native";
-import { Search, X } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Icon } from "@/components/ui/icon";
-import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/search-input";
 import { Text } from "@/components/ui/text";
 import { IngredientResult } from "./ingredient-result";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
@@ -56,28 +54,15 @@ export function IngredientsScreen() {
         />
 
         <View className="gap-2">
-          <View className="relative">
-            <Input
-              value={query}
-              onChangeText={searchIngredients}
-              placeholder="Search ingredients"
-              className="bg-background pl-10 pr-10"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <View className="absolute left-3 top-2.5">
-              <Icon as={Search} size={18} className="text-muted-foreground" />
-            </View>
-            {query ? (
-              <Pressable
-                className="absolute right-3 top-2.5"
-                onPress={clearIngredients}
-                hitSlop={8}
-              >
-                <Icon as={X} size={18} className="text-muted-foreground" />
-              </Pressable>
-            ) : null}
-          </View>
+          <SearchInput
+            value={query}
+            onChangeText={searchIngredients}
+            onClear={clearIngredients}
+            placeholder="Search ingredients"
+            inputClassName="bg-background"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
         </View>
         <View className="gap-3">
           {recipeIngredients.length > 0 ? (
