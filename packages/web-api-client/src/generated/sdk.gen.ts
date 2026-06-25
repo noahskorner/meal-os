@@ -35,6 +35,9 @@ import type {
   ListRecipesResponses,
   ListUnitsData,
   ListUnitsResponses,
+  ListUserIngredientsData,
+  ListUserIngredientsErrors,
+  ListUserIngredientsResponses,
   UpdateRecipeData,
   UpdateRecipeErrors,
   UpdateRecipeResponses,
@@ -103,6 +106,24 @@ export const getProfile = <ThrowOnError extends boolean = false>(
     GetProfileErrors,
     ThrowOnError
   >({ url: "/api/profiles/{profileId}", ...options });
+
+/**
+ * List user ingredients
+ *
+ * Lists paginated user ingredients created by the authenticated user.
+ */
+export const listUserIngredients = <ThrowOnError extends boolean = false>(
+  options?: Options<ListUserIngredientsData, ThrowOnError>,
+): RequestResult<
+  ListUserIngredientsResponses,
+  ListUserIngredientsErrors,
+  ThrowOnError
+> =>
+  (options?.client ?? client).get<
+    ListUserIngredientsResponses,
+    ListUserIngredientsErrors,
+    ThrowOnError
+  >({ url: "/api/user-ingredients", ...options });
 
 /**
  * Create user ingredient

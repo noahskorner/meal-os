@@ -95,6 +95,43 @@ export type CreateUserIngredientRequest = {
   defaultUnitId?: string;
 };
 
+export type ListUserIngredientsResponse = {
+  items: Array<ListUserIngredientResponse>;
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+};
+
+export type ListUserIngredientResponse = {
+  id: string;
+  name: string;
+  category: ListUserIngredientCategoryResponse;
+  defaultUnit: ListUserIngredientUnitResponse;
+};
+
+export type ListUserIngredientCategoryResponse = {
+  id: string;
+  name: string;
+} | null;
+
+export type ListUserIngredientUnitResponse = {
+  id: string;
+  name: string;
+  abbreviation: string;
+  type: string;
+} | null;
+
+export type ListUserIngredientsValidationErrorResponse =
+  ValidationErrorResponse & {
+    message?: string;
+    issues?: Array<string>;
+  };
+
+export type ListUserIngredientsUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
 export type GetUserIngredientResponse = {
   id: string;
   name: string;
@@ -410,6 +447,50 @@ export type GetProfileResponses = {
 
 export type GetProfileResponse2 =
   GetProfileResponses[keyof GetProfileResponses];
+
+export type ListUserIngredientsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * A fuzzy, case-insensitive search across user ingredient names.
+     */
+    searchTerm?: string;
+    /**
+     * The page number to return.
+     */
+    page?: number;
+    /**
+     * The number of user ingredients to return per page.
+     */
+    pageSize?: number;
+  };
+  url: "/api/user-ingredients";
+};
+
+export type ListUserIngredientsErrors = {
+  /**
+   * The query parameters were invalid.
+   */
+  400: ListUserIngredientsValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: ListUserIngredientsUnauthorizedResponse;
+};
+
+export type ListUserIngredientsError =
+  ListUserIngredientsErrors[keyof ListUserIngredientsErrors];
+
+export type ListUserIngredientsResponses = {
+  /**
+   * Paginated user ingredients created by the authenticated user.
+   */
+  200: ListUserIngredientsResponse;
+};
+
+export type ListUserIngredientsResponse2 =
+  ListUserIngredientsResponses[keyof ListUserIngredientsResponses];
 
 export type CreateUserIngredientData = {
   body: CreateUserIngredientRequest;

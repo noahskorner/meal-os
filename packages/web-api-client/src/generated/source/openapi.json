@@ -346,6 +346,136 @@
         },
         "required": ["name"]
       },
+      "ListUserIngredientsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListUserIngredientResponse"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 20
+          },
+          "totalItems": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 120
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 6
+          }
+        },
+        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
+      },
+      "ListUserIngredientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
+          },
+          "name": {
+            "type": "string",
+            "example": "Family Spice Blend"
+          },
+          "category": {
+            "$ref": "#/components/schemas/ListUserIngredientCategoryResponse"
+          },
+          "defaultUnit": {
+            "$ref": "#/components/schemas/ListUserIngredientUnitResponse"
+          }
+        },
+        "required": ["id", "name", "category", "defaultUnit"]
+      },
+      "ListUserIngredientCategoryResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Produce"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "ListUserIngredientUnitResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "name": {
+            "type": "string",
+            "example": "each"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ea"
+          },
+          "type": {
+            "type": "string",
+            "example": "COUNT"
+          }
+        },
+        "required": ["id", "name", "abbreviation", "type"]
+      },
+      "ListUserIngredientsValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid query parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["page: Too small: expected number to be >0"]
+              }
+            }
+          }
+        ]
+      },
+      "ListUserIngredientsUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
       "GetUserIngredientResponse": {
         "type": "object",
         "properties": {
@@ -1448,6 +1578,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateUserIngredientUnauthorizedResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listUserIngredients",
+        "tags": ["User Ingredients"],
+        "summary": "List user ingredients",
+        "description": "Lists paginated user ingredients created by the authenticated user.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "A fuzzy, case-insensitive search across user ingredient names.",
+              "example": "famly spce blnd"
+            },
+            "required": false,
+            "description": "A fuzzy, case-insensitive search across user ingredient names.",
+            "name": "searchTerm",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1,
+              "description": "The page number to return.",
+              "example": 1
+            },
+            "required": false,
+            "description": "The page number to return.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "default": 20,
+              "description": "The number of user ingredients to return per page.",
+              "example": 20
+            },
+            "required": false,
+            "description": "The number of user ingredients to return per page.",
+            "name": "pageSize",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated user ingredients created by the authenticated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListUserIngredientsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The query parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListUserIngredientsValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListUserIngredientsUnauthorizedResponse"
                 }
               }
             }

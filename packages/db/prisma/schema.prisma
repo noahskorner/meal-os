@@ -129,6 +129,7 @@ model UserIngredient {
   recipeIngredients RecipeIngredient[]
 
   @@unique([createdById, name])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "user_ingredients_name_trigram_idx")
   @@map("user_ingredients")
   @@schema("public")
 }

@@ -15,6 +15,7 @@ import { registerUpdateRecipe } from "@/app/features/recipes/update-recipe/updat
 import { SERVICE_TOKENS } from "@/app/features/service-tokens";
 import { registerCreateUserIngredient } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.di";
 import { registerGetUserIngredient } from "@/app/features/user-ingredients/get-user-ingredient/get-user-ingredient.di";
+import { registerListUserIngredients } from "@/app/features/user-ingredients/list-user-ingredients/list-user-ingredients.di";
 import { registerListUnits } from "@/app/features/units/list-units/list-units.di";
 
 export { SERVICE_TOKENS } from "@/app/features/service-tokens";
@@ -34,6 +35,7 @@ services.registerScoped(SERVICE_TOKENS.authProvider, () => {
 registerHealthCheck(services);
 registerListIngredients(services);
 registerCreateUserIngredient(services);
+registerListUserIngredients(services);
 registerGetUserIngredient(services);
 registerListUnits(services);
 registerGetProfile(services);
