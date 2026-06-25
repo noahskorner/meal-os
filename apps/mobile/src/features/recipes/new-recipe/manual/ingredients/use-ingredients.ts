@@ -1,14 +1,39 @@
 import { webApiClient } from "@/lib/web-api-client";
-import {
-  listIngredients,
-  type ListIngredientResponse,
-} from "@repo/web-api-client";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const pageSize = 20;
 
-export function useIngredients() {
-  const [ingredients, setIngredients] = useState<ListIngredientResponse[]>([]);
+type BaseListIngredientResponse = {
+  name: string;
+};
+
+type ListIngredientsApiResponse<
+  TIngredient extends BaseListIngredientResponse,
+> = {
+  data?: {
+    items: TIngredient[];
+  };
+  error?: unknown;
+};
+
+type ListIngredientsApi<TIngredient extends BaseListIngredientResponse> =
+  (options: {
+    client: typeof webApiClient;
+    query: {
+      page: number;
+      pageSize: number;
+      searchTerm?: string;
+    };
+  }) => Promise<ListIngredientsApiResponse<TIngredient>>;
+
+type UseIngredientsParams<TIngredient extends BaseListIngredientResponse> = {
+  listIngredients: ListIngredientsApi<TIngredient>;
+};
+
+export function useIngredients<TIngredient extends BaseListIngredientResponse>({
+  listIngredients,
+}: UseIngredientsParams<TIngredient>) {
+  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
   const [query, setQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

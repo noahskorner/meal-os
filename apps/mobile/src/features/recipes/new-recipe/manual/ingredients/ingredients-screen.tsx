@@ -6,7 +6,7 @@ import { SearchInput } from "@/components/search-input";
 import { Text } from "@/components/ui/text";
 import { IngredientResult } from "./ingredient-result";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
-import { useIngredients } from "./use-ingredients";
+import { useGlobalIngredients } from "./use-global-ingredients";
 import { useNewRecipe } from "../../use-new-recipe";
 import type { ListIngredientResponse } from "@repo/web-api-client";
 
@@ -19,7 +19,7 @@ export function IngredientsScreen() {
     hasExactMatch,
     searchIngredients,
     clearIngredients,
-  } = useIngredients();
+  } = useGlobalIngredients();
   const {
     recipe,
     addIngredient,
