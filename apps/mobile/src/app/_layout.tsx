@@ -3,6 +3,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
 import { AuthProvider, useAuth } from "@/features/auth/auth-provider";
 import { SplashScreenController } from "@/features/auth/splash-screen-controller";
+import { UnitsProvider } from "@/features/units/use-units";
 import { NAV_THEME } from "@/lib/theme";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -37,12 +38,14 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={theme}>
         <BottomSheetModalProvider>
-          <AuthProvider>
-            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-            <SplashScreenController />
-            <RootNavigator />
-            <PortalHost />
-          </AuthProvider>
+          <UnitsProvider>
+            <AuthProvider>
+              <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+              <SplashScreenController />
+              <RootNavigator />
+              <PortalHost />
+            </AuthProvider>
+          </UnitsProvider>
         </BottomSheetModalProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
