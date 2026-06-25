@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SearchInput } from "@/components/search-input";
 import { Text } from "@/components/ui/text";
+import { CreateUserIngredientBottomSheet } from "./create-user-ingredient-bottom-sheet";
 import { EditRecipeIngredientBottomSheet } from "./edit-recipe-ingredient-bottom-sheet";
 import { IngredientResult } from "./ingredient-result";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
@@ -21,14 +22,24 @@ function getIngredientReferenceKey(
     "ingredientId" | "userIngredientId" | "name"
   >,
 ) {
-  return ingredient.ingredientId ?? ingredient.userIngredientId ?? ingredient.name;
+  return (
+    ingredient.ingredientId ?? ingredient.userIngredientId ?? ingredient.name
+  );
 }
 
 export function IngredientsScreen() {
   const editIngredientSheetRef =
-    React.useRef<React.ElementRef<typeof EditRecipeIngredientBottomSheet>>(null);
+    React.useRef<React.ElementRef<typeof EditRecipeIngredientBottomSheet>>(
+      null,
+    );
+  const createIngredientSheetRef =
+    React.useRef<React.ElementRef<typeof CreateUserIngredientBottomSheet>>(
+      null,
+    );
   const [editingIngredient, setEditingIngredient] =
     React.useState<CreateRecipeIngredientRequest | null>(null);
+  const [creatingIngredientName, setCreatingIngredientName] =
+    React.useState("");
   const {
     query,
     ingredients,
@@ -163,13 +174,22 @@ export function IngredientsScreen() {
             </View>
 
             {query.trim() && !hasExactMatch ? (
-              <Button variant="ghost" size="sm">
+              <Button
+                variant="ghost"
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setCreatingIngredientName(query.trim());
+                  requestAnimationFrame(() => {
+                    createIngredientSheetRef.current?.present();
+                  });
+                }}
+              >
                 <Text className="font-medium text-brand">
                   Create &apos;{query.trim()}&apos;
                 </Text>
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" disabled>
+              <Button variant="ghost" disabled>
                 <Text className="font-medium text-muted-foreground">
                   Create New Ingredient
                 </Text>
@@ -191,9 +211,30 @@ export function IngredientsScreen() {
             return;
           }
 
-          updateIngredient(getIngredientReferenceKey(editingIngredient), ingredient);
+          updateIngredient(
+            getIngredientReferenceKey(editingIngredient),
+            ingredient,
+          );
           editIngredientSheetRef.current?.dismiss();
           setEditingIngredient(null);
+        }}
+      />
+      <CreateUserIngredientBottomSheet
+        ref={createIngredientSheetRef}
+        initialName={creatingIngredientName}
+        onDismiss={() => {
+          createIngredientSheetRef.current?.dismiss();
+          setCreatingIngredientName("");
+        }}
+        onCreated={(ingredient) => {
+          addIngredient({
+            userIngredientId: ingredient.id,
+            name: ingredient.name,
+            quantity: 1,
+            unitId: ingredient.defaultUnitId,
+          });
+          createIngredientSheetRef.current?.dismiss();
+          setCreatingIngredientName("");
         }}
       />
     </>
