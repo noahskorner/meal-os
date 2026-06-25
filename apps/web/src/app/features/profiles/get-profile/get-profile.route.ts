@@ -11,7 +11,7 @@ import { getProfileRequestSchema } from "./get-profile.request";
 export function registerGetProfileRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
-    path: "/api/profiles/{id}",
+    path: "/api/profiles/{profileId}",
     operationId: "getProfile",
     tags: ["Profiles"],
     summary: "Get profile",

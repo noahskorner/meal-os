@@ -95,7 +95,7 @@ export function useGetRecipe() {
         const { data, error: requestError } = await getRecipe({
           client: webApiClient,
           path: {
-            id: recipeId,
+            recipeId,
           },
         });
 

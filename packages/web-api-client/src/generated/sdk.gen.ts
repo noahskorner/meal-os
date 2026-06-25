@@ -99,7 +99,7 @@ export const getProfile = <ThrowOnError extends boolean = false>(
     GetProfileResponses,
     GetProfileErrors,
     ThrowOnError
-  >({ url: "/api/profiles/{id}", ...options });
+  >({ url: "/api/profiles/{profileId}", ...options });
 
 /**
  * Create user ingredient
@@ -173,7 +173,7 @@ export const getRecipe = <ThrowOnError extends boolean = false>(
     GetRecipeResponses,
     GetRecipeErrors,
     ThrowOnError
-  >({ url: "/api/recipes/{id}", ...options });
+  >({ url: "/api/recipes/{recipeId}", ...options });
 
 /**
  * Update recipe
@@ -188,7 +188,7 @@ export const updateRecipe = <ThrowOnError extends boolean = false>(
     UpdateRecipeErrors,
     ThrowOnError
   >({
-    url: "/api/recipes/{id}",
+    url: "/api/recipes/{recipeId}",
     ...options,
     headers: {
       "Content-Type": "application/json",

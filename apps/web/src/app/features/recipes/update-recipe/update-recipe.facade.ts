@@ -14,7 +14,7 @@ export class UpdateRecipeFacade {
     currentUserId: string,
   ): Promise<UpdateRecipeResponse | null> {
     const recipeUpdate = this.updateRecipeService.createRecipeUpdate(
-      request.id,
+      request.recipeId,
       request.body,
     );
 

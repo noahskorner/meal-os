@@ -7,7 +7,7 @@ import { createServiceScope, SERVICE_TOKENS } from "@/app/features/services";
 
 type GetProfileRouteContext = {
   params: Promise<{
-    id: string;
+    profileId: string;
   }>;
 };
 

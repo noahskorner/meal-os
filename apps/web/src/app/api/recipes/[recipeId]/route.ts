@@ -10,7 +10,7 @@ import { createServiceScope, SERVICE_TOKENS } from "@/app/features/services";
 
 type GetRecipeRouteContext = {
   params: Promise<{
-    id: string;
+    recipeId: string;
   }>;
 };
 

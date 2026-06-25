@@ -42,7 +42,7 @@ export class GetRecipeController {
       };
     }
 
-    const recipe = await this.getRecipeFacade.getVisibleById(request.id, {
+    const recipe = await this.getRecipeFacade.getVisibleById(request.recipeId, {
       currentUserId: currentUser.id,
     });
 

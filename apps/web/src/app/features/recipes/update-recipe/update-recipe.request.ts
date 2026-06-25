@@ -39,7 +39,7 @@ const updateRecipeStepRequestSchema = z
 
 export const updateRecipeParamsRequestSchema = z
   .object({
-    id: z
+    recipeId: z
       .string()
       .uuid()
       .openapi({

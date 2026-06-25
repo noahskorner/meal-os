@@ -83,7 +83,7 @@ async function createTestRecipe(
   };
 }
 
-test.describe("PUT /api/recipes/:id", () => {
+test.describe("PUT /api/recipes/:recipeId", () => {
   test("authenticated user can update their own recipe", async ({
     baseURL,
   }) => {
@@ -121,7 +121,7 @@ test.describe("PUT /api/recipes/:id", () => {
       body: request,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -132,7 +132,7 @@ test.describe("PUT /api/recipes/:id", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -186,7 +186,7 @@ test.describe("PUT /api/recipes/:id", () => {
       },
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -202,7 +202,7 @@ test.describe("PUT /api/recipes/:id", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.secondary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -227,7 +227,7 @@ test.describe("PUT /api/recipes/:id", () => {
         name: "Anonymous Update Attempt",
       },
       path: {
-        id,
+        recipeId: id,
       },
     });
 

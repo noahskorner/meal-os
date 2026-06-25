@@ -3,7 +3,7 @@ import { getProfile } from "@repo/web-api-client";
 import { createAuthHeaders, createTestApiClient } from "../../../api-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
-test.describe("GET /api/profiles/:id", () => {
+test.describe("GET /api/profiles/:profileId", () => {
   test("authenticated user can retrieve their own profile", async ({
     baseURL,
   }) => {
@@ -11,7 +11,7 @@ test.describe("GET /api/profiles/:id", () => {
       client: createTestApiClient(baseURL),
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: E2E_TEST_USERS.primary.id,
+        profileId: E2E_TEST_USERS.primary.id,
       },
     });
 
@@ -31,7 +31,7 @@ test.describe("GET /api/profiles/:id", () => {
       client: createTestApiClient(baseURL),
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: E2E_TEST_USERS.secondary.id,
+        profileId: E2E_TEST_USERS.secondary.id,
       },
     });
 
@@ -48,7 +48,7 @@ test.describe("GET /api/profiles/:id", () => {
     const result = await getProfile({
       client: createTestApiClient(baseURL),
       path: {
-        id: E2E_TEST_USERS.primary.id,
+        profileId: E2E_TEST_USERS.primary.id,
       },
     });
 

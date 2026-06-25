@@ -96,7 +96,7 @@ test.describe("POST /api/recipes", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: result.data?.id ?? "",
+        recipeId: result.data?.id ?? "",
       },
     });
 
@@ -195,7 +195,7 @@ test.describe("POST /api/recipes", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: result.data?.id ?? "",
+        recipeId: result.data?.id ?? "",
       },
     });
 

@@ -339,10 +339,10 @@ export type GetProfileData = {
     /**
      * The profile ID.
      */
-    id: string;
+    profileId: string;
   };
   query?: never;
-  url: "/api/profiles/{id}";
+  url: "/api/profiles/{profileId}";
 };
 
 export type GetProfileErrors = {
@@ -486,10 +486,10 @@ export type GetRecipeData = {
     /**
      * The recipe ID.
      */
-    id: string;
+    recipeId: string;
   };
   query?: never;
-  url: "/api/recipes/{id}";
+  url: "/api/recipes/{recipeId}";
 };
 
 export type GetRecipeErrors = {
@@ -524,10 +524,10 @@ export type UpdateRecipeData = {
     /**
      * The recipe ID.
      */
-    id: string;
+    recipeId: string;
   };
   query?: never;
-  url: "/api/recipes/{id}";
+  url: "/api/recipes/{recipeId}";
 };
 
 export type UpdateRecipeErrors = {

@@ -82,7 +82,7 @@ async function createTestRecipe(
   };
 }
 
-test.describe("GET /api/recipes/:id", () => {
+test.describe("GET /api/recipes/:recipeId", () => {
   test("authenticated user can get their own recipe", async ({ baseURL }) => {
     const apiClient = createTestApiClient(baseURL);
     const { id, request } = await createTestRecipe(
@@ -94,7 +94,7 @@ test.describe("GET /api/recipes/:id", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -184,7 +184,7 @@ test.describe("GET /api/recipes/:id", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: recipeId,
+        recipeId,
       },
     });
 
@@ -216,7 +216,7 @@ test.describe("GET /api/recipes/:id", () => {
       client: apiClient,
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -239,7 +239,7 @@ test.describe("GET /api/recipes/:id", () => {
     const result = await getRecipe({
       client: apiClient,
       path: {
-        id,
+        recipeId: id,
       },
     });
 
@@ -257,7 +257,7 @@ test.describe("GET /api/recipes/:id", () => {
       client: createTestApiClient(baseURL),
       headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
       path: {
-        id: "99999999-9999-4999-8999-999999999999",
+        recipeId: "99999999-9999-4999-8999-999999999999",
       },
     });
 

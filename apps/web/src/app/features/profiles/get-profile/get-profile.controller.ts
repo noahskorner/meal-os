@@ -48,19 +48,19 @@ export class GetProfileController {
       };
     }
 
-    if (currentUser.id !== request.id) {
+    if (currentUser.id !== request.profileId) {
       return {
         status: 403,
         body: createProfileForbiddenResponseDto(),
       };
     }
 
-    const profile = await this.getProfileFacade.getById(request.id);
+    const profile = await this.getProfileFacade.getById(request.profileId);
 
     if (!profile) {
       return {
         status: 404,
-        body: createProfileNotFoundResponseDto(request.id),
+        body: createProfileNotFoundResponseDto(request.profileId),
       };
     }
 

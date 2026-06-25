@@ -10,7 +10,7 @@ import { getRecipeRequestSchema } from "./get-recipe.request";
 export function registerGetRecipeRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "get",
-    path: "/api/recipes/{id}",
+    path: "/api/recipes/{recipeId}",
     operationId: "getRecipe",
     tags: ["Recipes"],
     summary: "Get recipe",

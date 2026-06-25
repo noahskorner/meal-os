@@ -1192,7 +1192,7 @@
         }
       }
     },
-    "/api/profiles/{id}": {
+    "/api/profiles/{profileId}": {
       "get": {
         "operationId": "getProfile",
         "tags": ["Profiles"],
@@ -1208,7 +1208,7 @@
             },
             "required": true,
             "description": "The profile ID.",
-            "name": "id",
+            "name": "profileId",
             "in": "path"
           }
         ],
@@ -1462,7 +1462,7 @@
         }
       }
     },
-    "/api/recipes/{id}": {
+    "/api/recipes/{recipeId}": {
       "get": {
         "operationId": "getRecipe",
         "tags": ["Recipes"],
@@ -1478,7 +1478,7 @@
             },
             "required": true,
             "description": "The recipe ID.",
-            "name": "id",
+            "name": "recipeId",
             "in": "path"
           }
         ],
@@ -1540,7 +1540,7 @@
             },
             "required": true,
             "description": "The recipe ID.",
-            "name": "id",
+            "name": "recipeId",
             "in": "path"
           }
         ],

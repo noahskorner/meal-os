@@ -12,7 +12,7 @@ import {
 export function registerUpdateRecipeRoute(registry: OpenAPIRegistry) {
   registry.registerPath({
     method: "put",
-    path: "/api/recipes/{id}",
+    path: "/api/recipes/{recipeId}",
     operationId: "updateRecipe",
     tags: ["Recipes"],
     summary: "Update recipe",
