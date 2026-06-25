@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState, type ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
-import { NewRecipeRoute, newRecipeRoutes } from "../new-recipe-routes";
+import { type NewRecipeRoute, newRecipeRoutes } from "../new-recipe-routes";
 import { NewManualRecipeFooter } from "./new-manual-recipe-footer";
 import { NewRecipeHeader } from "../new-recipe-header";
 import { useNewRecipe } from "../use-new-recipe";
@@ -10,7 +10,7 @@ export type NewManualRecipeLayoutProps = {
   children: ReactNode;
   nextLabel: string;
   nextRoute?: NewRecipeRoute;
-  backFallback: NewRecipeRoute;
+  backRoute: NewRecipeRoute;
   scroll?: boolean;
 };
 
@@ -18,7 +18,7 @@ export function NewManualRecipeLayout({
   children,
   nextLabel,
   nextRoute,
-  backFallback,
+  backRoute,
   scroll = true,
 }: NewManualRecipeLayoutProps) {
   const { resetDraft, save } = useNewRecipe();
@@ -49,14 +49,14 @@ export function NewManualRecipeLayout({
 
   const cancel = () => {
     resetDraft();
-    router.replace(newRecipeRoutes.chooseMethod);
+    router.dismissTo(newRecipeRoutes.recipes);
   };
 
   return (
     <View className="flex-1 bg-background">
       <NewRecipeHeader
         showCancel
-        onBack={() => goBackOrReplace(backFallback)}
+        onBack={() => router.dismissTo(backRoute)}
         onCancel={cancel}
       />
 
@@ -84,27 +84,8 @@ export function NewManualRecipeLayout({
         <NewManualRecipeFooter
           primaryLabel={isSaving ? "Saving..." : nextLabel}
           onPrimaryPress={goNext}
-          secondaryLabel={
-            backFallback === newRecipeRoutes.chooseMethod
-              ? "Save Draft"
-              : "Back"
-          }
-          onSecondaryPress={
-            backFallback === newRecipeRoutes.chooseMethod
-              ? undefined
-              : () => goBackOrReplace(backFallback)
-          }
         />
       </KeyboardAvoidingView>
     </View>
   );
-}
-
-export function goBackOrReplace(fallbackRoute: NewRecipeRoute) {
-  if (router.canGoBack()) {
-    router.back();
-    return;
-  }
-
-  router.replace(fallbackRoute);
 }

@@ -43,7 +43,12 @@ function createEmptyRecipe(): CreateRecipeRequest {
     cookTimeMinutes: 0,
     servings: 0,
     recipeIngredients: [],
-    recipeSteps: [],
+    recipeSteps: [
+      {
+        text: "Gather and measure all ingredients.",
+        sortOrder: 0,
+      },
+    ],
   };
 }
 
@@ -60,7 +65,9 @@ function getIngredientReferenceKey(
     "ingredientId" | "userIngredientId" | "name"
   >,
 ) {
-  return ingredient.ingredientId ?? ingredient.userIngredientId ?? ingredient.name;
+  return (
+    ingredient.ingredientId ?? ingredient.userIngredientId ?? ingredient.name
+  );
 }
 
 export function NewRecipeProvider({ children }: { children: ReactNode }) {
@@ -92,7 +99,8 @@ export function NewRecipeProvider({ children }: { children: ReactNode }) {
       recipeIngredients: [
         ...(prev.recipeIngredients || []).filter(
           (item) =>
-            getIngredientReferenceKey(item) !== getIngredientReferenceKey(ingredient),
+            getIngredientReferenceKey(item) !==
+            getIngredientReferenceKey(ingredient),
         ),
         ingredient,
       ],

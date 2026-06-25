@@ -6,7 +6,7 @@ import { newRecipeRoutes } from "@/features/recipes/new-recipe/new-recipe-routes
 export default function NewManualRecipeIngredientsRoute() {
   return (
     <NewManualRecipeLayout
-      backFallback={newRecipeRoutes.manualDetails}
+      backRoute={newRecipeRoutes.manualDetails}
       nextLabel="Next: Steps"
       nextRoute={newRecipeRoutes.manualInstructions}
       scroll={false}

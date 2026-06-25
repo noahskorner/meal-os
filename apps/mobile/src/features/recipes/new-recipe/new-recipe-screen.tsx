@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { NewRecipeSelection } from "./new-recipe-selection";
-import { NewRecipeRoute, newRecipeRoutes } from "./new-recipe-routes";
+import { newRecipeRoutes } from "./new-recipe-routes";
 import { NewRecipeHeader } from "./new-recipe-header";
 
 export function NewRecipeScreen() {
@@ -9,8 +9,8 @@ export function NewRecipeScreen() {
     <View className="flex-1 bg-background">
       <NewRecipeHeader
         showCancel={false}
-        onBack={() => goBackOrReplace(newRecipeRoutes.recipes)}
-        onCancel={() => {}}
+        onBack={() => router.dismissTo(newRecipeRoutes.recipes)}
+        onCancel={() => router.dismissTo(newRecipeRoutes.recipes)}
       />
 
       <KeyboardAvoidingView
@@ -34,13 +34,4 @@ export function NewRecipeScreen() {
       </KeyboardAvoidingView>
     </View>
   );
-}
-
-export function goBackOrReplace(fallbackRoute: NewRecipeRoute) {
-  if (router.canGoBack()) {
-    router.back();
-    return;
-  }
-
-  router.replace(fallbackRoute);
 }
