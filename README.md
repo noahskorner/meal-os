@@ -1,159 +1,117 @@
-# Turborepo starter
+# 🧑‍🍳 Meal OS
 
-This Turborepo starter is maintained by the Turborepo core team.
+Meal OS is a meal planning and grocery workflow app. It helps households manage shared shopping lists, save recipes, plan meals for the week, and generate grocery lists from meal plans.
 
-## Using this example
+The repo is an npm workspace managed with Turborepo.
 
-Run the following command:
+## What's inside
 
-```sh
-npx create-turbo@latest
+```text
+apps/
+├── web         # Next.js app and API
+├── web-test    # API integration and unit tests
+└── mobile      # Expo / React Native app
+
+packages/
+├── db                 # Prisma schema, migrations, and generated client
+├── ui                 # Shared React components
+├── web-api-client     # Generated OpenAPI SDK
+├── eslint-config
+└── typescript-config
 ```
 
-## What's inside?
+## Getting started
 
-This Turborepo includes the following packages/apps:
+### 1. Install dependencies
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+npm install
 ```
 
-Without global `turbo`, use your package manager:
+Requires Node `>=18` and npm `10.8.2`.
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+### 2. Create env files
+
+Copy the example files and fill in the Supabase/Postgres values.
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp apps/mobile/.env.example apps/mobile/.env
+cp packages/db/.env.example packages/db/.env
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+The main values are:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+- `DATABASE_URL`: Supabase transaction pooler connection string
+- `DIRECT_URL`: direct/session database connection string for Prisma CLI commands
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `EXPO_PUBLIC_WEB_URL`
 
-```sh
-turbo build --filter=docs
+### 3. Set up the database
+
+```bash
+npm run db:generate
+npm run db:migrate:dev
+npm run db:seed
 ```
 
-Without global `turbo`:
+### 4. Start development
 
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+Run everything:
+
+```bash
+npm run dev
 ```
 
-### Develop
+Run only the web app:
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run dev -- --filter=web
 ```
 
-Without global `turbo`, use your package manager:
+Run only the mobile app:
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+```bash
+npm run dev -- --filter=mobile
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Common commands
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```bash
+npm run lint
+npm run check-types
+npm run test
+npm run build
+npm run generate:client
 ```
 
-Without global `turbo`:
+Run the full local validation:
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
+```bash
+npm run check
 ```
 
-### Remote Caching
+## API client
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+The web API client is generated into `packages/web-api-client` and imported as `@repo/web-api-client`.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Regenerate it after changing API routes, OpenAPI metadata, DTOs, or request schemas:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```bash
+npm run generate:client
 ```
 
-Without global `turbo`, use your package manager:
+## Tests
 
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
+API and unit tests live in `apps/web-test`.
+
+```bash
+npm run test
+npm run test:unit
+npm run test:e2e
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+The Playwright test server defaults to port `3020`. Set `PORT` or `PLAYWRIGHT_BASE_URL` when needed.
