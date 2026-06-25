@@ -151,6 +151,51 @@ test.describe("GET /api/recipes", () => {
     }
   });
 
+  test("authenticated user can fuzzy search their recipes by name", async ({
+    baseURL,
+  }) => {
+    const apiClient = createTestApiClient(baseURL);
+    const matchingRecipeName = `Skillet Chicken Parmesan ${crypto.randomUUID()}`;
+    const nonMatchingRecipeName = `Blueberry Pancakes ${crypto.randomUUID()}`;
+    const matchingRecipe = await createRecipe({
+      client: apiClient,
+      body: createRecipeRequest(matchingRecipeName),
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+    const nonMatchingRecipe = await createRecipe({
+      client: apiClient,
+      body: createRecipeRequest(nonMatchingRecipeName),
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+
+    expect(matchingRecipe.response?.status).toBe(201);
+    expect(nonMatchingRecipe.response?.status).toBe(201);
+
+    const result = await listRecipes({
+      client: apiClient,
+      query: {
+        searchTerm: "chicken parmesn",
+        page: 1,
+        pageSize: 20,
+      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+
+    expect(result.response?.status).toBe(200);
+    expect(result.data?.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: matchingRecipe.data?.id,
+          name: matchingRecipeName,
+        }),
+      ]),
+    );
+    expect(result.data?.items.map((recipe) => recipe.id)).not.toContain(
+      nonMatchingRecipe.data?.id,
+    );
+    expect(result.data?.totalItems).toBeGreaterThanOrEqual(1);
+  });
+
   test("rejects invalid query parameters", async ({ baseURL }) => {
     const result = await listRecipes({
       client: createTestApiClient(baseURL),

@@ -29,6 +29,9 @@ import type {
   ListRecipesResponses,
   ListUnitsData,
   ListUnitsResponses,
+  UpdateRecipeData,
+  UpdateRecipeErrors,
+  UpdateRecipeResponses,
 } from "./types.gen";
 
 export type Options<
@@ -143,6 +146,27 @@ export const getRecipe = <ThrowOnError extends boolean = false>(
     GetRecipeErrors,
     ThrowOnError
   >({ url: "/api/recipes/{id}", ...options });
+
+/**
+ * Update recipe
+ *
+ * Updates a recipe owned by the authenticated user.
+ */
+export const updateRecipe = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateRecipeData, ThrowOnError>,
+): RequestResult<UpdateRecipeResponses, UpdateRecipeErrors, ThrowOnError> =>
+  (options.client ?? client).put<
+    UpdateRecipeResponses,
+    UpdateRecipeErrors,
+    ThrowOnError
+  >({
+    url: "/api/recipes/{id}",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * List units

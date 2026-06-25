@@ -13,7 +13,10 @@ export class ListRecipesFacade {
     const params = this.listRecipesService.createFindManyParams(request);
     const [items, totalItems] = await Promise.all([
       this.listRecipesRepository.findMany(params),
-      this.listRecipesRepository.countByCreatedById(request.createdById),
+      this.listRecipesRepository.count({
+        createdById: request.createdById,
+        searchTerm: request.searchTerm,
+      }),
     ]);
 
     return this.listRecipesService.createListResponse({

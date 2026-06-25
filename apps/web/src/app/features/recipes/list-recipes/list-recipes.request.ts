@@ -4,6 +4,20 @@ const positiveInteger = z.coerce.number().int().positive();
 
 export const listRecipesQueryRequestSchema = z
   .object({
+    searchTerm: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .optional()
+      .openapi({
+        description: "A fuzzy, case-insensitive search across recipe names.",
+        example: "chikn parm",
+        param: {
+          name: "searchTerm",
+          in: "query",
+        },
+      }),
     page: positiveInteger.default(1).openapi({
       description: "The page number to return.",
       example: 1,

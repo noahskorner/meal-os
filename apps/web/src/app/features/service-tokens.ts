@@ -24,6 +24,10 @@ import type { GetRecipeController } from "@/app/features/recipes/get-recipe/get-
 import type { GetRecipeFacade } from "@/app/features/recipes/get-recipe/get-recipe.facade";
 import type { GetRecipeRepository } from "@/app/features/recipes/get-recipe/get-recipe.repository";
 import type { GetRecipeService } from "@/app/features/recipes/get-recipe/get-recipe.service";
+import type { UpdateRecipeController } from "@/app/features/recipes/update-recipe/update-recipe.controller";
+import type { UpdateRecipeFacade } from "@/app/features/recipes/update-recipe/update-recipe.facade";
+import type { UpdateRecipeRepository } from "@/app/features/recipes/update-recipe/update-recipe.repository";
+import type { UpdateRecipeService } from "@/app/features/recipes/update-recipe/update-recipe.service";
 import type { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
 import type { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
 import type { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
@@ -81,4 +85,12 @@ export const SERVICE_TOKENS = {
   getRecipeService: createToken<GetRecipeService>("getRecipeService"),
   getRecipeFacade: createToken<GetRecipeFacade>("getRecipeFacade"),
   getRecipeController: createToken<GetRecipeController>("getRecipeController"),
+  updateRecipeRepository: createToken<UpdateRecipeRepository>(
+    "updateRecipeRepository",
+  ),
+  updateRecipeService: createToken<UpdateRecipeService>("updateRecipeService"),
+  updateRecipeFacade: createToken<UpdateRecipeFacade>("updateRecipeFacade"),
+  updateRecipeController: createToken<UpdateRecipeController>(
+    "updateRecipeController",
+  ),
 } as const;

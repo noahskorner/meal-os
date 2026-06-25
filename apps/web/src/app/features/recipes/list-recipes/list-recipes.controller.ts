@@ -44,6 +44,7 @@ export class ListRecipesController {
 
     const recipes = await this.listRecipesFacade.list({
       createdById: currentUser.id,
+      searchTerm: request.searchTerm,
       page: request.page,
       pageSize: request.pageSize,
     });

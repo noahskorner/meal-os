@@ -182,6 +182,45 @@ export type GetRecipeNotFoundResponse = ErrorResponse & {
   message?: string;
 };
 
+export type UpdateRecipeValidationErrorResponse = ValidationErrorResponse & {
+  message?: string;
+  issues?: Array<string>;
+};
+
+export type UpdateRecipeUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type UpdateRecipeNotFoundResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type UpdateRecipeRequest = {
+  name: string;
+  description?: string;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  servings?: number;
+  recipeIngredients?: Array<UpdateRecipeIngredientRequest>;
+  recipeSteps?: Array<UpdateRecipeStepRequest>;
+};
+
+export type UpdateRecipeIngredientRequest = {
+  ingredientId: string;
+  name: string;
+  quantity?: number;
+  unitId?: string;
+  preparation?: string;
+  note?: string;
+  isOptional?: boolean;
+};
+
+export type UpdateRecipeStepRequest = {
+  ingredientId?: string;
+  text: string;
+  sortOrder: number | null;
+};
+
 export type ListUnitsResponse = Array<UnitSummary>;
 
 export type UnitSummary = {
@@ -310,6 +349,10 @@ export type ListRecipesData = {
   path?: never;
   query?: {
     /**
+     * A fuzzy, case-insensitive search across recipe names.
+     */
+    searchTerm?: string;
+    /**
      * The page number to return.
      */
     page?: number;
@@ -411,6 +454,45 @@ export type GetRecipeResponses = {
 };
 
 export type GetRecipeResponse2 = GetRecipeResponses[keyof GetRecipeResponses];
+
+export type UpdateRecipeData = {
+  body: UpdateRecipeRequest;
+  path: {
+    /**
+     * The recipe ID.
+     */
+    id: string;
+  };
+  query?: never;
+  url: "/api/recipes/{id}";
+};
+
+export type UpdateRecipeErrors = {
+  /**
+   * The route parameters or request body were invalid.
+   */
+  400: UpdateRecipeValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: UpdateRecipeUnauthorizedResponse;
+  /**
+   * The recipe does not exist or is not owned by the authenticated user.
+   */
+  404: UpdateRecipeNotFoundResponse;
+};
+
+export type UpdateRecipeError = UpdateRecipeErrors[keyof UpdateRecipeErrors];
+
+export type UpdateRecipeResponses = {
+  /**
+   * The recipe was updated.
+   */
+  204: void;
+};
+
+export type UpdateRecipeResponse =
+  UpdateRecipeResponses[keyof UpdateRecipeResponses];
 
 export type ListUnitsData = {
   body?: never;

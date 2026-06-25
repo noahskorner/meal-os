@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const parsedQuery = listRecipesQueryRequestSchema.safeParse({
+    searchTerm: request.nextUrl.searchParams.get("searchTerm") ?? undefined,
     page: request.nextUrl.searchParams.get("page") ?? undefined,
     pageSize: request.nextUrl.searchParams.get("pageSize") ?? undefined,
   });

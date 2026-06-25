@@ -9,6 +9,7 @@ export {
   listRecipes,
   listUnits,
   type Options,
+  updateRecipe,
 } from "./sdk.gen";
 export type {
   ClientOptions,
@@ -74,5 +75,16 @@ export type {
   ListUnitsResponse2,
   ListUnitsResponses,
   UnitSummary,
+  UpdateRecipeData,
+  UpdateRecipeError,
+  UpdateRecipeErrors,
+  UpdateRecipeIngredientRequest,
+  UpdateRecipeNotFoundResponse,
+  UpdateRecipeRequest,
+  UpdateRecipeResponse,
+  UpdateRecipeResponses,
+  UpdateRecipeStepRequest,
+  UpdateRecipeUnauthorizedResponse,
+  UpdateRecipeValidationErrorResponse,
   ValidationErrorResponse,
 } from "./types.gen";

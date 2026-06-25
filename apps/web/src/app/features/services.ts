@@ -11,6 +11,7 @@ import { registerGetProfile } from "@/app/features/profiles/get-profile/get-prof
 import { registerCreateRecipe } from "@/app/features/recipes/create-recipe/create-recipe.di";
 import { registerListRecipes } from "@/app/features/recipes/list-recipes/list-recipes.di";
 import { registerGetRecipe } from "@/app/features/recipes/get-recipe/get-recipe.di";
+import { registerUpdateRecipe } from "@/app/features/recipes/update-recipe/update-recipe.di";
 import { SERVICE_TOKENS } from "@/app/features/service-tokens";
 import { registerListUnits } from "@/app/features/units/list-units/list-units.di";
 
@@ -35,6 +36,7 @@ registerGetProfile(services);
 registerCreateRecipe(services);
 registerListRecipes(services);
 registerGetRecipe(services);
+registerUpdateRecipe(services);
 
 export function createServiceScope(): ServiceScope {
   return services.createScope();

@@ -2,7 +2,6 @@ import type { PaginatedResponse } from "../../paginated.response";
 import type { ListRecipeModel } from "./list-recipes.model";
 import type { FindManyRecipesParams } from "./list-recipes.repository";
 import type { ListRecipesRequest } from "./list-recipes.request";
-import type { ListRecipesResponse } from "./list-recipes.response";
 
 export class ListRecipesService {
   public createFindManyParams(
@@ -10,6 +9,7 @@ export class ListRecipesService {
   ): FindManyRecipesParams {
     return {
       createdById: request.createdById,
+      searchTerm: request.searchTerm,
       skip: (request.page - 1) * request.pageSize,
       take: request.pageSize,
     };

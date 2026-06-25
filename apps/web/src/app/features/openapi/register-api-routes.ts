@@ -5,6 +5,7 @@ import { registerGetProfileRoute } from "../profiles/get-profile/get-profile.rou
 import { registerCreateRecipeRoute } from "../recipes/create-recipe/create-recipe.route";
 import { registerListRecipesRoute } from "../recipes/list-recipes/list-recipes.route";
 import { registerGetRecipeRoute } from "../recipes/get-recipe/get-recipe.route";
+import { registerUpdateRecipeRoute } from "../recipes/update-recipe/update-recipe.route";
 import { registerListUnitsRoute } from "../units/list-units/list-units.route";
 
 const routeRegistrations = [
@@ -14,6 +15,7 @@ const routeRegistrations = [
   registerCreateRecipeRoute,
   registerListRecipesRoute,
   registerGetRecipeRoute,
+  registerUpdateRecipeRoute,
   registerListUnitsRoute,
 ];
 
