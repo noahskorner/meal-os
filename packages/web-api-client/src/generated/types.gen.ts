@@ -74,6 +74,27 @@ export type GetProfileNotFoundResponse = ErrorResponse & {
   message?: string;
 };
 
+export type CreateUserIngredientResponse = {
+  id: string;
+  location: string;
+};
+
+export type CreateUserIngredientValidationErrorResponse =
+  ValidationErrorResponse & {
+    message?: string;
+    issues?: Array<string>;
+  };
+
+export type CreateUserIngredientUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type CreateUserIngredientRequest = {
+  name: string;
+  categoryId?: string;
+  defaultUnitId?: string;
+};
+
 export type CreateRecipeResponse = {
   id: string;
   location: string;
@@ -354,6 +375,37 @@ export type GetProfileResponses = {
 
 export type GetProfileResponse2 =
   GetProfileResponses[keyof GetProfileResponses];
+
+export type CreateUserIngredientData = {
+  body: CreateUserIngredientRequest;
+  path?: never;
+  query?: never;
+  url: "/api/user-ingredients";
+};
+
+export type CreateUserIngredientErrors = {
+  /**
+   * The request body was invalid.
+   */
+  400: CreateUserIngredientValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: CreateUserIngredientUnauthorizedResponse;
+};
+
+export type CreateUserIngredientError =
+  CreateUserIngredientErrors[keyof CreateUserIngredientErrors];
+
+export type CreateUserIngredientResponses = {
+  /**
+   * The user ingredient was created.
+   */
+  201: CreateUserIngredientResponse;
+};
+
+export type CreateUserIngredientResponse2 =
+  CreateUserIngredientResponses[keyof CreateUserIngredientResponses];
 
 export type ListRecipesData = {
   body?: never;

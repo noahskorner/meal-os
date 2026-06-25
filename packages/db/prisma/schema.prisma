@@ -119,9 +119,13 @@ model UserIngredient {
   id                String             @id @default(uuid()) @db.Uuid
   createdById       String             @map("created_by_id") @db.Uuid
   name              String
+  categoryId        String?            @map("category_id") @db.Uuid
+  defaultUnitId     String?            @map("default_unit_id") @db.Uuid
   createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   createdBy         Profile            @relation(fields: [createdById], references: [id])
+  category          IngredientCategory? @relation(fields: [categoryId], references: [id])
+  defaultUnit       Unit?              @relation(fields: [defaultUnitId], references: [id])
   recipeIngredients RecipeIngredient[]
 
   @@unique([createdById, name])
@@ -133,6 +137,7 @@ model IngredientCategory {
   id          String       @id @default(uuid()) @db.Uuid
   name        String       @unique
   ingredients Ingredient[]
+  userIngredients UserIngredient[]
 
   @@map("ingredient_categories")
   @@schema("public")
@@ -155,6 +160,7 @@ model Unit {
   name              String             @unique
   abbreviation      String
   ingredients       Ingredient[]
+  userIngredients   UserIngredient[]
   recipeIngredients RecipeIngredient[]
 
   @@map("units")

@@ -12,6 +12,9 @@ import type {
   CreateRecipeData,
   CreateRecipeErrors,
   CreateRecipeResponses,
+  CreateUserIngredientData,
+  CreateUserIngredientErrors,
+  CreateUserIngredientResponses,
   GetProfileData,
   GetProfileErrors,
   GetProfileResponses,
@@ -97,6 +100,31 @@ export const getProfile = <ThrowOnError extends boolean = false>(
     GetProfileErrors,
     ThrowOnError
   >({ url: "/api/profiles/{id}", ...options });
+
+/**
+ * Create user ingredient
+ *
+ * Creates a custom ingredient for the authenticated user.
+ */
+export const createUserIngredient = <ThrowOnError extends boolean = false>(
+  options: Options<CreateUserIngredientData, ThrowOnError>,
+): RequestResult<
+  CreateUserIngredientResponses,
+  CreateUserIngredientErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    CreateUserIngredientResponses,
+    CreateUserIngredientErrors,
+    ThrowOnError
+  >({
+    url: "/api/user-ingredients",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * List recipes

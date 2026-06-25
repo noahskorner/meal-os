@@ -28,6 +28,10 @@ import type { UpdateRecipeController } from "@/app/features/recipes/update-recip
 import type { UpdateRecipeFacade } from "@/app/features/recipes/update-recipe/update-recipe.facade";
 import type { UpdateRecipeRepository } from "@/app/features/recipes/update-recipe/update-recipe.repository";
 import type { UpdateRecipeService } from "@/app/features/recipes/update-recipe/update-recipe.service";
+import type { CreateUserIngredientController } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.controller";
+import type { CreateUserIngredientFacade } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.facade";
+import type { CreateUserIngredientRepository } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.repository";
+import type { CreateUserIngredientService } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.service";
 import type { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
 import type { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
 import type { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
@@ -52,6 +56,18 @@ export const SERVICE_TOKENS = {
   ),
   listIngredientsController: createToken<ListIngredientsController>(
     "listIngredientsController",
+  ),
+  createUserIngredientRepository: createToken<CreateUserIngredientRepository>(
+    "createUserIngredientRepository",
+  ),
+  createUserIngredientService: createToken<CreateUserIngredientService>(
+    "createUserIngredientService",
+  ),
+  createUserIngredientFacade: createToken<CreateUserIngredientFacade>(
+    "createUserIngredientFacade",
+  ),
+  createUserIngredientController: createToken<CreateUserIngredientController>(
+    "createUserIngredientController",
   ),
   listUnitsRepository: createToken<ListUnitsRepository>("listUnitsRepository"),
   listUnitsService: createToken<ListUnitsService>("listUnitsService"),

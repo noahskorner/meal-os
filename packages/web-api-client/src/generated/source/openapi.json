@@ -268,6 +268,84 @@
           }
         ]
       },
+      "CreateUserIngredientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
+          },
+          "location": {
+            "type": "string",
+            "example": "/api/user-ingredients/550e8400-e29b-41d4-a716-446655440010"
+          }
+        },
+        "required": ["id", "location"]
+      },
+      "CreateUserIngredientValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid request body."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "name: Too small: expected string to have >=1 characters"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CreateUserIngredientUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
+      "CreateUserIngredientRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Family Spice Blend"
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "defaultUnitId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          }
+        },
+        "required": ["name"]
+      },
       "CreateRecipeResponse": {
         "type": "object",
         "properties": {
@@ -1181,6 +1259,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetProfileNotFoundResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user-ingredients": {
+      "post": {
+        "operationId": "createUserIngredient",
+        "tags": ["User Ingredients"],
+        "summary": "Create user ingredient",
+        "description": "Creates a custom ingredient for the authenticated user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserIngredientRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The user ingredient was created.",
+            "headers": {
+              "Location": {
+                "description": "Location of the created user ingredient resource.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserIngredientResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request body was invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserIngredientValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserIngredientUnauthorizedResponse"
                 }
               }
             }

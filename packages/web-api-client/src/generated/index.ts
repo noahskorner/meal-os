@@ -2,6 +2,7 @@
 
 export {
   createRecipe,
+  createUserIngredient,
   getProfile,
   getRecipe,
   healthCheck,
@@ -24,6 +25,15 @@ export type {
   CreateRecipeStepRequest,
   CreateRecipeUnauthorizedResponse,
   CreateRecipeValidationErrorResponse,
+  CreateUserIngredientData,
+  CreateUserIngredientError,
+  CreateUserIngredientErrors,
+  CreateUserIngredientRequest,
+  CreateUserIngredientResponse,
+  CreateUserIngredientResponse2,
+  CreateUserIngredientResponses,
+  CreateUserIngredientUnauthorizedResponse,
+  CreateUserIngredientValidationErrorResponse,
   ErrorResponse,
   GetProfileData,
   GetProfileError,

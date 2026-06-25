@@ -277,8 +277,9 @@ Do not perform auth in:
 For create operations:
 
 - Return `201 Created`
-- Include a resource identifier
+- Include a minimal response body containing the resource identifier (for example, `{ "id": "...", "location": "..." }`)
 - Include a `Location` header when appropriate
+- Avoid returning the full resource. If the client needs it, fetch it via the corresponding query endpoint.
 
 ---
 

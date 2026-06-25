@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   createRecipe,
+  createUserIngredient,
   getRecipe,
   listIngredients,
   type Client,
@@ -8,7 +9,6 @@ import {
   type ListIngredientResponse,
 } from "@repo/web-api-client";
 import { createAuthHeaders, createTestApiClient } from "../../../api-client";
-import { getTestPrismaClient } from "../../../prisma-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
 async function getIngredient(
@@ -143,17 +143,19 @@ test.describe("GET /api/recipes/:id", () => {
     baseURL,
   }) => {
     const apiClient = createTestApiClient(baseURL);
-    const prisma = await getTestPrismaClient();
-    const userIngredient = await prisma.userIngredient.create({
-      data: {
-        createdById: E2E_TEST_USERS.primary.id,
-        name: "Fermented Chili Paste",
+    const userIngredientName = `Fermented Chili Paste ${Date.now()}`;
+    const userIngredientResult = await createUserIngredient({
+      client: apiClient,
+      body: {
+        name: userIngredientName,
       },
-      select: {
-        id: true,
-        name: true,
-      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
     });
+
+    const userIngredient = {
+      id: userIngredientResult.data?.id ?? "",
+      name: userIngredientName,
+    };
 
     const createResult = await createRecipe({
       client: apiClient,
