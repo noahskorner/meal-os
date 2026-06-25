@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 import {
   createUserIngredient,
+  getUserIngredient,
   listIngredients,
 } from "@repo/web-api-client";
 import { createAuthHeaders, createTestApiClient } from "../../../api-client";
-import { getTestPrismaClient } from "../../../prisma-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
 test.describe("POST /api/user-ingredients", () => {
@@ -12,7 +12,6 @@ test.describe("POST /api/user-ingredients", () => {
     baseURL,
   }) => {
     const apiClient = createTestApiClient(baseURL);
-    const prisma = await getTestPrismaClient();
     const name = `Family Spice Blend ${Date.now()}`;
 
     const result = await createUserIngredient({
@@ -32,28 +31,33 @@ test.describe("POST /api/user-ingredients", () => {
     expect(result.data?.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );
-    expect(result.data?.location).toBe(`/api/user-ingredients/${result.data?.id}`);
+    expect(result.data?.location).toBe(
+      `/api/user-ingredients/${result.data?.id}`,
+    );
     expect(location).toBe(result.data?.location);
 
-    const persistedUserIngredient = await prisma.userIngredient.findUnique({
-      where: {
-        id: result.data?.id,
-      },
-      select: {
-        id: true,
-        name: true,
-        createdById: true,
-        categoryId: true,
-        defaultUnitId: true,
+    const userIngredientId = result.data?.id;
+
+    if (!userIngredientId) {
+      throw new Error("Expected user ingredient creation to return an id.");
+    }
+
+    const fetchResult = await getUserIngredient({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        userIngredientId,
       },
     });
 
-    expect(persistedUserIngredient).toEqual({
-      id: result.data?.id,
+    expect(fetchResult.response?.status).toBe(200);
+    expect(fetchResult.data).toEqual({
+      id: userIngredientId,
       name,
-      createdById: E2E_TEST_USERS.primary.id,
       categoryId: null,
       defaultUnitId: null,
+      category: null,
+      defaultUnit: null,
     });
   });
 
@@ -61,7 +65,6 @@ test.describe("POST /api/user-ingredients", () => {
     baseURL,
   }) => {
     const apiClient = createTestApiClient(baseURL);
-    const prisma = await getTestPrismaClient();
     const ingredientsResult = await listIngredients({
       client: apiClient,
       query: {
@@ -88,24 +91,35 @@ test.describe("POST /api/user-ingredients", () => {
     });
 
     expect(result.response?.status).toBe(201);
-    expect(result.response?.headers.get("location")).toBe(result.data?.location);
+    expect(result.response?.headers.get("location")).toBe(
+      result.data?.location,
+    );
     expect(result.data?.location).toBe(
       `/api/user-ingredients/${result.data?.id}`,
     );
 
-    const persistedUserIngredient = await prisma.userIngredient.findUnique({
-      where: {
-        id: result.data?.id,
-      },
-      select: {
-        categoryId: true,
-        defaultUnitId: true,
+    const userIngredientId = result.data?.id;
+
+    if (!userIngredientId) {
+      throw new Error("Expected user ingredient creation to return an id.");
+    }
+
+    const fetchResult = await getUserIngredient({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        userIngredientId,
       },
     });
 
-    expect(persistedUserIngredient).toEqual({
+    expect(fetchResult.response?.status).toBe(200);
+    expect(fetchResult.data).toEqual({
+      id: userIngredientId,
+      name,
       categoryId: ingredient.category.id,
       defaultUnitId: ingredient.defaultUnit.id,
+      category: ingredient.category,
+      defaultUnit: ingredient.defaultUnit,
     });
   });
 
@@ -132,7 +146,6 @@ test.describe("POST /api/user-ingredients", () => {
     baseURL,
   }) => {
     const apiClient = createTestApiClient(baseURL);
-    const prisma = await getTestPrismaClient();
     const name = `Protected User Ingredient ${Date.now()}`;
 
     const result = await apiClient.post<{
@@ -153,18 +166,36 @@ test.describe("POST /api/user-ingredients", () => {
     });
 
     expect(result.response?.status).toBe(201);
-    expect(result.response?.headers.get("location")).toBe(result.data?.location);
+    expect(result.response?.headers.get("location")).toBe(
+      result.data?.location,
+    );
 
-    const persistedUserIngredient = await prisma.userIngredient.findUnique({
-      where: {
-        id: result.data?.id,
-      },
-      select: {
-        createdById: true,
+    const userIngredientId = result.data?.id;
+
+    if (!userIngredientId) {
+      throw new Error("Expected user ingredient creation to return an id.");
+    }
+
+    const primaryFetchResult = await getUserIngredient({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        userIngredientId,
       },
     });
 
-    expect(persistedUserIngredient?.createdById).toBe(E2E_TEST_USERS.primary.id);
+    expect(primaryFetchResult.response?.status).toBe(200);
+    expect(primaryFetchResult.data?.name).toBe(name);
+
+    const secondaryFetchResult = await getUserIngredient({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.secondary.id),
+      path: {
+        userIngredientId,
+      },
+    });
+
+    expect(secondaryFetchResult.response?.status).toBe(404);
   });
 
   test("rejects invalid request bodies", async ({ baseURL }) => {

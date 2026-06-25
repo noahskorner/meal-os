@@ -346,6 +346,137 @@
         },
         "required": ["name"]
       },
+      "GetUserIngredientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
+          },
+          "name": {
+            "type": "string",
+            "example": "Family Spice Blend"
+          },
+          "categoryId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "defaultUnitId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "category": {
+            "$ref": "#/components/schemas/GetUserIngredientCategoryResponse"
+          },
+          "defaultUnit": {
+            "$ref": "#/components/schemas/GetUserIngredientUnitResponse"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "categoryId",
+          "defaultUnitId",
+          "category",
+          "defaultUnit"
+        ]
+      },
+      "GetUserIngredientCategoryResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Produce"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "GetUserIngredientUnitResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "name": {
+            "type": "string",
+            "example": "each"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ea"
+          },
+          "type": {
+            "type": "string",
+            "example": "COUNT"
+          }
+        },
+        "required": ["id", "name", "abbreviation", "type"]
+      },
+      "GetUserIngredientValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ValidationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Invalid route parameters."
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": ["userIngredientId: Invalid UUID"]
+              }
+            }
+          }
+        ]
+      },
+      "GetUserIngredientUnauthorizedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Authentication required."
+              }
+            }
+          }
+        ]
+      },
+      "GetUserIngredientNotFoundResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "User ingredient not found."
+              }
+            }
+          }
+        ]
+      },
       "CreateRecipeResponse": {
         "type": "object",
         "properties": {
@@ -1317,6 +1448,70 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateUserIngredientUnauthorizedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user-ingredients/{userIngredientId}": {
+      "get": {
+        "operationId": "getUserIngredient",
+        "tags": ["User Ingredients"],
+        "summary": "Get user ingredient",
+        "description": "Returns a user ingredient visible to the authenticated user.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The user ingredient ID.",
+              "example": "550e8400-e29b-41d4-a716-446655440010"
+            },
+            "required": true,
+            "description": "The user ingredient ID.",
+            "name": "userIngredientId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user ingredient was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserIngredientResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The route parameters were invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserIngredientValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The request was unauthenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserIngredientUnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The user ingredient does not exist or is not visible to the authenticated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserIngredientNotFoundResponse"
                 }
               }
             }

@@ -21,6 +21,9 @@ import type {
   GetRecipeData,
   GetRecipeErrors,
   GetRecipeResponses,
+  GetUserIngredientData,
+  GetUserIngredientErrors,
+  GetUserIngredientResponses,
   HealthCheckData,
   HealthCheckErrors,
   HealthCheckResponses,
@@ -125,6 +128,24 @@ export const createUserIngredient = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
+
+/**
+ * Get user ingredient
+ *
+ * Returns a user ingredient visible to the authenticated user.
+ */
+export const getUserIngredient = <ThrowOnError extends boolean = false>(
+  options: Options<GetUserIngredientData, ThrowOnError>,
+): RequestResult<
+  GetUserIngredientResponses,
+  GetUserIngredientErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetUserIngredientResponses,
+    GetUserIngredientErrors,
+    ThrowOnError
+  >({ url: "/api/user-ingredients/{userIngredientId}", ...options });
 
 /**
  * List recipes

@@ -32,6 +32,10 @@ import type { CreateUserIngredientController } from "@/app/features/user-ingredi
 import type { CreateUserIngredientFacade } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.facade";
 import type { CreateUserIngredientRepository } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.repository";
 import type { CreateUserIngredientService } from "@/app/features/user-ingredients/create-user-ingredient/create-user-ingredient.service";
+import type { GetUserIngredientController } from "@/app/features/user-ingredients/get-user-ingredient/get-user-ingredient.controller";
+import type { GetUserIngredientFacade } from "@/app/features/user-ingredients/get-user-ingredient/get-user-ingredient.facade";
+import type { GetUserIngredientRepository } from "@/app/features/user-ingredients/get-user-ingredient/get-user-ingredient.repository";
+import type { GetUserIngredientService } from "@/app/features/user-ingredients/get-user-ingredient/get-user-ingredient.service";
 import type { ListUnitsController } from "@/app/features/units/list-units/list-units.controller";
 import type { ListUnitsFacade } from "@/app/features/units/list-units/list-units.facade";
 import type { ListUnitsRepository } from "@/app/features/units/list-units/list-units.repository";
@@ -68,6 +72,18 @@ export const SERVICE_TOKENS = {
   ),
   createUserIngredientController: createToken<CreateUserIngredientController>(
     "createUserIngredientController",
+  ),
+  getUserIngredientRepository: createToken<GetUserIngredientRepository>(
+    "getUserIngredientRepository",
+  ),
+  getUserIngredientService: createToken<GetUserIngredientService>(
+    "getUserIngredientService",
+  ),
+  getUserIngredientFacade: createToken<GetUserIngredientFacade>(
+    "getUserIngredientFacade",
+  ),
+  getUserIngredientController: createToken<GetUserIngredientController>(
+    "getUserIngredientController",
   ),
   listUnitsRepository: createToken<ListUnitsRepository>("listUnitsRepository"),
   listUnitsService: createToken<ListUnitsService>("listUnitsService"),

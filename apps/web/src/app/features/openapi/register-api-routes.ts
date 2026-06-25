@@ -7,6 +7,7 @@ import { registerListRecipesRoute } from "../recipes/list-recipes/list-recipes.r
 import { registerGetRecipeRoute } from "../recipes/get-recipe/get-recipe.route";
 import { registerUpdateRecipeRoute } from "../recipes/update-recipe/update-recipe.route";
 import { registerCreateUserIngredientRoute } from "../user-ingredients/create-user-ingredient/create-user-ingredient.route";
+import { registerGetUserIngredientRoute } from "../user-ingredients/get-user-ingredient/get-user-ingredient.route";
 import { registerListUnitsRoute } from "../units/list-units/list-units.route";
 
 const routeRegistrations = [
@@ -14,6 +15,7 @@ const routeRegistrations = [
   registerListIngredientsRoute,
   registerGetProfileRoute,
   registerCreateUserIngredientRoute,
+  registerGetUserIngredientRoute,
   registerCreateRecipeRoute,
   registerListRecipesRoute,
   registerGetRecipeRoute,

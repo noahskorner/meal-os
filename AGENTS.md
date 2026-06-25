@@ -192,6 +192,8 @@ Never exposed through APIs.
 ### \*.request.ts
 
 Request schemas and inferred request types.
+- Use camelCase for route parameters.
+- Prefer `userIngredientId` over `id`.
 
 ---
 

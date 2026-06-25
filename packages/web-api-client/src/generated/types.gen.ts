@@ -95,6 +95,41 @@ export type CreateUserIngredientRequest = {
   defaultUnitId?: string;
 };
 
+export type GetUserIngredientResponse = {
+  id: string;
+  name: string;
+  categoryId: string | null;
+  defaultUnitId: string | null;
+  category: GetUserIngredientCategoryResponse;
+  defaultUnit: GetUserIngredientUnitResponse;
+};
+
+export type GetUserIngredientCategoryResponse = {
+  id: string;
+  name: string;
+} | null;
+
+export type GetUserIngredientUnitResponse = {
+  id: string;
+  name: string;
+  abbreviation: string;
+  type: string;
+} | null;
+
+export type GetUserIngredientValidationErrorResponse =
+  ValidationErrorResponse & {
+    message?: string;
+    issues?: Array<string>;
+  };
+
+export type GetUserIngredientUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type GetUserIngredientNotFoundResponse = ErrorResponse & {
+  message?: string;
+};
+
 export type CreateRecipeResponse = {
   id: string;
   location: string;
@@ -406,6 +441,46 @@ export type CreateUserIngredientResponses = {
 
 export type CreateUserIngredientResponse2 =
   CreateUserIngredientResponses[keyof CreateUserIngredientResponses];
+
+export type GetUserIngredientData = {
+  body?: never;
+  path: {
+    /**
+     * The user ingredient ID.
+     */
+    userIngredientId: string;
+  };
+  query?: never;
+  url: "/api/user-ingredients/{userIngredientId}";
+};
+
+export type GetUserIngredientErrors = {
+  /**
+   * The route parameters were invalid.
+   */
+  400: GetUserIngredientValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: GetUserIngredientUnauthorizedResponse;
+  /**
+   * The user ingredient does not exist or is not visible to the authenticated user.
+   */
+  404: GetUserIngredientNotFoundResponse;
+};
+
+export type GetUserIngredientError =
+  GetUserIngredientErrors[keyof GetUserIngredientErrors];
+
+export type GetUserIngredientResponses = {
+  /**
+   * The user ingredient was found.
+   */
+  200: GetUserIngredientResponse;
+};
+
+export type GetUserIngredientResponse2 =
+  GetUserIngredientResponses[keyof GetUserIngredientResponses];
 
 export type ListRecipesData = {
   body?: never;
