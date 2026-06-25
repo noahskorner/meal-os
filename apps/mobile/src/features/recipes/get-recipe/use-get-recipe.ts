@@ -157,6 +157,8 @@ export function useGetRecipe() {
         ...ingredient,
         quantityLabel: formatDetailValue(ingredient.quantity),
         unitIdLabel: formatDetailValue(ingredient.unitId),
+        ingredientIdLabel: formatDetailValue(ingredient.ingredientId),
+        userIngredientIdLabel: formatDetailValue(ingredient.userIngredientId),
         preparationLabel: formatDetailValue(ingredient.preparation),
         noteLabel: formatDetailValue(ingredient.note),
         isOptionalLabel: formatDetailValue(ingredient.isOptional),

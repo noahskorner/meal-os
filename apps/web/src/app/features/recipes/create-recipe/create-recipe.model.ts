@@ -10,7 +10,8 @@ export type CreateRecipeModel = {
 };
 
 export type CreateRecipeIngredientModel = {
-  ingredientId: string;
+  ingredientId: string | null;
+  userIngredientId: string | null;
   name: string;
   quantity: number | null;
   unitId: string | null;

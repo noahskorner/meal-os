@@ -99,7 +99,8 @@ export type CreateRecipeRequest = {
 };
 
 export type CreateRecipeIngredientRequest = {
-  ingredientId: string;
+  ingredientId?: string;
+  userIngredientId?: string;
   name: string;
   quantity?: number;
   unitId?: string;
@@ -152,14 +153,27 @@ export type GetRecipeResponse = {
 
 export type GetRecipeIngredientResponse = {
   id: string;
-  ingredientId: string;
+  ingredientId: string | null;
+  userIngredientId: string | null;
   name: string;
   quantity: number | null;
   unitId: string | null;
   preparation: string | null;
   note: string | null;
   isOptional: boolean | null;
+  ingredient: GetRecipeIngredientReferenceResponse;
+  userIngredient: GetRecipeUserIngredientReferenceResponse;
 };
+
+export type GetRecipeIngredientReferenceResponse = {
+  id: string;
+  name: string;
+} | null;
+
+export type GetRecipeUserIngredientReferenceResponse = {
+  id: string;
+  name: string;
+} | null;
 
 export type GetRecipeStepResponse = {
   id: string;

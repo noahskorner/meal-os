@@ -2,8 +2,11 @@ import { z } from "../../../lib/zod";
 
 const createRecipeIngredientRequestSchema = z
   .object({
-    ingredientId: z.uuid().openapi({
+    ingredientId: z.uuid().optional().openapi({
       example: "550e8400-e29b-41d4-a716-446655440000",
+    }),
+    userIngredientId: z.uuid().optional().openapi({
+      example: "550e8400-e29b-41d4-a716-446655440010",
     }),
     name: z.string().trim().min(1).max(200).openapi({
       example: "Garlic",
@@ -23,6 +26,19 @@ const createRecipeIngredientRequestSchema = z
     isOptional: z.boolean().optional().openapi({
       example: false,
     }),
+  })
+  .superRefine((ingredient, context) => {
+    const hasIngredientId = ingredient.ingredientId !== undefined;
+    const hasUserIngredientId = ingredient.userIngredientId !== undefined;
+
+    if (hasIngredientId === hasUserIngredientId) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Exactly one of ingredientId or userIngredientId must be provided.",
+        path: ["ingredientId"],
+      });
+    }
   })
   .openapi("CreateRecipeIngredientRequest");
 
@@ -78,6 +94,10 @@ export const createRecipeRequestSchema = z
             unitId: "550e8400-e29b-41d4-a716-446655440001",
             preparation: "minced",
             isOptional: false,
+          },
+          {
+            userIngredientId: "550e8400-e29b-41d4-a716-446655440010",
+            name: "Family Spice Blend",
           },
         ],
       }),

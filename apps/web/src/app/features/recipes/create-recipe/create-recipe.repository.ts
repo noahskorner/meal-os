@@ -16,6 +16,7 @@ export class CreateRecipeRepository {
         recipeIngredients: {
           create: input.recipeIngredients.map((ingredient) => ({
             ingredientId: ingredient.ingredientId,
+            userIngredientId: ingredient.userIngredientId,
             name: ingredient.name,
             quantity: ingredient.quantity,
             unitId: ingredient.unitId,

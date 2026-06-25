@@ -370,6 +370,10 @@
                 "unitId": "550e8400-e29b-41d4-a716-446655440001",
                 "preparation": "minced",
                 "isOptional": false
+              },
+              {
+                "userIngredientId": "550e8400-e29b-41d4-a716-446655440010",
+                "name": "Family Spice Blend"
               }
             ]
           },
@@ -395,6 +399,11 @@
             "type": "string",
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "userIngredientId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
           },
           "name": {
             "type": "string",
@@ -430,7 +439,7 @@
             "example": false
           }
         },
-        "required": ["ingredientId", "name"]
+        "required": ["name"]
       },
       "CreateRecipeStepRequest": {
         "type": "object",
@@ -616,9 +625,14 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "ingredientId": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "userIngredientId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
           },
           "name": {
             "type": "string",
@@ -644,18 +658,57 @@
           "isOptional": {
             "type": ["boolean", "null"],
             "example": false
+          },
+          "ingredient": {
+            "$ref": "#/components/schemas/GetRecipeIngredientReferenceResponse"
+          },
+          "userIngredient": {
+            "$ref": "#/components/schemas/GetRecipeUserIngredientReferenceResponse"
           }
         },
         "required": [
           "id",
           "ingredientId",
+          "userIngredientId",
           "name",
           "quantity",
           "unitId",
           "preparation",
           "note",
-          "isOptional"
+          "isOptional",
+          "ingredient",
+          "userIngredient"
         ]
+      },
+      "GetRecipeIngredientReferenceResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Garlic"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "GetRecipeUserIngredientReferenceResponse": {
+        "type": ["object", "null"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440010"
+          },
+          "name": {
+            "type": "string",
+            "example": "Family Spice Blend"
+          }
+        },
+        "required": ["id", "name"]
       },
       "GetRecipeStepResponse": {
         "type": "object",

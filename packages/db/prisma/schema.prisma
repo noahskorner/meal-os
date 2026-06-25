@@ -13,6 +13,7 @@ model Profile {
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   recipes        Recipe[]
+  userIngredients UserIngredient[]
 
   @@map("profiles")
   @@schema("public")
@@ -47,18 +48,20 @@ model Recipe {
 }
 
 model RecipeIngredient {
-  id           String     @id @default(uuid()) @db.Uuid
-  recipeId     String     @map("recipe_id") @db.Uuid
-  ingredientId String     @map("ingredient_id") @db.Uuid
-  name         String
-  quantity     Decimal?   @db.Decimal(10, 2)
-  unitId       String?    @map("unit_id") @db.Uuid
-  preparation  String?    @db.Text
-  note         String?    @db.Text
-  isOptional   Boolean?   @map("is_optional")
-  recipe       Recipe     @relation(fields: [recipeId], references: [id])
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  unit         Unit?      @relation(fields: [unitId], references: [id])
+  id               String         @id @default(uuid()) @db.Uuid
+  recipeId         String         @map("recipe_id") @db.Uuid
+  ingredientId     String?        @map("ingredient_id") @db.Uuid
+  userIngredientId String?        @map("user_ingredient_id") @db.Uuid
+  name             String
+  quantity         Decimal?       @db.Decimal(10, 2)
+  unitId           String?        @map("unit_id") @db.Uuid
+  preparation      String?        @db.Text
+  note             String?        @db.Text
+  isOptional       Boolean?       @map("is_optional")
+  recipe           Recipe         @relation(fields: [recipeId], references: [id])
+  ingredient       Ingredient?    @relation(fields: [ingredientId], references: [id])
+  userIngredient   UserIngredient? @relation(fields: [userIngredientId], references: [id])
+  unit             Unit?          @relation(fields: [unitId], references: [id])
 
   @@map("recipe_ingredients")
   @@schema("public")
@@ -109,6 +112,20 @@ model Ingredient {
 
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ingredients_name_trigram_idx")
   @@map("ingredients")
+  @@schema("public")
+}
+
+model UserIngredient {
+  id                String             @id @default(uuid()) @db.Uuid
+  createdById       String             @map("created_by_id") @db.Uuid
+  name              String
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy         Profile            @relation(fields: [createdById], references: [id])
+  recipeIngredients RecipeIngredient[]
+
+  @@unique([createdById, name])
+  @@map("user_ingredients")
   @@schema("public")
 }
 

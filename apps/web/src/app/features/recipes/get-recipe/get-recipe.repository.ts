@@ -31,12 +31,25 @@ export class GetRecipeRepository {
           select: {
             id: true,
             ingredientId: true,
+            userIngredientId: true,
             name: true,
             quantity: true,
             unitId: true,
             preparation: true,
             note: true,
             isOptional: true,
+            ingredient: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            userIngredient: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
         recipeSteps: {
@@ -66,6 +79,7 @@ export class GetRecipeRepository {
       ingredients: recipe.recipeIngredients.map((ingredient) => ({
         id: ingredient.id,
         ingredientId: ingredient.ingredientId,
+        userIngredientId: ingredient.userIngredientId,
         name: ingredient.name,
         quantity:
           ingredient.quantity === null ? null : ingredient.quantity.toNumber(),
@@ -73,6 +87,8 @@ export class GetRecipeRepository {
         preparation: ingredient.preparation,
         note: ingredient.note,
         isOptional: ingredient.isOptional,
+        ingredient: ingredient.ingredient,
+        userIngredient: ingredient.userIngredient,
       })),
       steps: recipe.recipeSteps,
     };

@@ -50,6 +50,15 @@ function normalizeSteps(steps: CreateRecipeStepRequest[]) {
   }));
 }
 
+function getIngredientReferenceKey(
+  ingredient: Pick<
+    CreateRecipeIngredientRequest,
+    "ingredientId" | "userIngredientId" | "name"
+  >,
+) {
+  return ingredient.ingredientId ?? ingredient.userIngredientId ?? ingredient.name;
+}
+
 export function NewRecipeProvider({ children }: { children: ReactNode }) {
   const [recipe, setRecipe] = useState<CreateRecipeRequest>(createEmptyRecipe);
 
@@ -78,7 +87,8 @@ export function NewRecipeProvider({ children }: { children: ReactNode }) {
       ...prev,
       recipeIngredients: [
         ...(prev.recipeIngredients || []).filter(
-          (item) => item.ingredientId !== ingredient.ingredientId,
+          (item) =>
+            getIngredientReferenceKey(item) !== getIngredientReferenceKey(ingredient),
         ),
         ingredient,
       ],
@@ -89,7 +99,7 @@ export function NewRecipeProvider({ children }: { children: ReactNode }) {
     setRecipe((prev) => ({
       ...prev,
       recipeIngredients: (prev.recipeIngredients || []).filter(
-        (ingredient) => ingredient.ingredientId !== ingredientId,
+        (ingredient) => getIngredientReferenceKey(ingredient) !== ingredientId,
       ),
     }));
   };

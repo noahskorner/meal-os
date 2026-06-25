@@ -5,13 +5,38 @@ import {
 } from "../../error.dto";
 import type { GetRecipeResponse } from "./get-recipe.response";
 
+const getRecipeIngredientReferenceResponseDtoSchema = z
+  .object({
+    id: z.uuid().openapi({
+      example: "550e8400-e29b-41d4-a716-446655440001",
+    }),
+    name: z.string().openapi({
+      example: "Garlic",
+    }),
+  })
+  .openapi("GetRecipeIngredientReferenceResponse");
+
+const getRecipeUserIngredientReferenceResponseDtoSchema = z
+  .object({
+    id: z.uuid().openapi({
+      example: "550e8400-e29b-41d4-a716-446655440010",
+    }),
+    name: z.string().openapi({
+      example: "Family Spice Blend",
+    }),
+  })
+  .openapi("GetRecipeUserIngredientReferenceResponse");
+
 const getRecipeIngredientResponseDtoSchema = z
   .object({
     id: z.uuid().openapi({
       example: "550e8400-e29b-41d4-a716-446655440000",
     }),
-    ingredientId: z.uuid().openapi({
+    ingredientId: z.uuid().nullable().openapi({
       example: "550e8400-e29b-41d4-a716-446655440001",
+    }),
+    userIngredientId: z.uuid().nullable().openapi({
+      example: "550e8400-e29b-41d4-a716-446655440010",
     }),
     name: z.string().openapi({
       example: "Garlic",
@@ -31,6 +56,9 @@ const getRecipeIngredientResponseDtoSchema = z
     isOptional: z.boolean().nullable().openapi({
       example: false,
     }),
+    ingredient: getRecipeIngredientReferenceResponseDtoSchema.nullable(),
+    userIngredient:
+      getRecipeUserIngredientReferenceResponseDtoSchema.nullable(),
   })
   .openapi("GetRecipeIngredientResponse");
 

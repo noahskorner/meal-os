@@ -8,6 +8,7 @@ import {
   type ListIngredientResponse,
 } from "@repo/web-api-client";
 import { createAuthHeaders, createTestApiClient } from "../../../api-client";
+import { getTestPrismaClient } from "../../../prisma-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
 async function getIngredient(
@@ -111,12 +112,18 @@ test.describe("GET /api/recipes/:id", () => {
       ingredients: [
         expect.objectContaining({
           ingredientId: request.recipeIngredients?.[0]?.ingredientId,
+          userIngredientId: null,
           name: request.recipeIngredients?.[0]?.name,
           quantity: request.recipeIngredients?.[0]?.quantity,
           unitId: request.recipeIngredients?.[0]?.unitId,
           preparation: request.recipeIngredients?.[0]?.preparation,
           note: null,
           isOptional: request.recipeIngredients?.[0]?.isOptional,
+          ingredient: {
+            id: request.recipeIngredients?.[0]?.ingredientId,
+            name: request.recipeIngredients?.[0]?.name,
+          },
+          userIngredient: null,
         }),
       ],
       steps: [
@@ -130,6 +137,68 @@ test.describe("GET /api/recipes/:id", () => {
         }),
       ],
     });
+  });
+
+  test("recipe ingredients can resolve user ingredient details", async ({
+    baseURL,
+  }) => {
+    const apiClient = createTestApiClient(baseURL);
+    const prisma = await getTestPrismaClient();
+    const userIngredient = await prisma.userIngredient.create({
+      data: {
+        createdById: E2E_TEST_USERS.primary.id,
+        name: "Fermented Chili Paste",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    const createResult = await createRecipe({
+      client: apiClient,
+      body: {
+        name: "Spicy Noodles",
+        recipeIngredients: [
+          {
+            userIngredientId: userIngredient.id,
+            name: userIngredient.name,
+            quantity: 1,
+          },
+        ],
+      },
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+
+    expect(createResult.response?.status).toBe(201);
+
+    const recipeId = createResult.data?.id;
+
+    if (!recipeId) {
+      throw new Error("Expected recipe creation to return a recipe id.");
+    }
+
+    const result = await getRecipe({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        id: recipeId,
+      },
+    });
+
+    expect(result.response?.status).toBe(200);
+    expect(result.data?.ingredients).toEqual([
+      expect.objectContaining({
+        ingredientId: null,
+        userIngredientId: userIngredient.id,
+        name: userIngredient.name,
+        ingredient: null,
+        userIngredient: {
+          id: userIngredient.id,
+          name: userIngredient.name,
+        },
+      }),
+    ]);
   });
 
   test("users cannot get recipes created by other users", async ({

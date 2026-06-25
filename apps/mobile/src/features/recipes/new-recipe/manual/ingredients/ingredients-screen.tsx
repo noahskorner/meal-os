@@ -81,9 +81,19 @@ export function IngredientsScreen() {
             <View className="gap-3">
               {recipeIngredients.map((ingredient) => (
                 <RecipeIngredientRow
-                  key={ingredient.ingredientId}
+                  key={
+                    ingredient.ingredientId ??
+                    ingredient.userIngredientId ??
+                    ingredient.name
+                  }
                   ingredient={ingredient}
-                  onRemove={() => removeIngredient(ingredient.ingredientId)}
+                  onRemove={() =>
+                    removeIngredient(
+                      ingredient.ingredientId ??
+                        ingredient.userIngredientId ??
+                        ingredient.name,
+                    )
+                  }
                 />
               ))}
             </View>

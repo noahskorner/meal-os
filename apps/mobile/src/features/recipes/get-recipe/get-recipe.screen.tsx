@@ -248,7 +248,8 @@ function IngredientRow({
   index: number;
   ingredient: {
     id: string;
-    ingredientId: string;
+    ingredientId: string | null;
+    userIngredientId: string | null;
     name: string;
     quantity: number | null;
     unitId: string | null;
@@ -257,6 +258,8 @@ function IngredientRow({
     isOptional: boolean | null;
     quantityLabel: string;
     unitIdLabel: string;
+    ingredientIdLabel: string;
+    userIngredientIdLabel: string;
     preparationLabel: string;
     noteLabel: string;
     isOptionalLabel: string;
@@ -303,7 +306,12 @@ function IngredientRow({
             <MetadataRow
               icon={ArrowUpRight}
               label="Ingredient ID"
-              value={ingredient.ingredientId}
+              value={ingredient.ingredientIdLabel}
+            />
+            <MetadataRow
+              icon={ArrowUpRight}
+              label="User Ingredient ID"
+              value={ingredient.userIngredientIdLabel}
             />
             <MetadataRow icon={SquareStack} label="Row ID" value={ingredient.id} />
           </View>

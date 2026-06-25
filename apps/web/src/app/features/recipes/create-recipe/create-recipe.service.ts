@@ -14,7 +14,8 @@ export class CreateRecipeService {
       servings: request.servings ?? null,
       recipeIngredients: (request.recipeIngredients ?? []).map(
         (ingredient) => ({
-          ingredientId: ingredient.ingredientId,
+          ingredientId: ingredient.ingredientId ?? null,
+          userIngredientId: ingredient.userIngredientId ?? null,
           name: ingredient.name,
           quantity: ingredient.quantity ?? null,
           unitId: ingredient.unitId ?? null,

@@ -8,6 +8,7 @@ import {
   type ListIngredientResponse,
 } from "@repo/web-api-client";
 import { createAuthHeaders, createTestApiClient } from "../../../api-client";
+import { getTestPrismaClient } from "../../../prisma-client";
 import { E2E_TEST_USERS } from "../../../test-users";
 
 async function getIngredient(
@@ -110,21 +111,33 @@ test.describe("POST /api/recipes", () => {
       ingredients: expect.arrayContaining([
         expect.objectContaining({
           ingredientId: garlic.id,
+          userIngredientId: null,
           name: garlic.name,
           quantity: 2,
           unitId: garlic.defaultUnit.id,
           preparation: "minced",
           note: null,
           isOptional: false,
+          ingredient: {
+            id: garlic.id,
+            name: garlic.name,
+          },
+          userIngredient: null,
         }),
         expect.objectContaining({
           ingredientId: oliveOil.id,
+          userIngredientId: null,
           name: oliveOil.name,
           quantity: 1,
           unitId: oliveOil.defaultUnit.id,
           preparation: null,
           note: "Use extra virgin if available.",
           isOptional: null,
+          ingredient: {
+            id: oliveOil.id,
+            name: oliveOil.name,
+          },
+          userIngredient: null,
         }),
       ]),
       steps: [
@@ -138,6 +151,70 @@ test.describe("POST /api/recipes", () => {
         }),
       ],
     });
+  });
+
+  test("authenticated user can create a recipe with a user ingredient", async ({
+    baseURL,
+  }) => {
+    const apiClient = createTestApiClient(baseURL);
+    const prisma = await getTestPrismaClient();
+    const userIngredient = await prisma.userIngredient.create({
+      data: {
+        createdById: E2E_TEST_USERS.primary.id,
+        name: "Family Spice Blend",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    const recipeRequest: CreateRecipeRequest = {
+      name: "Roasted Vegetables",
+      recipeIngredients: [
+        {
+          userIngredientId: userIngredient.id,
+          name: userIngredient.name,
+          quantity: 1,
+          note: "Use the weekend batch.",
+        },
+      ],
+    };
+
+    const result = await createRecipe({
+      client: apiClient,
+      body: recipeRequest,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+    });
+
+    expect(result.response?.status).toBe(201);
+
+    const recipeResult = await getRecipe({
+      client: apiClient,
+      headers: createAuthHeaders(E2E_TEST_USERS.primary.id),
+      path: {
+        id: result.data?.id ?? "",
+      },
+    });
+
+    expect(recipeResult.response?.status).toBe(200);
+    expect(recipeResult.data?.ingredients).toEqual([
+      expect.objectContaining({
+        ingredientId: null,
+        userIngredientId: userIngredient.id,
+        name: userIngredient.name,
+        quantity: 1,
+        unitId: null,
+        preparation: null,
+        note: "Use the weekend batch.",
+        isOptional: null,
+        ingredient: null,
+        userIngredient: {
+          id: userIngredient.id,
+          name: userIngredient.name,
+        },
+      }),
+    ]);
   });
 
   test("unauthenticated requests receive 401 unauthorized", async ({
