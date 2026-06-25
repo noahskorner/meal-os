@@ -435,11 +435,6 @@
       "CreateRecipeStepRequest": {
         "type": "object",
         "properties": {
-          "ingredientId": {
-            "type": "string",
-            "format": "uuid",
-            "example": "550e8400-e29b-41d4-a716-446655440000"
-          },
           "text": {
             "type": "string",
             "minLength": 1,
@@ -670,11 +665,6 @@
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440003"
           },
-          "ingredientId": {
-            "type": ["string", "null"],
-            "format": "uuid",
-            "example": "550e8400-e29b-41d4-a716-446655440001"
-          },
           "text": {
             "type": "string",
             "example": "Saute the garlic until fragrant."
@@ -684,7 +674,7 @@
             "example": 0
           }
         },
-        "required": ["id", "ingredientId", "text", "sortOrder"]
+        "required": ["id", "text", "sortOrder"]
       },
       "GetRecipeValidationErrorResponse": {
         "allOf": [
@@ -907,11 +897,6 @@
       "UpdateRecipeStepRequest": {
         "type": "object",
         "properties": {
-          "ingredientId": {
-            "type": "string",
-            "format": "uuid",
-            "example": "550e8400-e29b-41d4-a716-446655440000"
-          },
           "text": {
             "type": "string",
             "minLength": 1,

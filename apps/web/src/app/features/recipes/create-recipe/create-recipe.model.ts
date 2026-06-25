@@ -20,7 +20,6 @@ export type CreateRecipeIngredientModel = {
 };
 
 export type CreateRecipeStepModel = {
-  ingredientId: string | null;
   text: string;
   sortOrder: number;
 };

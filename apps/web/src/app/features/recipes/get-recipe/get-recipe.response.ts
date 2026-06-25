@@ -22,7 +22,6 @@ export type GetRecipeIngredientResponse = {
 
 export type GetRecipeStepResponse = {
   id: string;
-  ingredientId: string | null;
   text: string;
   sortOrder: number;
 };

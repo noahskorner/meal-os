@@ -45,7 +45,6 @@ export class GetRecipeRepository {
           },
           select: {
             id: true,
-            ingredientId: true,
             text: true,
             sortOrder: true,
           },

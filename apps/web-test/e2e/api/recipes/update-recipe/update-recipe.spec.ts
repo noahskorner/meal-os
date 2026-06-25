@@ -57,7 +57,6 @@ async function createTestRecipe(
     ],
     recipeSteps: [
       {
-        ingredientId: garlic.id,
         text: "Cook garlic until fragrant.",
         sortOrder: 0,
       },
@@ -111,7 +110,6 @@ test.describe("PUT /api/recipes/:id", () => {
       ],
       recipeSteps: [
         {
-          ingredientId: oliveOil.id,
           text: "Warm the olive oil gently.",
           sortOrder: 0,
         },
@@ -148,7 +146,6 @@ test.describe("PUT /api/recipes/:id", () => {
       servings: request.servings,
       steps: [
         expect.objectContaining({
-          ingredientId: oliveOil.id,
           text: "Warm the olive oil gently.",
           sortOrder: 0,
         }),

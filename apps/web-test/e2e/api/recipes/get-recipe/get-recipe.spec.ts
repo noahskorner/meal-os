@@ -55,7 +55,6 @@ async function createTestRecipe(
     ],
     recipeSteps: [
       {
-        ingredientId: garlic.id,
         text: "Cook garlic until fragrant.",
         sortOrder: 0,
       },
@@ -122,12 +121,10 @@ test.describe("GET /api/recipes/:id", () => {
       ],
       steps: [
         expect.objectContaining({
-          ingredientId: request.recipeSteps?.[0]?.ingredientId,
           text: request.recipeSteps?.[0]?.text,
           sortOrder: request.recipeSteps?.[0]?.sortOrder,
         }),
         expect.objectContaining({
-          ingredientId: null,
           text: request.recipeSteps?.[1]?.text,
           sortOrder: request.recipeSteps?.[1]?.sortOrder,
         }),

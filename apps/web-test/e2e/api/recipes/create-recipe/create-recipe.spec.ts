@@ -64,7 +64,6 @@ test.describe("POST /api/recipes", () => {
         {
           text: "Saute the garlic in olive oil until fragrant.",
           sortOrder: 0,
-          ingredientId: garlic.id,
         },
         {
           text: "Toss with cooked pasta and serve warm.",
@@ -130,12 +129,10 @@ test.describe("POST /api/recipes", () => {
       ]),
       steps: [
         expect.objectContaining({
-          ingredientId: garlic.id,
           text: "Saute the garlic in olive oil until fragrant.",
           sortOrder: 0,
         }),
         expect.objectContaining({
-          ingredientId: null,
           text: "Toss with cooked pasta and serve warm.",
           sortOrder: 1,
         }),

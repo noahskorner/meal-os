@@ -26,7 +26,6 @@ export class CreateRecipeRepository {
         },
         recipeSteps: {
           create: input.recipeSteps.map((step) => ({
-            ingredientId: step.ingredientId,
             text: step.text,
             sortOrder: step.sortOrder,
           })),

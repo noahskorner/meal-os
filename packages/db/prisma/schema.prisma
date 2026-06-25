@@ -65,13 +65,11 @@ model RecipeIngredient {
 }
 
 model RecipeStep {
-  id           String      @id @default(uuid()) @db.Uuid
-  recipeId     String      @map("recipe_id") @db.Uuid
-  ingredientId String?     @map("ingredient_id") @db.Uuid
-  text         String      @db.Text
-  sortOrder    Int         @map("sort_order")
-  recipe       Recipe      @relation(fields: [recipeId], references: [id])
-  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
+  id        String @id @default(uuid()) @db.Uuid
+  recipeId  String @map("recipe_id") @db.Uuid
+  text      String @db.Text
+  sortOrder Int    @map("sort_order")
+  recipe    Recipe @relation(fields: [recipeId], references: [id])
 
   @@unique([recipeId, sortOrder])
   @@map("recipe_steps")
@@ -108,7 +106,6 @@ model Ingredient {
   defaultUnit       Unit               @relation(fields: [defaultUnitId], references: [id])
   aliases           IngredientAlias[]
   recipeIngredients RecipeIngredient[]
-  recipeSteps       RecipeStep[]
 
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "ingredients_name_trigram_idx")
   @@map("ingredients")

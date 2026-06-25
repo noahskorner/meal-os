@@ -39,9 +39,6 @@ const getRecipeStepResponseDtoSchema = z
     id: z.uuid().openapi({
       example: "550e8400-e29b-41d4-a716-446655440003",
     }),
-    ingredientId: z.uuid().nullable().openapi({
-      example: "550e8400-e29b-41d4-a716-446655440001",
-    }),
     text: z.string().openapi({
       example: "Saute the garlic until fragrant.",
     }),

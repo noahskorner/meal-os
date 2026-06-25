@@ -109,7 +109,6 @@ export type CreateRecipeIngredientRequest = {
 };
 
 export type CreateRecipeStepRequest = {
-  ingredientId?: string;
   text: string;
   sortOrder: number | null;
 };
@@ -164,7 +163,6 @@ export type GetRecipeIngredientResponse = {
 
 export type GetRecipeStepResponse = {
   id: string;
-  ingredientId: string | null;
   text: string;
   sortOrder: number;
 };
@@ -216,7 +214,6 @@ export type UpdateRecipeIngredientRequest = {
 };
 
 export type UpdateRecipeStepRequest = {
-  ingredientId?: string;
   text: string;
   sortOrder: number | null;
 };

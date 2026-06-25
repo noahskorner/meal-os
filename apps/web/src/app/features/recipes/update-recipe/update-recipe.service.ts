@@ -25,7 +25,6 @@ export class UpdateRecipeService {
         }),
       ),
       recipeSteps: (request.recipeSteps ?? []).map((step) => ({
-        ingredientId: step.ingredientId ?? null,
         text: step.text,
         sortOrder: step.sortOrder,
       })),

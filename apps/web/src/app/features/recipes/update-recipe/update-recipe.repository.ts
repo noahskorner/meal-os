@@ -53,7 +53,6 @@ export class UpdateRecipeRepository {
           recipeSteps: {
             deleteMany: {},
             create: input.recipeSteps.map((step) => ({
-              ingredientId: step.ingredientId,
               text: step.text,
               sortOrder: step.sortOrder,
             })),

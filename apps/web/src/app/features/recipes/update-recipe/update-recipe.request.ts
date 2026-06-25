@@ -28,9 +28,6 @@ const updateRecipeIngredientRequestSchema = z
 
 const updateRecipeStepRequestSchema = z
   .object({
-    ingredientId: z.uuid().optional().openapi({
-      example: "550e8400-e29b-41d4-a716-446655440000",
-    }),
     text: z.string().trim().min(1).max(10000).openapi({
       example: "Saute the garlic until fragrant.",
     }),
