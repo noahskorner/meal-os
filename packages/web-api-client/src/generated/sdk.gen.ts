@@ -9,6 +9,9 @@ import type {
 } from "./client";
 import { client } from "./client.gen";
 import type {
+  CreateMealPlanData,
+  CreateMealPlanErrors,
+  CreateMealPlanResponses,
   CreateRecipeData,
   CreateRecipeErrors,
   CreateRecipeResponses,
@@ -108,6 +111,27 @@ export const listIngredientCategories = <ThrowOnError extends boolean = false>(
     unknown,
     ThrowOnError
   >({ url: "/api/ingredient-categories", ...options });
+
+/**
+ * Create meal plan
+ *
+ * Creates a meal plan for the authenticated user.
+ */
+export const createMealPlan = <ThrowOnError extends boolean = false>(
+  options: Options<CreateMealPlanData, ThrowOnError>,
+): RequestResult<CreateMealPlanResponses, CreateMealPlanErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    CreateMealPlanResponses,
+    CreateMealPlanErrors,
+    ThrowOnError
+  >({
+    url: "/api/meal-plans",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * Get profile

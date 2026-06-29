@@ -8,6 +8,7 @@ import { SupabaseAuthProvider } from "@/app/features/auth/supabase-auth.provider
 import { registerHealthCheck } from "@/app/features/health-check/health-check.di";
 import { registerListIngredientCategories } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.di";
 import { registerListIngredients } from "@/app/features/ingredients/list-ingredients/list-ingredients.di";
+import { registerCreateMealPlan } from "@/app/features/meal-plans/create-meal-plan/create-meal-plan.di";
 import { registerGetProfile } from "@/app/features/profiles/get-profile/get-profile.di";
 import { registerCreateRecipe } from "@/app/features/recipes/create-recipe/create-recipe.di";
 import { registerListRecipes } from "@/app/features/recipes/list-recipes/list-recipes.di";
@@ -36,6 +37,7 @@ services.registerScoped(SERVICE_TOKENS.authProvider, () => {
 registerHealthCheck(services);
 registerListIngredients(services);
 registerListIngredientCategories(services);
+registerCreateMealPlan(services);
 registerCreateUserIngredient(services);
 registerListUserIngredients(services);
 registerGetUserIngredient(services);

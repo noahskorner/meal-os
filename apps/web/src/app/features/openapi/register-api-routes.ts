@@ -2,6 +2,7 @@ import type { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { registerHealthCheckRoute } from "../health-check/health-check.route";
 import { registerListIngredientCategoriesRoute } from "../ingredients/list-ingredient-categories/list-ingredient-categories.route";
 import { registerListIngredientsRoute } from "../ingredients/list-ingredients/list-ingredients.route";
+import { registerCreateMealPlanRoute } from "../meal-plans/create-meal-plan/create-meal-plan.route";
 import { registerGetProfileRoute } from "../profiles/get-profile/get-profile.route";
 import { registerCreateRecipeRoute } from "../recipes/create-recipe/create-recipe.route";
 import { registerListRecipesRoute } from "../recipes/list-recipes/list-recipes.route";
@@ -16,6 +17,7 @@ const routeRegistrations = [
   registerHealthCheckRoute,
   registerListIngredientsRoute,
   registerListIngredientCategoriesRoute,
+  registerCreateMealPlanRoute,
   registerGetProfileRoute,
   registerCreateUserIngredientRoute,
   registerListUserIngredientsRoute,

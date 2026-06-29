@@ -5,7 +5,7 @@ import { openApiDocument } from "../../../apps/web/src/app/features/openapi/open
 
 const currentFilePath = fileURLToPath(import.meta.url);
 const packageRoot = path.resolve(path.dirname(currentFilePath), "..");
-const outputPath = path.join(packageRoot, "src", "generated", "openapi.json");
+const outputPath = path.join(packageRoot, "src", "openapi.json");
 
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(openApiDocument, null, 2)}\n`);

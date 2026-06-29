@@ -12,12 +12,16 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["ok"],
+            "enum": [
+              "ok"
+            ],
             "example": "ok"
           },
           "service": {
             "type": "string",
-            "enum": ["web"],
+            "enum": [
+              "web"
+            ],
             "example": "web"
           },
           "timestamp": {
@@ -26,7 +30,10 @@
             "example": "2026-06-19T14:00:00.000Z"
           }
         },
-        "required": ["status", "service"]
+        "required": [
+          "status",
+          "service"
+        ]
       },
       "HealthCheckValidationErrorResponse": {
         "type": "object",
@@ -45,7 +52,10 @@
             ]
           }
         },
-        "required": ["message", "issues"]
+        "required": [
+          "message",
+          "issues"
+        ]
       },
       "ListIngredientsResponse": {
         "type": "object",
@@ -77,7 +87,13 @@
             "example": 6
           }
         },
-        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ]
       },
       "ListIngredientResponse": {
         "type": "object",
@@ -96,7 +112,10 @@
             "items": {
               "type": "string"
             },
-            "example": ["Capsicum", "Sweet Pepper"]
+            "example": [
+              "Capsicum",
+              "Sweet Pepper"
+            ]
           },
           "category": {
             "type": "object",
@@ -111,7 +130,10 @@
                 "example": "Produce"
               }
             },
-            "required": ["id", "name"]
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "defaultUnit": {
             "type": "object",
@@ -134,10 +156,21 @@
                 "example": "COUNT"
               }
             },
-            "required": ["id", "name", "abbreviation", "type"]
+            "required": [
+              "id",
+              "name",
+              "abbreviation",
+              "type"
+            ]
           }
         },
-        "required": ["id", "name", "aliases", "category", "defaultUnit"]
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "category",
+          "defaultUnit"
+        ]
       },
       "ListIngredientsValidationErrorResponse": {
         "allOf": [
@@ -156,7 +189,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["page: Too small: expected number to be >0"]
+                "example": [
+                  "page: Too small: expected number to be >0"
+                ]
               }
             }
           }
@@ -175,7 +210,10 @@
             }
           }
         },
-        "required": ["message", "issues"]
+        "required": [
+          "message",
+          "issues"
+        ]
       },
       "ListIngredientCategoriesResponse": {
         "type": "array",
@@ -196,7 +234,10 @@
             "example": "Produce"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "CreateMealPlanResponse": {
         "type": "object",
@@ -211,7 +252,10 @@
             "example": "/api/meal-plans/550e8400-e29b-41d4-a716-446655440000"
           }
         },
-        "required": ["id", "location"]
+        "required": [
+          "id",
+          "location"
+        ]
       },
       "CreateMealPlanValidationErrorResponse": {
         "allOf": [
@@ -261,7 +305,9 @@
             "type": "string"
           }
         },
-        "required": ["message"]
+        "required": [
+          "message"
+        ]
       },
       "CreateMealPlanRequest": {
         "type": "object",
@@ -286,7 +332,9 @@
             ]
           }
         },
-        "required": ["entries"]
+        "required": [
+          "entries"
+        ]
       },
       "CreateMealPlanEntryRequest": {
         "type": "object",
@@ -308,7 +356,9 @@
             ]
           }
         },
-        "required": ["date"]
+        "required": [
+          "date"
+        ]
       },
       "GetProfileResponse": {
         "type": "object",
@@ -319,7 +369,9 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           }
         },
-        "required": ["id"]
+        "required": [
+          "id"
+        ]
       },
       "GetProfileValidationErrorResponse": {
         "allOf": [
@@ -338,7 +390,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["id: Invalid UUID"]
+                "example": [
+                  "id: Invalid UUID"
+                ]
               }
             }
           }
@@ -405,7 +459,10 @@
             "example": "/api/user-ingredients/550e8400-e29b-41d4-a716-446655440010"
           }
         },
-        "required": ["id", "location"]
+        "required": [
+          "id",
+          "location"
+        ]
       },
       "CreateUserIngredientValidationErrorResponse": {
         "allOf": [
@@ -468,7 +525,9 @@
             "example": "550e8400-e29b-41d4-a716-446655440002"
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "ListUserIngredientsResponse": {
         "type": "object",
@@ -500,7 +559,13 @@
             "example": 6
           }
         },
-        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ]
       },
       "ListUserIngredientResponse": {
         "type": "object",
@@ -521,10 +586,18 @@
             "$ref": "#/components/schemas/ListUserIngredientUnitResponse"
           }
         },
-        "required": ["id", "name", "category", "defaultUnit"]
+        "required": [
+          "id",
+          "name",
+          "category",
+          "defaultUnit"
+        ]
       },
       "ListUserIngredientCategoryResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -536,10 +609,16 @@
             "example": "Produce"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "ListUserIngredientUnitResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -559,7 +638,12 @@
             "example": "COUNT"
           }
         },
-        "required": ["id", "name", "abbreviation", "type"]
+        "required": [
+          "id",
+          "name",
+          "abbreviation",
+          "type"
+        ]
       },
       "ListUserIngredientsValidationErrorResponse": {
         "allOf": [
@@ -578,7 +662,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["page: Too small: expected number to be >0"]
+                "example": [
+                  "page: Too small: expected number to be >0"
+                ]
               }
             }
           }
@@ -613,12 +699,18 @@
             "example": "Family Spice Blend"
           },
           "categoryId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440001"
           },
           "defaultUnitId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440002"
           },
@@ -639,7 +731,10 @@
         ]
       },
       "GetUserIngredientCategoryResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -651,10 +746,16 @@
             "example": "Produce"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "GetUserIngredientUnitResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -674,7 +775,12 @@
             "example": "COUNT"
           }
         },
-        "required": ["id", "name", "abbreviation", "type"]
+        "required": [
+          "id",
+          "name",
+          "abbreviation",
+          "type"
+        ]
       },
       "GetUserIngredientValidationErrorResponse": {
         "allOf": [
@@ -693,7 +799,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["userIngredientId: Invalid UUID"]
+                "example": [
+                  "userIngredientId: Invalid UUID"
+                ]
               }
             }
           }
@@ -744,7 +852,10 @@
             "example": "/api/recipes/550e8400-e29b-41d4-a716-446655440000"
           }
         },
-        "required": ["id", "location"]
+        "required": [
+          "id",
+          "location"
+        ]
       },
       "CreateRecipeValidationErrorResponse": {
         "allOf": [
@@ -853,7 +964,9 @@
             ]
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "CreateRecipeIngredientRequest": {
         "type": "object",
@@ -902,7 +1015,9 @@
             "example": false
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "CreateRecipeStepRequest": {
         "type": "object",
@@ -914,13 +1029,19 @@
             "example": "Saute the garlic until fragrant."
           },
           "sortOrder": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "minimum": 0,
             "maximum": 1000,
             "example": 0
           }
         },
-        "required": ["text", "sortOrder"]
+        "required": [
+          "text",
+          "sortOrder"
+        ]
       },
       "ListRecipesResponse": {
         "type": "object",
@@ -952,7 +1073,13 @@
             "example": 6
           }
         },
-        "required": ["items", "page", "pageSize", "totalItems", "totalPages"]
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ]
       },
       "ListRecipeResponse": {
         "type": "object",
@@ -986,7 +1113,10 @@
             "example": 4
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "ListRecipesValidationErrorResponse": {
         "allOf": [
@@ -1005,7 +1135,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["page: Too small: expected number to be >0"]
+                "example": [
+                  "page: Too small: expected number to be >0"
+                ]
               }
             }
           }
@@ -1040,19 +1172,31 @@
             "example": "Weeknight Pasta"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Simple pasta with garlic, olive oil, and chili flakes."
           },
           "prepTimeMinutes": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 10
           },
           "cookTimeMinutes": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 15
           },
           "servings": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 4
           },
           "ingredients": {
@@ -1088,12 +1232,18 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "ingredientId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440001"
           },
           "userIngredientId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440010"
           },
@@ -1102,24 +1252,39 @@
             "example": "Garlic"
           },
           "quantity": {
-            "type": ["number", "null"],
+            "type": [
+              "number",
+              "null"
+            ],
             "example": 2
           },
           "unitId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "550e8400-e29b-41d4-a716-446655440002"
           },
           "preparation": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "minced"
           },
           "note": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Adjust to taste."
           },
           "isOptional": {
-            "type": ["boolean", "null"],
+            "type": [
+              "boolean",
+              "null"
+            ],
             "example": false
           },
           "ingredient": {
@@ -1144,7 +1309,10 @@
         ]
       },
       "GetRecipeIngredientReferenceResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -1156,10 +1324,16 @@
             "example": "Garlic"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "GetRecipeUserIngredientReferenceResponse": {
-        "type": ["object", "null"],
+        "type": [
+          "object",
+          "null"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -1171,7 +1345,10 @@
             "example": "Family Spice Blend"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "GetRecipeStepResponse": {
         "type": "object",
@@ -1190,7 +1367,11 @@
             "example": 0
           }
         },
-        "required": ["id", "text", "sortOrder"]
+        "required": [
+          "id",
+          "text",
+          "sortOrder"
+        ]
       },
       "GetRecipeValidationErrorResponse": {
         "allOf": [
@@ -1209,7 +1390,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["id: Invalid UUID"]
+                "example": [
+                  "id: Invalid UUID"
+                ]
               }
             }
           }
@@ -1264,7 +1447,9 @@
                 "items": {
                   "type": "string"
                 },
-                "example": ["id: Invalid UUID"]
+                "example": [
+                  "id: Invalid UUID"
+                ]
               }
             }
           }
@@ -1364,7 +1549,9 @@
             ]
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "UpdateRecipeIngredientRequest": {
         "type": "object",
@@ -1408,7 +1595,10 @@
             "example": false
           }
         },
-        "required": ["ingredientId", "name"]
+        "required": [
+          "ingredientId",
+          "name"
+        ]
       },
       "UpdateRecipeStepRequest": {
         "type": "object",
@@ -1420,13 +1610,19 @@
             "example": "Saute the garlic until fragrant."
           },
           "sortOrder": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "minimum": 0,
             "maximum": 1000,
             "example": 0
           }
         },
-        "required": ["text", "sortOrder"]
+        "required": [
+          "text",
+          "sortOrder"
+        ]
       },
       "ListUnitsResponse": {
         "type": "array",
@@ -1455,7 +1651,12 @@
             "example": "VOLUME"
           }
         },
-        "required": ["id", "name", "abbreviation", "type"]
+        "required": [
+          "id",
+          "name",
+          "abbreviation",
+          "type"
+        ]
       }
     },
     "parameters": {}
@@ -1464,14 +1665,19 @@
     "/api/health-check": {
       "get": {
         "operationId": "healthCheck",
-        "tags": ["System"],
+        "tags": [
+          "System"
+        ],
         "summary": "Health check",
         "description": "Returns the basic status of the web application.",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["true", "false"],
+              "enum": [
+                "true",
+                "false"
+              ],
               "description": "Set to true to include a timestamp in the response.",
               "example": "true"
             },
@@ -1508,7 +1714,9 @@
     "/api/ingredients": {
       "get": {
         "operationId": "listIngredients",
-        "tags": ["Ingredients"],
+        "tags": [
+          "Ingredients"
+        ],
         "summary": "List ingredients",
         "description": "Returns a paginated list of ingredients with aliases, category, and default unit details.",
         "parameters": [
@@ -1580,7 +1788,9 @@
     "/api/ingredient-categories": {
       "get": {
         "operationId": "listIngredientCategories",
-        "tags": ["Ingredient Categories"],
+        "tags": [
+          "Ingredient Categories"
+        ],
         "summary": "List ingredient categories",
         "description": "Returns all ingredient categories.",
         "responses": {
@@ -1600,7 +1810,9 @@
     "/api/meal-plans": {
       "post": {
         "operationId": "createMealPlan",
-        "tags": ["Meal Plans"],
+        "tags": [
+          "Meal Plans"
+        ],
         "summary": "Create meal plan",
         "description": "Creates a meal plan for the authenticated user.",
         "requestBody": {
@@ -1658,7 +1870,9 @@
     "/api/profiles/{profileId}": {
       "get": {
         "operationId": "getProfile",
-        "tags": ["Profiles"],
+        "tags": [
+          "Profiles"
+        ],
         "summary": "Get profile",
         "description": "Returns a profile by ID.",
         "parameters": [
@@ -1732,7 +1946,9 @@
     "/api/user-ingredients": {
       "post": {
         "operationId": "createUserIngredient",
-        "tags": ["User Ingredients"],
+        "tags": [
+          "User Ingredients"
+        ],
         "summary": "Create user ingredient",
         "description": "Creates a custom ingredient for the authenticated user.",
         "requestBody": {
@@ -1788,7 +2004,9 @@
       },
       "get": {
         "operationId": "listUserIngredients",
-        "tags": ["User Ingredients"],
+        "tags": [
+          "User Ingredients"
+        ],
         "summary": "List user ingredients",
         "description": "Lists paginated user ingredients created by the authenticated user.",
         "parameters": [
@@ -1870,7 +2088,9 @@
     "/api/user-ingredients/{userIngredientId}": {
       "get": {
         "operationId": "getUserIngredient",
-        "tags": ["User Ingredients"],
+        "tags": [
+          "User Ingredients"
+        ],
         "summary": "Get user ingredient",
         "description": "Returns a user ingredient visible to the authenticated user.",
         "parameters": [
@@ -1934,7 +2154,9 @@
     "/api/recipes": {
       "post": {
         "operationId": "createRecipe",
-        "tags": ["Recipes"],
+        "tags": [
+          "Recipes"
+        ],
         "summary": "Create recipe",
         "description": "Creates a recipe for the authenticated user.",
         "requestBody": {
@@ -1990,7 +2212,9 @@
       },
       "get": {
         "operationId": "listRecipes",
-        "tags": ["Recipes"],
+        "tags": [
+          "Recipes"
+        ],
         "summary": "List recipes",
         "description": "Lists paginated recipe metadata visible to the authenticated user.",
         "parameters": [
@@ -2072,7 +2296,9 @@
     "/api/recipes/{recipeId}": {
       "get": {
         "operationId": "getRecipe",
-        "tags": ["Recipes"],
+        "tags": [
+          "Recipes"
+        ],
         "summary": "Get recipe",
         "description": "Returns a recipe visible to the authenticated user.",
         "parameters": [
@@ -2134,7 +2360,9 @@
       },
       "put": {
         "operationId": "updateRecipe",
-        "tags": ["Recipes"],
+        "tags": [
+          "Recipes"
+        ],
         "summary": "Update recipe",
         "description": "Updates a recipe owned by the authenticated user.",
         "parameters": [
@@ -2201,7 +2429,9 @@
     "/api/units": {
       "get": {
         "operationId": "listUnits",
-        "tags": ["Units"],
+        "tags": [
+          "Units"
+        ],
         "summary": "List units",
         "description": "Returns all units.",
         "responses": {

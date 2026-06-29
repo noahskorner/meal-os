@@ -12,6 +12,7 @@ model Profile {
   id             String   @id @db.Uuid
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  mealPlans      MealPlan[]
   recipes        Recipe[]
   userIngredients UserIngredient[]
 
@@ -38,12 +39,51 @@ model Recipe {
   cookTimeMinutes   Int?               @map("cook_time_minutes")
   servings          Int?
   createdBy         Profile            @relation(fields: [createdById], references: [id])
+  mealPlanEntryRecipes MealPlanEntryRecipe[]
   recipeIngredients RecipeIngredient[]
   recipeSteps       RecipeStep[]
   recipeRecipeTags  RecipeRecipeTag[]
 
   @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "recipes_name_trigram_idx")
   @@map("recipes")
+  @@schema("public")
+}
+
+model MealPlan {
+  id          String          @id @default(uuid()) @db.Uuid
+  createdById String          @map("created_by_id") @db.Uuid
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy   Profile         @relation(fields: [createdById], references: [id])
+  entries     MealPlanEntry[]
+
+  @@index([createdById])
+  @@map("meal_plans")
+  @@schema("public")
+}
+
+model MealPlanEntry {
+  id                  String                @id @default(uuid()) @db.Uuid
+  mealPlanId          String                @map("meal_plan_id") @db.Uuid
+  date                DateTime              @db.Date
+  mealPlan            MealPlan              @relation(fields: [mealPlanId], references: [id])
+  mealPlanEntryRecipes MealPlanEntryRecipe[]
+
+  @@unique([mealPlanId, date])
+  @@map("meal_plan_entries")
+  @@schema("public")
+}
+
+model MealPlanEntryRecipe {
+  id              String        @id @default(uuid()) @db.Uuid
+  mealPlanEntryId String        @map("meal_plan_entry_id") @db.Uuid
+  recipeId        String        @map("recipe_id") @db.Uuid
+  sortOrder       Int           @map("sort_order")
+  mealPlanEntry   MealPlanEntry @relation(fields: [mealPlanEntryId], references: [id])
+  recipe          Recipe        @relation(fields: [recipeId], references: [id])
+
+  @@unique([mealPlanEntryId, sortOrder])
+  @@map("meal_plan_entry_recipes")
   @@schema("public")
 }
 

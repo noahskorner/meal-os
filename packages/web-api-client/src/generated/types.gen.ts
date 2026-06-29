@@ -56,6 +56,33 @@ export type IngredientCategorySummary = {
   name: string;
 };
 
+export type CreateMealPlanResponse = {
+  id: string;
+  location: string;
+};
+
+export type CreateMealPlanValidationErrorResponse = ValidationErrorResponse & {
+  message?: string;
+  issues?: Array<string>;
+};
+
+export type CreateMealPlanUnauthorizedResponse = ErrorResponse & {
+  message?: string;
+};
+
+export type ErrorResponse = {
+  message: string;
+};
+
+export type CreateMealPlanRequest = {
+  entries: Array<CreateMealPlanEntryRequest>;
+};
+
+export type CreateMealPlanEntryRequest = {
+  date: string;
+  recipeIds?: Array<string>;
+};
+
 export type GetProfileResponse = {
   id: string;
 };
@@ -67,10 +94,6 @@ export type GetProfileValidationErrorResponse = ValidationErrorResponse & {
 
 export type GetProfileUnauthorizedResponse = ErrorResponse & {
   message?: string;
-};
-
-export type ErrorResponse = {
-  message: string;
 };
 
 export type GetProfileForbiddenResponse = ErrorResponse & {
@@ -428,6 +451,37 @@ export type ListIngredientCategoriesResponses = {
 
 export type ListIngredientCategoriesResponse2 =
   ListIngredientCategoriesResponses[keyof ListIngredientCategoriesResponses];
+
+export type CreateMealPlanData = {
+  body: CreateMealPlanRequest;
+  path?: never;
+  query?: never;
+  url: "/api/meal-plans";
+};
+
+export type CreateMealPlanErrors = {
+  /**
+   * The request body was invalid.
+   */
+  400: CreateMealPlanValidationErrorResponse;
+  /**
+   * The request was unauthenticated.
+   */
+  401: CreateMealPlanUnauthorizedResponse;
+};
+
+export type CreateMealPlanError =
+  CreateMealPlanErrors[keyof CreateMealPlanErrors];
+
+export type CreateMealPlanResponses = {
+  /**
+   * The meal plan was created.
+   */
+  201: CreateMealPlanResponse;
+};
+
+export type CreateMealPlanResponse2 =
+  CreateMealPlanResponses[keyof CreateMealPlanResponses];
 
 export type GetProfileData = {
   body?: never;

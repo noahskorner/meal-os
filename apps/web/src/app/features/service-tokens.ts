@@ -12,6 +12,10 @@ import type { ListIngredientCategoriesController } from "@/app/features/ingredie
 import type { ListIngredientCategoriesFacade } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.facade";
 import type { ListIngredientCategoriesRepository } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.repository";
 import type { ListIngredientCategoriesService } from "@/app/features/ingredients/list-ingredient-categories/list-ingredient-categories.service";
+import type { CreateMealPlanController } from "@/app/features/meal-plans/create-meal-plan/create-meal-plan.controller";
+import type { CreateMealPlanFacade } from "@/app/features/meal-plans/create-meal-plan/create-meal-plan.facade";
+import type { CreateMealPlanRepository } from "@/app/features/meal-plans/create-meal-plan/create-meal-plan.repository";
+import type { CreateMealPlanService } from "@/app/features/meal-plans/create-meal-plan/create-meal-plan.service";
 import type { GetProfileController } from "@/app/features/profiles/get-profile/get-profile.controller";
 import type { GetProfileFacade } from "@/app/features/profiles/get-profile/get-profile.facade";
 import type { GetProfileRepository } from "@/app/features/profiles/get-profile/get-profile.repository";
@@ -84,6 +88,18 @@ export const SERVICE_TOKENS = {
     createToken<ListIngredientCategoriesController>(
       "listIngredientCategoriesController",
     ),
+  createMealPlanRepository: createToken<CreateMealPlanRepository>(
+    "createMealPlanRepository",
+  ),
+  createMealPlanService: createToken<CreateMealPlanService>(
+    "createMealPlanService",
+  ),
+  createMealPlanFacade: createToken<CreateMealPlanFacade>(
+    "createMealPlanFacade",
+  ),
+  createMealPlanController: createToken<CreateMealPlanController>(
+    "createMealPlanController",
+  ),
   createUserIngredientRepository: createToken<CreateUserIngredientRepository>(
     "createUserIngredientRepository",
   ),
