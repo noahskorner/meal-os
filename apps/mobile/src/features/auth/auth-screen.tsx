@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text";
 import * as React from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -74,6 +75,13 @@ export function AuthScreen() {
     >
       <View className="w-full max-w-[420px] gap-3 rounded-lg">
         <View className="mt-3 gap-4">
+          <Image
+            source={require("../../../assets/images/logo.png")}
+            className="self-center"
+            resizeMode="contain"
+            style={{ width: 200, height: 200 }}
+          />
+
           <View className="gap-2">
             <Label nativeID="email-label">Email</Label>
             <Input
