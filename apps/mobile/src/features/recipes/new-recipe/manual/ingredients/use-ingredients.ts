@@ -40,48 +40,53 @@ export function useIngredients<TIngredient extends BaseListIngredientResponse>({
   const isMountedRef = useRef(true);
   const requestIdRef = useRef(0);
 
-  const loadIngredients = useCallback(async (searchTerm = "") => {
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
-    setIsLoading(true);
-    setError(null);
+  const loadIngredients = useCallback(
+    async (searchTerm = "") => {
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const normalizedSearchTerm = searchTerm.trim();
-      const { data, error } = await listIngredients({
-        client: webApiClient,
-        query: {
-          page: 1,
-          pageSize,
-          ...(normalizedSearchTerm ? { searchTerm: normalizedSearchTerm } : {}),
-        },
-      });
+      try {
+        const normalizedSearchTerm = searchTerm.trim();
+        const { data, error } = await listIngredients({
+          client: webApiClient,
+          query: {
+            page: 1,
+            pageSize,
+            ...(normalizedSearchTerm
+              ? { searchTerm: normalizedSearchTerm }
+              : {}),
+          },
+        });
 
-      if (!isMountedRef.current || requestIdRef.current !== requestId) {
-        return;
-      }
+        if (!isMountedRef.current || requestIdRef.current !== requestId) {
+          return;
+        }
 
-      if (error || !data) {
+        if (error || !data) {
+          setIngredients([]);
+          setError("Unable to load ingredients.");
+          return;
+        }
+
+        setIngredients(data.items);
+      } catch (e) {
+        console.error("Error loading ingredients:", JSON.stringify(e, null, 2));
+        if (!isMountedRef.current || requestIdRef.current !== requestId) {
+          return;
+        }
+
         setIngredients([]);
         setError("Unable to load ingredients.");
-        return;
+      } finally {
+        if (isMountedRef.current && requestIdRef.current === requestId) {
+          setIsLoading(false);
+        }
       }
-
-      setIngredients(data.items);
-    } catch (e) {
-      console.error("Error loading ingredients:", JSON.stringify(e, null, 2));
-      if (!isMountedRef.current || requestIdRef.current !== requestId) {
-        return;
-      }
-
-      setIngredients([]);
-      setError("Unable to load ingredients.");
-    } finally {
-      if (isMountedRef.current && requestIdRef.current === requestId) {
-        setIsLoading(false);
-      }
-    }
-  }, []);
+    },
+    [listIngredients],
+  );
 
   const searchIngredients = useCallback(
     (searchTerm: string) => {

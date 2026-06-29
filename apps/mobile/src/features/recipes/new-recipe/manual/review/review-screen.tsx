@@ -56,7 +56,11 @@ export function ReviewScreen() {
             <View className="gap-2">
               {recipeIngredients.map((ingredient) => (
                 <ReviewListItem
-                  key={ingredient.ingredientId}
+                  key={
+                    ingredient.ingredientId ??
+                    ingredient.userIngredientId ??
+                    ingredient.name
+                  }
                   text={ingredient.name}
                 />
               ))}

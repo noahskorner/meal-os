@@ -1,18 +1,20 @@
 import { StepTitle } from "../step-title";
 import { Keyboard, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { SearchInput } from "@/components/search-input";
 import { Text } from "@/components/ui/text";
 import { CreateUserIngredientBottomSheet } from "./create-user-ingredient-bottom-sheet";
 import { EditRecipeIngredientBottomSheet } from "./edit-recipe-ingredient-bottom-sheet";
-import { IngredientResult } from "./ingredient-result";
+import { GlobalIngredientsList } from "./global-ingredients-list";
 import { RecipeIngredientRow } from "./recipe-ingredient-row";
+import { UserIngredientsList } from "./user-ingredients-list";
 import { useGlobalIngredients } from "./use-global-ingredients";
+import { useUserIngredients } from "./use-user-ingredients";
 import { useNewRecipe } from "../../use-new-recipe";
 import type {
   CreateRecipeIngredientRequest,
   ListIngredientResponse,
+  ListUserIngredientResponse,
 } from "@repo/web-api-client";
 import * as React from "react";
 
@@ -40,15 +42,8 @@ export function IngredientsScreen() {
     React.useState<CreateRecipeIngredientRequest | null>(null);
   const [creatingIngredientName, setCreatingIngredientName] =
     React.useState("");
-  const {
-    query,
-    ingredients,
-    isLoading,
-    error,
-    hasExactMatch,
-    searchIngredients,
-    clearIngredients,
-  } = useGlobalIngredients();
+  const globalIngredients = useGlobalIngredients();
+  const userIngredients = useUserIngredients();
   const {
     recipe,
     addIngredient,
@@ -58,6 +53,9 @@ export function IngredientsScreen() {
   } = useNewRecipe();
 
   const recipeIngredients = recipe.recipeIngredients || [];
+  const query = globalIngredients.query;
+  const hasExactMatch =
+    globalIngredients.hasExactMatch || userIngredients.hasExactMatch;
   const addRecipeIngredient = (ingredient: ListIngredientResponse) => {
     addIngredient({
       ingredientId: ingredient.id,
@@ -65,6 +63,22 @@ export function IngredientsScreen() {
       quantity: 1,
       unitId: ingredient.defaultUnit.id,
     });
+  };
+  const addUserRecipeIngredient = (ingredient: ListUserIngredientResponse) => {
+    addIngredient({
+      userIngredientId: ingredient.id,
+      name: ingredient.name,
+      quantity: 1,
+      ...(ingredient.defaultUnit ? { unitId: ingredient.defaultUnit.id } : {}),
+    });
+  };
+  const searchIngredients = (searchTerm: string) => {
+    globalIngredients.searchIngredients(searchTerm);
+    userIngredients.searchIngredients(searchTerm);
+  };
+  const clearIngredients = () => {
+    globalIngredients.clearIngredients();
+    userIngredients.clearIngredients();
   };
 
   return (
@@ -134,44 +148,19 @@ export function IngredientsScreen() {
           </View>
 
           <View className="gap-5">
-            <View className="gap-3">
-              <Text className="text-sm font-semibold text-foreground">
-                Search Results
-              </Text>
+            <GlobalIngredientsList
+              ingredients={globalIngredients.ingredients}
+              isLoading={globalIngredients.isLoading}
+              error={globalIngredients.error}
+              onAddIngredient={addRecipeIngredient}
+            />
 
-              {isLoading ? (
-                <Card className="items-center gap-2 rounded-xl border border-border bg-card p-5">
-                  <Text className="text-sm font-semibold text-foreground">
-                    Loading ingredients
-                  </Text>
-                </Card>
-              ) : error ? (
-                <Card className="items-center gap-2 rounded-xl border border-border bg-card p-5">
-                  <Text className="text-sm font-semibold text-foreground">
-                    {error}
-                  </Text>
-                </Card>
-              ) : ingredients.length > 0 ? (
-                <View className="gap-2">
-                  {ingredients.map((ingredient) => (
-                    <IngredientResult
-                      key={ingredient.id}
-                      ingredient={ingredient}
-                      onAdd={() => addRecipeIngredient(ingredient)}
-                    />
-                  ))}
-                </View>
-              ) : (
-                <Card className="items-center gap-2 rounded-xl border border-border bg-card p-5">
-                  <Text className="text-sm font-semibold text-foreground">
-                    No ingredients found
-                  </Text>
-                  <Text className="text-center text-xs text-muted-foreground">
-                    Create a new ingredient to add it to your recipe.
-                  </Text>
-                </Card>
-              )}
-            </View>
+            <UserIngredientsList
+              ingredients={userIngredients.ingredients}
+              isLoading={userIngredients.isLoading}
+              error={userIngredients.error}
+              onAddIngredient={addUserRecipeIngredient}
+            />
 
             {query.trim() && !hasExactMatch ? (
               <Button
